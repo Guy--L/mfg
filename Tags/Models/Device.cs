@@ -31,7 +31,11 @@ namespace Tags.Models
             using (tagDB tdb = new tagDB())
             {
                 var dev = tdb.Fetch<Device>("where Name = @0 and ChannelId = @1", Name, ChannelId).SingleOrDefault();
-                if (dev == null) tdb.Insert<Device>(this);
+                if (dev == null)
+                {
+                    Model = deviceModel ?? "DL-260";
+                    tdb.Insert<Device>(this);
+                }
                 else
                 {
                     DeviceId = dev.DeviceId;
