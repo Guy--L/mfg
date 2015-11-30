@@ -1,0 +1,95 @@
+﻿@model Test.Models.SolutionChart
+
+@section actions {
+<li><i class="print fa fa-print"></i>
+</li>
+}
+<br />
+<div id="ChartContainer" style="width:1000px;height:500px;"></div>
+
+@section scripts {
+    <script type="text/javascript" src='@Url.Content("~/Scripts/flotr2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/html2canvas.js")'></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $('.print').on('click', function () {
+                html2canvas($("#ChartContainer"), {
+                    onrendered: function (canvas) {
+                        $("#page").hide();
+                        document.body.appendChild(canvas);
+                        window.print();
+                        $('canvas').remove();
+                        $("#page").show();
+                    }
+                });
+            });
+
+            var container = document.getElementById('ChartContainer');
+
+            @Model.series;
+
+            var
+                options,
+                graph,
+                o;
+        
+            options = {
+                xaxis : {
+                    mode : 'time', 
+                    labelsAngle: 45,
+                    timezone: "browser",
+                    timeMode: 'local',
+                    autoscale: true,
+                    autoscaleMargin: 0.1 
+                },
+                @Html.Raw(Model.axes)
+                selection : {
+                    mode : 'xy'
+                },
+                HtmlText: false,
+                mouse: {
+                    track: true,
+                    lineColor: 'purple',
+                    relative: true,
+                    position: 'ne',
+                    sensibility: 2, // => The smaller this value, the more precise you've to point
+                    trackDecimals: 2,
+                    trackFormatter: function (obj) { return shortStamp(obj.x) + ', ' + obj.y; }
+                }
+            };
+        
+            function shortStamp(d)
+            {
+                return '' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + ('0' + d.getMinutes()).substr(0, 2);
+            }
+
+            // Draw graph with default options, overwriting with passed options
+            function drawGraph (opts) {
+
+                // Clone the options, so the 'options' variable always keeps intact.
+                o = Flotr._.extend(Flotr._.clone(options), opts || {});
+
+                // Return a new graph.
+                return Flotr.draw(
+                    container,
+                    [ @Html.Raw(Model.charts) ],
+                    o
+                );
+            }
+
+            graph = drawGraph();      
+        
+            Flotr.EventAdapter.observe(container, 'flotr:select', function(area){
+                // Draw selected area
+                graph = drawGraph({
+                    xaxis : { min : area.x1, max : area.x2, mode : 'time', timeMode: 'local', labelsAngle : 45 },
+                    yaxis : { min : area.y1, max : area.y2 }
+                });
+            });
+        
+            // When graph is clicked, draw the graph with default area.
+            Flotr.EventAdapter.observe(container, 'flotr:click', function () { graph = drawGraph(); });
+        });
+    </script>
+}

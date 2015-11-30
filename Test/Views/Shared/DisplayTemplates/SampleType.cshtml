@@ -1,0 +1,12 @@
+﻿@model List<Test.Models.Sample>
+
+<table class="table table-condensed table-hover table-no-border samplepick">
+@foreach (var s in Model)
+{
+    var next = s.NextScheduled.HasValue ? s.NextScheduled.Value.ToString("t") : "";
+    <text><tr class="typerow text-primary" data-id="@s.ParameterId"><td class="bra"></td>@Html.Raw(@s.TypeCells)<td id="@s.ParameterId">@next</td><td class="ket"></td></tr></text>
+}
+</table>
+
+
+

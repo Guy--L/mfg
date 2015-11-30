@@ -1,0 +1,52 @@
+﻿@model Test.Models.CasingSamples
+<div class="container">
+    <br />
+    <table id="casingsamples" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    @using (Html.BeginForm("UploadCasing", "Home", FormMethod.Post, new { enctype = "multipart/form-data", id = "casingup" }))
+                    {
+                        <button id="upload" class="btn btn-xs btn-toolbar" type="submit"><i class="fa fa-cloud-upload"></i>&nbsp;Import *.xls <input id="file" name="file" type="file" /></button>
+                    }
+                </th>
+                <th colspan="2">
+                    <button class="btn btn-success btn-xs" id="addsample">
+                        <i class="fa fa-plus"></i> Add New Casing Samples
+                    </button>
+                </th>
+                <th colspan="3">
+                    Readings Taken
+                </th>
+            </tr>
+            <tr>
+                <th>Scheduled For</th>
+                <th>Count</th>
+                <th>Registered</th>
+                <th>Wet</th>
+                <th>Dry</th>
+                <th>Gly</th>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m.batches)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+    $(function () {
+        $('#file').change(function () {
+            $('#casingup').submit();
+        });
+        $('#casingsamples tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : -bid;
+            location.href = '@Url.Action("CasingSample", "Home", null, Request.Url.Scheme)/' + id;
+        });
+        $('#addsample').on('click', function () {
+            location.href = '@Url.Action("CasingSample", "Home",null,Request.Url.Scheme)/0' ;
+        });
+    });
+    </script>
+}

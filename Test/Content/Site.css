@@ -1,0 +1,206 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+#group_TimeStamp {
+    max-width: 68px;
+    margin-left: 2px;
+    margin-bottom: 1px;
+}
+#group_TimeOnly {
+    max-width: 200px;
+    margin-left: 2px;
+    margin-bottom: 1px;
+}
+
+input#note.form-control.popup {
+    max-width: 100%;
+}
+
+#bc {
+    height: 100px;
+}
+
+tr.headers th {
+    text-align: center;
+    font-weight: normal;
+    font-size: x-small;
+}
+
+#grouptimestamp {
+    padding: 0;
+}
+#grouptimestamp div.form-group {
+    margin: 0;
+}
+
+.table-condensed tbody tr.linetestrow td {
+    padding: 0;
+}
+
+.table-no-border>thead>tr>th, 
+.table-no-border>tbody>tr>th, 
+.table-no-border>tfoot>tr>th, 
+.table-no-border>thead>tr>td, 
+.table-no-border>tbody>tr>td, 
+.table-no-border>tfoot>tr>td {
+  border-top: none; 
+  padding: 0 1px;
+}
+.casingsample.table-no-border>tbody>tr>td {
+    padding: 0;
+}
+.casingsample.table-no-border>tbody>tr>td>input.n2 {
+    width: 25px;
+}
+.casingsample.table-no-border>tbody>tr>td>input.n5 {
+    width: 50px;
+}
+.casingsample.table-no-border>tbody>tr>td>input.note {
+    width: 100px;
+}
+.casingsample.table-no-border>tbody>tr>td.product {
+    width: 90px;
+    padding-left: 2px;
+}
+.casingsample.table-no-border>tbody>tr>td.product>button.sampled {
+    padding: 0px;
+}
+.casingsample.table-no-border > tbody > tr > td.product.lineup {
+    color: green;
+}
+.casingsample.table-no-border > tbody > tr > td.product.linedown {
+    color: red;
+}
+i.noter {
+    margin-top: 3px;
+    margin-left: 8px;
+}
+.casingsample.table-no-border > tbody > tr > td.product {
+    text-wrap:none;
+}
+.casingsample.table-no-border > tbody > tr > td.lineadd > i.fa {
+    visibility: hidden;
+}
+.casingsample.table-no-border > tbody > tr:hover > td.lineadd > i.fa {
+    visibility:visible;
+}
+input#Tech.tech.form-control {
+    width: 50px;
+}
+#upload {
+    position: relative;
+    overflow: hidden;
+}
+#upload input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+.table-no-border>thead>tr>th {
+    width: 20px;
+    text-align:center;
+    font-size:10px;
+    font-weight: lighter;
+}
+
+.form-inline .form-group > input.rdg, 
+.form-inline .form-group > input.avg {
+    width: 70px;
+}
+
+#stestform input.form-control{
+    width: 70px;
+}
+
+#stestform input#t_DateTime {
+    width: 150px;
+}
+
+#ttestform input.read {
+    width: 80px;
+}
+
+#ttestform input.stamp {
+    width: 200px;
+}
+
+#ttestform input.tech {
+    width: 70px;
+}
+
+#ttestform input[disabled="disabled"] {
+    width: 80px;
+}
+
+tr.casingsample td input.form-control {
+    padding: 0;
+    height: 22px;
+    text-align: right;
+    max-width: 190px;
+}
+
+#sbatchform div.radio.checkbox-inline {
+    padding: 0;
+    margin: 3px;
+}
+
+.casingsample.table-no-border>tbody>tr>td.labresult {
+    padding-top: 1px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid grey;
+}
+
+.casingsample.table-no-border > tbody > tr > td.product {
+    overflow:visible;
+}
+
+.casingsample.table-no-border > tbody > tr > td.oocontrol {
+    background-color: yellow;
+    color: black;
+}
+.casingsample.table-no-border > tbody > tr > td.oospec {
+    background-color: red;
+    color: white;
+}
+.casingsample.table-no-border > tbody > tr.oocontrol {
+    background-color: lightgoldenrodyellow;
+}
+.casingsample.table-no-border > tbody > tr.oospec {
+    background-color: #fff0f2;
+}
+input#recode {
+    width: 300px;
+}

@@ -1,0 +1,32 @@
+{
+	"manifest_version":2,
+
+	"name":"Serial to Input",
+	"description":"Reads, parses data from serial port and puts result into content",
+	"version":"0.5",
+
+	"page_action": {
+		"default_icon":"icon.png",
+		"default_title":"Serial to Input Extension",
+		"default_popup":"popup.html"
+	},
+	
+	"background":{
+		"scripts": ["eventPage.js"],
+		"persistent":false
+	},
+	
+	"content_scripts":[
+		{
+			"matches":["http://mfg/Home/CasingSample/*", "http://localhost:49458/Home/CasingSample/*"],
+			"js":["serial2input.js"]
+		}
+	],
+	
+	"permissions":[
+    "tabs",
+    "serial",
+    "http://mfg/*",
+    "http://localhost:49458/*"
+	]
+}

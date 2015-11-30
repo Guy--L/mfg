@@ -1,0 +1,86 @@
+﻿@model Test.Models.Samples
+
+<div class="container">
+    <br />
+    <table id="tsamples" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr><th></th>
+                <th colspan="2">List of Samples</th>
+                <th colspan="4">
+                    <button class="btn btn-success btn-xs" id="addsample">
+                        <i class="fa fa-plus"></i> Add New Sample
+                    </button>
+                </th>
+                <th></th><th></th><th></th><th></th>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th title="Status">Status</th>
+                <th>Started</th>
+                <th>Line</th>
+                <th><i class="fa fa-flask" title="Sample Type"></i></th>
+                <th>Product Code</th>
+                <th>Reel</th>
+                <th>Footage</th>
+                <th><i class="fa fa-male" title="Operator"></i></th>
+                <th>Tests</th>
+                <th>Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m.list)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+    function attachDT() {
+        q = $('#tsamples').dataTable({
+            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+            "oSearch": { "sSearch": "active" },
+            "order": [[3, "asc"]],
+            "bPaginate": false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ sample(s)",
+                "sInfoFiltered": "(of _MAX_ unfiltered)",
+                "sProcessing": "<i class='fa fa-spinner fa-spin'></i>"
+            }
+        });
+    }
+    $(function () {
+        attachDT();
+        $('#tsamples tbody').on('click', 'tr', function (e) {
+            var id = $(this).data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            var hyper = $(e.target).parents('.ttest').length ? "Readings" : "Sample";
+            location.href = '@Url.Action("stub","Home",null,Request.Url.Scheme)/'.replace('stub', hyper) + id;
+        });
+        $('.btn').on('click', function (e) {
+            e.stopPropagation();
+            var id = $(this).closest('tr').data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            if ($(this).data('button')=='addtest')
+                location.href = '@Url.Action("Reading","Home",null,Request.Url.Scheme)/-' + id;
+            else if ($(this).attr('id') == 'addsample')
+                location.href = '@Url.Action("Sample","Home",null,Request.Url.Scheme)/0';
+            else
+                location.href = '@Url.Action("Readings","Home",null,Request.Url.Scheme)/' + id;
+        });
+        $('.stoptensile').on('click', function (e) {
+            e.stopPropagation();
+            var id = $(this).closest('tr').data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            console.log(id);
+            location.href = '@Url.Action("StopSample", "Home", null, Request.Url.Scheme)/' + id;
+        });
+        $('button.chart').on('click', function (e) {
+            e.stopPropagation();
+            var chart = $(this).data('button');
+            var id = $(this).closest('tr').data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            location.href = '@Url.Action("TensileChart","Home",null,Request.Url.Scheme)/' + id + '/' + chart;
+        });
+    });
+</script>
+}

@@ -1,0 +1,48 @@
+﻿@model GroupView
+
+@{
+    ViewBag.Title = "Edit Tag Group";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("save").Style(ButtonStyle.Success),
+            Html.Raw(" "),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
+    };
+}
+<div class="row">
+</div>
+
+<div class="row-fluid">
+@using (var form = Html.Bootstrap().Begin(new Form("Regroup", "Admin").Id("taggroupform")))
+{
+    @Html.HiddenFor(m => m.group.GroupId)
+    @Html.HiddenFor(m => m.group.UserId)
+    <div class="col-md-6">
+        <h3>@(Model.group.GroupId == 0 ? "Add " : "Edit ")Tag Group &nbsp; <i class="fa fa-spinner fa-pulse"></i></h3>
+        @(form.FormGroup().TextBoxFor(m=>m.group.Name))
+        @(form.FormGroup().CustomControls(buttons.ToArray()))
+    </div>
+    <div class="col-md-6">
+        @Html.HiddenFor(m => m.group.GroupId)
+        @Html.ListBoxFor(m => m.picked, Model.tags, new { size = 27 })
+    </div>
+}
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var $list = $('select[name="picked"]');
+        $list.hide();
+        var spnr = $('.fa-pulse');
+        $('.fa-pulse').show();
+        var demo1 = $('select[name="picked"]').bootstrapDualListbox({
+            nonSelectedListLabel: 'Non-selected',
+            selectedListLabel: 'Selected',
+            preserveSelectionOnMove: true,
+            spinner: spnr
+        });
+        $('.fa-pulse').hide();
+        $('#cancel').on('click',function () {
+            $('#@Html.IdFor(m=>m.Cancel)').val(true);
+        });
+    </script>
+}

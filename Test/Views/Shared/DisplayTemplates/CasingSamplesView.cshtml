@@ -1,0 +1,27 @@
+﻿@model Test.Models.CasingSamplesView
+<div class="container-fluid">
+    <div class="row">
+@foreach(var n in Model.samples)
+{
+    i = i + 1;
+    <div class="panel">
+        Unit @n.Key
+        <table class="table-condensed">
+            <thead><tr>
+                <th>Line</th><th>Product</th>
+                <th>Reel</th><th>Feet</th><th>Delm</th><th>Oil</th>
+                <th>Wt4Oven</th><th>Wt4Gly</th><th>WtDry</th>
+                <th>Area</th><th>STD</th>
+                </tr>
+            </thead>
+            @Html.DisplayFor(m=>n, "Casing")
+        </table>
+    </div>
+}
+</div>
+</div>
+
+@section scripts{
+
+
+}

@@ -1,0 +1,238 @@
+﻿@model Test.Models.UnitView
+
+@using (var form = Html.Bootstrap().Begin(new Form("SaveLineTests", "Home").Id("linetestsform").Type(FormType.Horizontal).LabelWidthXs(3)))
+{
+
+<div class="container">
+    <br />
+    @using (Html.Bootstrap().Begin(new Table().Hover().Condensed().Striped().Class("readingstable")))
+    {
+        @Html.HiddenFor(m => m.L0.LineTest.LineId)
+        @Html.HiddenFor(m => m.L1.LineTest.LineId)
+        @Html.HiddenFor(m => m.L2.LineTest.LineId)
+        @Html.HiddenFor(m => m.L3.LineTest.LineId)
+        @Html.HiddenFor(m => m.L4.LineTest.LineId)
+        @Html.HiddenFor(m => m.L5.LineTest.LineId)
+        @Html.HiddenFor(m => m.L6.LineTest.LineId)
+        @Html.HiddenFor(m => m.L7.LineTest.LineId)
+        <thead>
+            <tr>
+                <th colspan="3"><h4>Unit @Model.unit._Unit</h4></th>
+                <th colspan="9">
+                    @*<button class="btn btn-success btn-xs" id="addtest">
+                        <i class="fa fa-plus"></i> Stub
+                    </button>*@
+                </th>
+                <th colspan="2">Casing</th>
+                <th colspan="6">Solution</th>
+            </tr>
+            <tr>
+                <th>Line</th>
+                <th>Product</th>
+                <th>Std Speed</th>
+                <th>Computer</th>
+                <th>Belt Speed</th>
+                <th>DryEnd Speed</th>
+                <th>Zone A</th>
+                <th>Zone B</th>
+                <th>Zone C</th>
+                <th>Wet Door#</th>
+                <th>Casing Temp</th>
+                <th>Delm</th>
+                <th>Moist</th>
+                <th>Glyc</th>
+                <th>Gly</th>
+                <th>CMC</th>
+                <th>Cond</th>
+                <th>pH</th>
+                <th>Hypo Level</th>
+                <th>Timing</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="linetestrow" data-id="@Model.L0.LineTest.LineTestId">
+                <td><strong>@Model.L0.LineNumber</strong></td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L0.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+            <tr class="linetestrow" data-id="@Model.L1.LineTest.LineTestId">
+                <td>@Model.L1.LineNumber</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L1.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+            <tr class="linetestrow" data-id="@Model.L2.LineTest.LineTestId">
+                <td>@Model.L2.LineNumber</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L2.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+            <tr class="linetestrow" data-id="@Model.L3.LineTest.LineTestId">
+                <td>@Model.L3.LineNumber</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L3.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+            <tr class="linetestrow" data-id="@Model.L4.LineTest.LineTestId">
+                <td>@Model.L4.LineNumber</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L4.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+            <tr class="linetestrow" data-id="@Model.L5.LineTest.LineTestId">
+                <td>@Model.L5.LineNumber</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L5.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+            <tr class="linetestrow" data-id="@Model.L6.LineTest.LineTestId">
+                <td>@Model.L6.LineNumber</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L6.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+            <tr class="linetestrow" data-id="@Model.L7.LineTest.LineTestId">
+                <td>@Model.L7.LineNumber</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.Product).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.StdSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.Computer).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.BeltSpeed).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.DryEndSpeed).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.ZoneA).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.ZoneB).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.ZoneC).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.WetDoorNumber).Data(new { mask = "9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.CasingTemp).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.Delm).Data(new { mask = "99" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.CasingMoist).Data(new { mask = "99.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.CasingGlyc).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.Gly).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.CMC).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.Cond).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.pH).Data(new { mask = "9.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.HypoLevel).Data(new { mask = "999.9" }).WidthLg(12).Label().Class("sr-only")</td>
+                <td>@form.FormGroup().TextBoxFor(m => m.L7.LineTest.Timing).Data(new { mask = "999" }).WidthLg(12).Label().Class("sr-only")</td>
+            </tr>
+          </tbody>
+    }
+    @form.FormGroup().TextBoxFor(m = m.)
+    @(form.FormGroup().CustomControls(
+                    Html.Bootstrap().SubmitButton().Text("Save").Id("savehrs").Style(ButtonStyle.Success),
+                    Html.Bootstrap().Button().Data(new { dismiss = "modal" }).Text("Cancel"))
+    )
+</div>
+}
+

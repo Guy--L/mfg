@@ -1,0 +1,41 @@
+﻿<container>
+    <block>0</block>
+    <block>1</block>
+    <block>2</block>
+    <block>3</block>
+    <block v2=""></block>
+    <block></block>
+    <block></block>
+    <block></block>
+    <block></block>
+    <block></block>
+    <block></block>
+    <block v2=""></block>
+    <block></block>
+    <block></block>
+    <block></block>
+    <block></block>
+    <block h2=""></block>
+</container>
+
+container {
+    width: 100%;
+    border: 1px solid black;
+    display: inline-block;
+}
+block {
+    display: inline-block;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: calc(25% - 10px);
+    height: 100px;
+    margin: 5px;
+    background: red;
+    float: right;
+}
+block[v2] {
+    height: 210px;
+}
+block[h2] {
+    width: calc(50% - 10px);
+}

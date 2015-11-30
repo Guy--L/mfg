@@ -1,0 +1,84 @@
+﻿@model Test.Models.CasingTestView
+
+@{
+    ViewBag.Title = "Casing Test";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savectest").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveCTest", "Home").Id("ctestform").Type(FormType.Horizontal).LabelWidthXs(5)))
+    {
+        @Html.HiddenFor(m => m.t.CasingTestId)
+        <div class="row">
+            <div class="col-xs-12 text-primary"><h3>@(Model.t.CasingTestId == 0 ? "Add " : "Edit ")Casing Test</h3></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @form.FormGroup().TextBoxFor(m => m.t.DateTime).Class("input-sm").WidthLg(3).Label().LabelText("Taken")
+                @form.FormGroup().TextBoxFor(m => m.t.ReelFt).Class("input-sm n32").WidthLg(3).Label().LabelText("Reel/Ft")
+                @form.FormGroup().TextBoxFor(m => m.t.Delm).Class("input-sm n32").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.WetWt).Class("input-sm n32").WidthLg(3).Label().LabelText("Oven Wet Wt")
+                @form.FormGroup().TextBoxFor(m => m.t.DryWt).Class("input-sm n32").WidthLg(3).Label().LabelText("Oven Dry Wt")
+                @form.FormGroup().TextBoxFor(m => m.t.GlyWetWt).Class("input-sm n32").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.GlyArea).Class("input-sm n32").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.GlySTD).Class("input-sm n32").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.OilArea).Class("input-sm n32").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.Oil).Class("input-sm n54").WidthLg(3)
+                    
+            </div>
+        </div>
+        <div class="row">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+        </div>
+    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('input.n32').inputmask('decimal', { digits: 2, integerDigits: 1 });
+            $('input.n31').inputmask('decimal', { digits: 1, integerDigits: 2 });
+            $('input.n54').inputmask('decimal', { digits: 4, integerDigits: 1 });
+            $('input.n4').inputmask('decimal', { digits: 0, integerDigits: 4 });
+            $('input.n2').inputmask('decimal', { digits: 0, integerDigits: 2 });
+            $('input.n21').inputmask('decimal', { digits: 1, integerDigits: 2 });
+
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("SolutionBatches", "Home",null,Request.Url.Scheme)';
+            });
+            $(":input").on("keydown", function (event) {
+                if (event.which == 38) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    var inputs = $(this).parents("form").eq(0).find(":input");
+                    var idx = inputs.index(this);
+
+                    if (idx == 0) {
+                        inputs[inputs.length - 1].select()
+                    } else {
+                        inputs[idx - 1].focus(); //  handles su =bmit buttons
+                        inputs[idx - 1].select();
+                    }
+                    return false;
+                }
+                if (event.which == 40 || (event.which === 13 && !$(this).is("textarea, :button, :submit"))) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    var inputs = $(this).parents("form").eq(0).find(":input");
+                    var idx = inputs.index(this);
+
+                    if (idx == inputs.length - 1) {
+                        inputs[0].select()
+                    } else {
+                        inputs[idx + 1].focus(); //  handles suif bmit buttons
+                        inputs[idx + 1].select();
+                    }
+                    return false;
+                }
+            });
+        });
+    </script>
+}

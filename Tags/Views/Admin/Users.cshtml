@@ -1,0 +1,45 @@
+﻿@model List<User>
+
+<div class="container">
+<br />
+<table id="users" class="table table-striped table-hover table-condensed table-bordered">
+    <thead>
+        <tr>
+            <th colspan="3">
+                <button class="btn btn-success btn-xs" id="adduser">
+                    <i class="fa fa-plus fa-white"></i> Add New User
+                </button>
+            </th>
+        </tr>
+        <tr>
+            <th>Login</th>
+            <th>Identity</th>
+            <th>Roles</th>
+        </tr>
+    </thead>
+    <tbody>
+        @Html.DisplayFor(m => m)
+    </tbody>
+</table>
+</div>
+
+@section scripts {
+<script type="text/javascript">
+    $(function () {
+        $('#users tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '') ? id : 0;
+            location.href = '@Url.Action("UserEdit", "Admin", null, Request.Url.Scheme)/' + id;
+        });
+        $('#users tbody').on('click', 'button', function (e) {
+            e.stopPropagation();
+            var wid = $(this).closest('tr').data('id');
+            wid = (wid != '') ? wid : 0;
+            location.href = '@Url.Action("UserRoles", "Admin", null, Request.Url.Scheme)/' + wid;
+        });
+        $('#adduser').on('click', function () {
+            location.href = '@Url.Action("UserEdit","Admin",null,Request.Url.Scheme)/0';
+        });
+    });
+</script>
+}

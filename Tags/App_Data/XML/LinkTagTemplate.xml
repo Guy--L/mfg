@@ -1,0 +1,15 @@
+﻿<advanced_tags:LinkTag xmlns:advanced_tags="http://www.kepware.com/schemas/advanced_tags">
+  <advanced_tags:Name>C3Lock</advanced_tags:Name>
+  <advanced_tags:DataType>String</advanced_tags:DataType>
+  <advanced_tags:ReadWriteAccess>Read Only</advanced_tags:ReadWriteAccess>
+  <advanced_tags:RespectGUIDataType>false</advanced_tags:RespectGUIDataType>
+  <advanced_tags:Enabled>true</advanced_tags:Enabled>
+  <advanced_tags:Input>C3.Dry.ScreenLatch</advanced_tags:Input>
+  <advanced_tags:Output>Locks.HMI.RequestComplete.HMI__01__RequestComplete</advanced_tags:Output>
+  <advanced_tags:DeadValue></advanced_tags:DeadValue>
+  <advanced_tags:Mode>1</advanced_tags:Mode>
+  <advanced_tags:UpdateRateMS>1000</advanced_tags:UpdateRateMS>
+  <advanced_tags:TriggerTag></advanced_tags:TriggerTag>
+  <advanced_tags:Comparison>0</advanced_tags:Comparison>
+  <advanced_tags:Value>0</advanced_tags:Value>
+</advanced_tags:LinkTag>

@@ -1,0 +1,103 @@
+﻿@model Test.Models.SolutionTestView
+
+@{
+    ViewBag.Title = "Solution Test";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savestest").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveSTest", "Home").Id("stestform").Type(FormType.Horizontal).LabelWidthXs(5)))
+    {
+        @Html.HiddenFor(m => m.System)
+        @Html.HiddenFor(m => m.t.SolutionBatchId)
+        @Html.HiddenFor(m => m.t.SolutionTestId)
+        @Html.HiddenFor(m => m.t.System)
+        @Html.HiddenFor(m => m.t.SystemId)
+        <div class="row">
+            <div class="col-xs-12 text-primary"><h3>@(Model.t.SolutionTestId == 0 ? "Add " : "Edit ")Solution Test to System @Model.System running @Model.Recipe</h3></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @form.FormGroup().TextBoxFor(m => m.t.DateTime).Class("input-sm").WidthLg(6).Label().LabelText("Taken")
+                @form.FormGroup().TextBoxFor(m => m.t.ReadingNumber).Readonly().WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.Glycerin).Class("input-sm n32").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.CMC).Class("input-sm n32").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.MeasuredDensity).Class("input-sm n54").WidthLg(3).Label().LabelText("Density")
+                @if (!Model.t.isGr)
+                {
+                    @form.FormGroup().TextBoxFor(m => m.t.ConsoleDensity).Class("input-sm n54").WidthLg(3).Label().LabelText("Console Density")
+                }
+                @form.FormGroup().TextBoxFor(m => m.t.MeasuredpH).Class("input-sm n32").WidthLg(3).Label().LabelText("pH")
+                @if (!Model.t.isGr)
+                {
+                    @form.FormGroup().TextBoxFor(m => m.t.ConsolepH).Class("input-sm n32").WidthLg(3).Label().LabelText("Console pH")
+                }
+                @form.FormGroup().TextBoxFor(m => m.t.Viscoscity).Class("input-sm n2").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.Conductivity).Class("input-sm n4").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.Hypochlorite).Class("input-sm n21").WidthLg(3)
+                @if (!Model.t.isGr) { 
+                    @form.FormGroup().TextBoxFor(m => m.t.CasingGlycerin).Class("input-sm n31").WidthLg(3).Label().LabelText("Average Casing Glycerin")
+                }
+                else
+                {
+                    @form.FormGroup().TextBoxFor(m => m.t.Feed).Class("input-sm n31").WidthLg(3).Label().LabelText("Feed")
+                    @form.FormGroup().TextBoxFor(m => m.t.Steam).Class("input-sm n2").WidthLg(3).Label().LabelText("Steam")
+                }
+                    
+            </div>
+        </div>
+        <div class="row">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+        </div>
+    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('input.n32').inputmask('decimal', { digits: 2, integerDigits: 1 });
+            $('input.n31').inputmask('decimal', { digits: 1, integerDigits: 2 });
+            $('input.n54').inputmask('decimal', { digits: 4, integerDigits: 1 });
+            $('input.n4').inputmask('decimal', { digits: 0, integerDigits: 4 });
+            $('input.n2').inputmask('decimal', { digits: 0, integerDigits: 2 });
+            $('input.n21').inputmask('decimal', { digits: 1, integerDigits: 2 });
+
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("SolutionBatches", "Home",null,Request.Url.Scheme)';
+            });
+            $(":input").on("keydown", function (event) {
+                if (event.which == 38) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    var inputs = $(this).parents("form").eq(0).find(":input");
+                    var idx = inputs.index(this);
+
+                    if (idx == 0) {
+                        inputs[inputs.length - 1].select()
+                    } else {
+                        inputs[idx - 1].focus(); //  handles su =bmit buttons
+                        inputs[idx - 1].select();
+                    }
+                    return false;
+                }
+                if (event.which == 40 || (event.which === 13 && !$(this).is("textarea, :button, :submit"))) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    var inputs = $(this).parents("form").eq(0).find(":input");
+                    var idx = inputs.index(this);
+
+                    if (idx == inputs.length - 1) {
+                        inputs[0].select()
+                    } else {
+                        inputs[idx + 1].focus(); //  handles suif bmit buttons
+                        inputs[idx + 1].select();
+                    }
+                    return false;
+                }
+            });
+        });
+    </script>
+}

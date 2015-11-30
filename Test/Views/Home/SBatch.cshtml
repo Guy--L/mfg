@@ -1,0 +1,52 @@
+﻿@model Test.Models.SolutionBatchView
+
+@{
+    ViewBag.Title = "Solution Batch";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savesbatch").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveSBatch", "Home").Id("sbatchform").Type(FormType.Horizontal).LabelWidthXs(5)))
+    {
+        @Html.HiddenFor(m => m.b.SolutionBatchId)
+        @Html.HiddenFor(m => m.b.CoA)
+        <div class="row">
+            <div class="col-xs-12 text-primary"><h3>@(Model.b.SolutionBatchId == 0 ? "Add " : "Edit ")Solution Batch</h3></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @form.FormGroup().TextBoxFor(m => m.b.DateTime).Label().LabelText("Started")
+                @form.FormGroup().RadioButtonListFor(
+                    m => m.SysId,
+                    m => m.systems,
+                    s => s.SystemId,
+                    s => s._System).SelectedValues(
+                    n => n.SystemId == Model.SysId.Value).DisplayInlineBlock().Label().LabelText("System")
+                @form.FormGroup().Class("solutionrecipe").DropDownListFor(m => m.b.SolutionRecipeId, Model.recipes).Size(InputSize.Small).WidthXs(3).Label().LabelText("Solution Type")
+            </div>
+        </div>
+        <div class="row">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+        </div>
+    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("SolutionBatches", "Home", null, Request.Url.Scheme)';
+            });
+
+            $('#sbatchform input[name="SysId"]').on("change", function () {
+                if ($('#sbatchform input[name="SysId"]:checked').val() > 9)
+                    $('.solutionrecipe').hide();
+                else
+                    $('.solutionrecipe').show();
+            });
+        });
+    </script>
+}

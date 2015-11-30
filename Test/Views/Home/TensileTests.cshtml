@@ -1,0 +1,65 @@
+﻿@model Test.Models.TensileTests
+@{
+    string title = "Tensile Tests on Line " + @Model.sample.Line + " producing " + @Model.sample.ProductCode;
+}
+<div class="container">
+    <br />
+    <table id="ttests" class="table table-hover table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th colspan="6">@title</th>
+                <th>
+                    <button class="btn btn-success btn-xs" id="addtest">
+                        <i class="fa fa-plus"></i> Add New Test
+                    </button>
+                </th>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th>DateTime</th>
+                <th>TestNumber</th>
+                <th>Average</th>
+                <th>Std.</th>
+                <th>N</th>
+                <th>Tech</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m.list)
+        </tbody>
+    </table>
+    @Html.HiddenFor(m => m.sample.TensileSampleId)
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+    function attachDT() {
+        q = $('#ttests').dataTable({
+            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+            "order": [[2, "asc"]],
+            "bPaginate": false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ test(s)",
+                "sInfoFiltered": "(of _MAX_ unfiltered)",
+                "sProcessing": "<i class='fa fa-spinner fa-spin'></i>"
+            },
+            "aoColumnDefs": [
+                { "bVisible": false, "aTargets": [0] }
+            ]
+
+        });
+    }
+    $(function () {
+        attachDT();
+        var bid = $('#@Html.IdFor(m=>m.sample.TensileSampleId)').val();
+        $('#ttests tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : -bid;
+            location.href = '@Url.Action("TTest", "Home", null, Request.Url.Scheme)/' + id;
+        });
+        $('#addtest').on('click', function () {
+            location.href = '@Url.Action("TTest","Home",null,Request.Url.Scheme)/-' + bid ;
+        });
+    });
+    </script>
+}

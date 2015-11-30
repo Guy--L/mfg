@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Reload Tag Configuration";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+
+<div>
+    <button type="submit" class="restart">Restart KEPWare Server</button>
+    <button type="reset" class="reset">Cancel</button>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('.restart').on('click', function () {
+            location.href = '@Url.Action("Restart","Home",null,Request.Url.Scheme)';
+        });
+        $('.reset').on('click', function () {
+            location.href = '@Url.Action("Index","Home",null,Request.Url.Scheme)';
+        });
+    </script>
+}

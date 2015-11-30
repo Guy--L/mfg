@@ -1,0 +1,18 @@
+﻿@model Test.Models.Reading
+<tr data-id="@Model.ReadingId">
+    <td>@Model.ReadingId</td>
+    <td>@Model.Unit</td>
+    <td>@Model.LineNumber</td>
+    <td>@Model.ReelNumber</td>
+    <td>@Model.Scheduled.ToString("MM/dd HH:mm")</td>
+    <td>@Model.Stamp.ToString("MM/dd HH:mm")</td>
+    <td title="@Model.Name"><i class="fa fa-@Model.Icon"></i></td>
+    <td>@Model.Operator</td>
+    <td>@Model.R1</td>
+    <td>@Model.R2</td>
+    <td>@Model.R3</td>
+    <td>@Model.R4</td>
+    <td>@Model.R5</td>
+    <td>@Model.Average</td>
+    <td>@Model.ProductCode</td>
+</tr>

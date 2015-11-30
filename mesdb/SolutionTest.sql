@@ -1,0 +1,28 @@
+﻿CREATE TABLE [dbo].[SolutionTest]
+(
+	[SolutionTestId] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [SolutionBatchId] INT NOT NULL, 
+    [DateTime] DATETIME NOT NULL, 
+    [SolutionRecipeId] DECIMAL(18,4) NULL, 
+    [CMC] DECIMAL(18,2) NULL, 
+    [DensitySetPoint] DECIMAL(18,4) NULL, 
+    [ConsoleDensity] DECIMAL(18,4) NULL, 
+    [pHSetPoint] DECIMAL(18,2) NULL, 
+    [Viscoscity] DECIMAL(18,1) NULL, 
+    [Temperature] DECIMAL(18,1) NULL, 
+    [TitrationMLs] DECIMAL(18,1) NULL, 
+    [NaOCl Pump Set] DECIMAL(18,1) NULL, 
+    [NaOCl Flow] INT NULL, 
+    [MeasuredDensity] DECIMAL(18, 4) NULL, 
+    [ConsolepH] DECIMAL(18, 2) NULL, 
+    [MeasuredpH] DECIMAL(18, 2) NULL, 
+    [Conductivity] DECIMAL(18, 1) NULL, 
+    [Acid Pump Output] DECIMAL(18, 1) NULL, 
+    [Booster Pump Output] INT NULL, 
+    [Glycerin] DECIMAL(18, 2) NULL, 
+    [Hypochlorite] DECIMAL(18, 1) NULL, 
+    [CasingGlycerin] DECIMAL(18, 1) NULL, 
+    [Feed] DECIMAL(18, 1) NULL, 
+    [Steam] INT NULL, 
+    CONSTRAINT [FK_SolutionTest_SolutionBatch] FOREIGN KEY ([SolutionBatchId]) REFERENCES [SolutionBatch]([SolutionBatchId]) 
+)

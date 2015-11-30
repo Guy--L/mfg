@@ -1,0 +1,25 @@
+﻿@model Test.Models.SolutionBatch
+<tr data-id="@Model.SolutionBatchId">
+    <td>@Model.SolutionBatchId</td>
+    @Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stopbatch'><i class='stopbatch fa fa-power-off'> Stop</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))
+    <td>@Model.DateTime</td>
+    <td>@Model.System</td>
+    <td>@Model.SolutionType</td>
+    <td class="stest">
+        <button class="btn btn-success btn-xs">
+            <i class="fa fa-flask"></i> @Model.TestCount
+        </button>
+    </td>
+    <td>
+        @if (Model.TestCount > 1)
+        {
+            <button class="btn btn-success btn-xs chart" data-button="0">A</button>
+            <button class="btn btn-success btn-xs chart" data-button="1">B</button>
+            <button class="btn btn-success btn-xs chart" data-button="2">Gly</button>
+            <button class="btn btn-success btn-xs chart" data-button="3">CMC</button>
+            <button class="btn btn-success btn-xs chart" data-button="4">Conductivity</button>
+        }
+    </td>
+    <td>@Model.Completed</td>
+</tr>
+    

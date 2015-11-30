@@ -1,0 +1,96 @@
+﻿@model Test.Models.TensileTestView
+
+@{
+    ViewBag.Title = "Solution Test";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savettest").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveTTest", "Home").Id("ttestform").Type(FormType.Horizontal).LabelWidthXs(5)))
+    {
+        @Html.HiddenFor(m => m.sample.TensileSampleId)
+        @Html.HiddenFor(m => m.t.Average)
+        @Html.HiddenFor(m => m.t.Range)
+        @Html.HiddenFor(m => m.t.TensileSampleId)
+        @Html.HiddenFor(m => m.t.TensileTestId)
+        @Html.HiddenFor(m => m.t.N)
+        <div class="row">
+            <div class="col-xs-12 text-primary"><h3>@(Model.t.TensileTestId == 0 ? "Add " : "Edit ")Tensile Test on sample from Line @Model.sample.Line running @Model.sample.ProductCode</h3></div>
+            <br />
+        </div>
+        <div class="row">
+            <div class="col-xs-offset-2 col-xs-3">
+                @form.FormGroup().TextBoxFor(m => m.t.Stamp).Class("input-lg stamp").WidthMd(3).Label().LabelText("Tested")
+                @form.FormGroup().TextBoxFor(m => m.t.Tech).Class("input-lg tech")
+                @form.FormGroup().TextBox("Average").Class("input-lg").Disabled().WidthMd(3).Label().LabelText("Average")
+                @form.FormGroup().TextBoxFor(m => m.sample.WetTensileMinimum).Class("input-lg").Disabled().WidthMd(3).Label().LabelText("Minimum")
+            </div>
+            <div class="col-xs-4">
+                @form.FormGroup().TextBoxFor(m => m.read1).Class("input-lg read").WidthMd(3).Label().LabelText("Reading 1")
+                @form.FormGroup().TextBoxFor(m => m.read2).Class("input-lg read").WidthMd(3).Label().LabelText("Reading 2")
+                @form.FormGroup().TextBoxFor(m => m.read3).Class("input-lg read").WidthMd(3).Label().LabelText("Reading 3")
+                @form.FormGroup().TextBoxFor(m => m.read4).Class("input-lg read").WidthMd(3).Label().LabelText("Reading 4")
+            </div>
+        </div>
+        <div class="row">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+        </div>
+    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            var aid = $('#@Html.IdFor(m=>m.t.Average)');
+            $('#Average').val(aid.val() / 100);
+
+            $('input.read').on('change', function (e) {
+                var n = 0;
+                var mean = 0;
+                var M2 = 0;
+                $('input.read').each(function () {
+                    var v = Number($(this).val());
+                    if (v == 0) 
+                        return true;
+                    n++;
+                    var d = v - mean;
+                    mean += d/n;
+                    M2 += d*(v - mean);
+                });
+                M2 = n>1?Math.sqrt(M2/(n-1)):0;
+                $('#@Html.IdFor(m=>m.t.N)').val(n);
+                if (n == 0) n = 1;
+                $('#Average').val(mean/100);
+                $('#@Html.IdFor(m=>m.t.Range)').val(Math.round(M2));
+                aid.val(Math.round(mean));
+                if (Number($('#Average').val()) >= Number($('#@Html.IdFor(m=>m.sample.WetTensileMinimum)').val())) {
+                    $('#Average').css("background-color", "lightgreen");
+                }
+                else {
+                    $('#Average').css("background-color", "pink");
+                }
+
+            });
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("TensileTests", "Home", new { id = Model.sample.TensileSampleId })';
+            });
+            $('#savettest').on('click', function (e) {
+                $(this).addClass('disabled');
+            });
+            $('#@Html.IdFor(m=>m.t.Tech)').inputmask("AA");
+            $('input.read').inputmask("9.99", {
+                'autoUnmask': true,
+                'numericInput': true,
+                'rightalign' : true
+            });
+            $('input.read').each(function () {
+                if ($(this).val() == 0)
+                    $(this).val('');
+            });
+            $('#@Html.IdFor(m=>m.t.Tech)').focus();
+        });
+    </script>
+}

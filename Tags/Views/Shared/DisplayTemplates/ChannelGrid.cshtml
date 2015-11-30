@@ -1,0 +1,24 @@
+﻿@model Dictionary<char, int[]>
+@{
+    Layout = null;
+}
+
+@foreach (var kvp in Model)
+{
+    <tr><td>Unit @kvp.Key</td>
+    @foreach (var cid in kvp.Value)
+    {
+        if (cid > 0)
+        {<td>
+             <button class="btn btn-primary" data-id="@cid">
+                 <i class="fa fa-square"></i>
+             </button>
+        </td>
+        }
+        else
+        {<td>
+        </td>
+        }
+    }
+    </tr>
+}

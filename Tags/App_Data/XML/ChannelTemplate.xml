@@ -1,0 +1,73 @@
+  <servermain:Channel xmlns:servermain="http://www.kepware.com/schemas/servermain">
+    <servermain:Name>C3</servermain:Name>
+    <servermain:Driver>AutomationDirect ECOM</servermain:Driver>
+    <servermain:Ethernet>
+      <servermain:NetworkAdapter>Default</servermain:NetworkAdapter>
+    </servermain:Ethernet>
+    <servermain:WriteOptimizations>
+      <servermain:Method>Write last value only</servermain:Method>
+      <servermain:WritesToRead>10</servermain:WritesToRead>
+    </servermain:WriteOptimizations>
+    <servermain:NonNormalizedFloatHandlingType>Replaced with zero</servermain:NonNormalizedFloatHandlingType>
+    <servermain:CommunicationSerialization>
+      <servermain:VirtualNetwork>None</servermain:VirtualNetwork>
+      <servermain:TransactionsPerCycle>1</servermain:TransactionsPerCycle>
+    </servermain:CommunicationSerialization>
+    <servermain:InterDeviceDelay>
+      <servermain:DelayMS>0</servermain:DelayMS>
+    </servermain:InterDeviceDelay>
+    <servermain:Diagnostics>
+      <servermain:Enabled>false</servermain:Enabled>
+      <servermain:Identifier>1346557901</servermain:Identifier>
+    </servermain:Diagnostics>
+    <servermain:DeviceList>
+      <servermain:Device>
+        <servermain:Name>Dry</servermain:Name>
+        <servermain:DiagsIdentifier>1294486804</servermain:DiagsIdentifier>
+        <servermain:Enabled>true</servermain:Enabled>
+        <servermain:Simulated>false</servermain:Simulated>
+        <servermain:ModelInfo xmlns:plcdirect_ecom="http://www.kepware.com/schemas/plcdirect_ecom">
+          <plcdirect_ecom:Model>DL-260</plcdirect_ecom:Model>
+        </servermain:ModelInfo>
+        <servermain:ID Format="String">191.1.11.76</servermain:ID>
+        <servermain:ScanMode>UseClientRate</servermain:ScanMode>
+        <servermain:ScanFloorMs>1000</servermain:ScanFloorMs>
+        <servermain:Timing>
+          <servermain:ConnectionTimeoutSeconds>3</servermain:ConnectionTimeoutSeconds>
+          <servermain:ResponseTimeoutMilliseconds>1000</servermain:ResponseTimeoutMilliseconds>
+          <servermain:FailAfter>3</servermain:FailAfter>
+        </servermain:Timing>
+        <servermain:AutoDemotion>
+          <servermain:Enabled>false</servermain:Enabled>
+          <servermain:DemoteAfter>3</servermain:DemoteAfter>
+          <servermain:DemoteForMilliseconds>10000</servermain:DemoteForMilliseconds>
+          <servermain:DiscardWrites>false</servermain:DiscardWrites>
+        </servermain:AutoDemotion>
+        <servermain:AutoTagGeneration>
+          <servermain:Startup>Do not generate on startup</servermain:Startup>
+          <servermain:DuplicateTagAction>Delete on create</servermain:DuplicateTagAction>
+          <servermain:Group></servermain:Group>
+          <servermain:AllowSubGroups>true</servermain:AllowSubGroups>
+        </servermain:AutoTagGeneration>
+        <servermain:CustomDeviceProperties xmlns:plcdirect_ecom="http://www.kepware.com/schemas/plcdirect_ecom">
+          <plcdirect_ecom:TagImportSettings>
+            <plcdirect_ecom:TagImportFile>*.csv</plcdirect_ecom:TagImportFile>
+            <plcdirect_ecom:DisplayDescription>true</plcdirect_ecom:DisplayDescription>
+          </plcdirect_ecom:TagImportSettings>
+          <plcdirect_ecom:Communications>
+            <plcdirect_ecom:Port>28784</plcdirect_ecom:Port>
+          </plcdirect_ecom:Communications>
+        </servermain:CustomDeviceProperties>
+        <servermain:TagList>
+          <servermain:Tag>
+            <servermain:Name>blower_vfd_fault</servermain:Name>
+            <servermain:Address>C33</servermain:Address>
+            <servermain:DataType>Boolean</servermain:DataType>
+            <servermain:ReadWriteAccess>Read/Write</servermain:ReadWriteAccess>
+            <servermain:RespectGUIDataType>true</servermain:RespectGUIDataType>
+            <servermain:ScanRateMilliseconds>300</servermain:ScanRateMilliseconds>
+          </servermain:Tag>
+        </servermain:TagList>
+      </servermain:Device>
+    </servermain:DeviceList>
+  </servermain:Channel>

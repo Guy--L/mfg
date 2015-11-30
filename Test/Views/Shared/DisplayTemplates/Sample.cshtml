@@ -1,0 +1,30 @@
+﻿@model Test.Models.Sample
+<tr data-id="@Model.SampleId">
+    <td>@Model.SampleId</td>
+    @Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stoptensile'><i class='stoptensile fa fa-power-off'> Close</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))
+    <td>@Model.Stamp</td>
+    <td>@Model.Line</td>
+    <td>@Html.Raw(Model.Type)</td>
+    <td>@Model.CodeSpec</td>
+    <td>@Model.Tech</td>
+    <td>@Model.ReelNumber</td>
+    <td class="ttest">
+        <button class="btn btn-success btn-xs">
+            <i class="fa fa-flask"></i> @Model.TestCount
+        </button>
+        <button class="btn btn-primary btn-xs" data-button="addtest">
+            &nbsp;<i class="fa fa-plus"> &nbsp;</i>
+        </button>
+    </td>
+    <td>
+        @if (Model.TestCount > 1)
+        {
+            <button class="btn btn-success btn-xs chart" data-button="0">Failed</button>
+            <button class="btn btn-success btn-xs chart" data-button="1">Passed</button>
+            <button class="btn btn-success btn-xs chart" data-button="2">ByLine</button>
+            <button class="btn btn-success btn-xs chart" data-button="3">ByProduct</button>
+        }
+    </td>
+    <td>@Model.Completed</td>
+</tr>
+    

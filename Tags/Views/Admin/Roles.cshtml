@@ -1,0 +1,38 @@
+﻿@model List<Role>
+
+<div class="container">
+    <br />
+    <table id="roles" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th colspan="2">
+                    <button class="btn btn-success btn-xs" id="addrole">
+                        <i class="fa fa-plus fa-white"></i> Add New Role
+                    </button>
+                </th>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <th>ActiveDirectory</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+    $(function () {
+        $('#roles tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '') ? id : 0;
+            location.href = '@Url.Action("Role", "Admin", null, Request.Url.Scheme)/' + id;
+        });
+        $('#addrole').on('click', function () {
+            location.href = '@Url.Action("Role","Admin",null,Request.Url.Scheme)/0';
+        });
+    });
+    </script>
+}

@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[Unit]
+(
+	[UnitId] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [Unit] CHAR NOT NULL
+)

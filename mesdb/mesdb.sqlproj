@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>mesdb</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{516e221f-8992-445d-a7a2-00392f8e971e}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql110DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>mesdb</RootNamespace>
+    <AssemblyName>mesdb</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DacDescription>Manufacturing database</DacDescription>
+    <Recovery>SIMPLE</Recovery>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+  </PropertyGroup>
+  <!-- VS10 without SP1 will not have VisualStudioVersion set, so do that here -->
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <!-- Default to the v10.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Data" />
+    <Folder Include="Snapshots" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="ProductBatch.sql" />
+    <Build Include="Line.sql" />
+    <Build Include="LineTank.sql" />
+    <Build Include="Cellulose.sql" />
+    <Build Include="Water.sql" />
+    <Build Include="Acid.sql" />
+    <Build Include="SolutionBatch.sql" />
+    <Build Include="GelBatch.sql" />
+    <Build Include="Hide.sql" />
+    <Build Include="BufferedHide.sql" />
+    <Build Include="GelRecipe.sql" />
+    <Build Include="Production.sql" />
+    <Build Include="ProductRecipe.sql" />
+    <Build Include="Extruder.sql" />
+    <Build Include="Glut.sql" />
+    <Build Include="Shirr.sql" />
+    <Build Include="Poly.sql" />
+    <Build Include="GrindBatch.sql" />
+    <Build Include="GelBlend.sql" />
+    <Build Include="HideType.sql" />
+    <Build Include="System.sql" />
+    <Build Include="Booster.sql" />
+    <Build Include="ProductSpec.sql" />
+    <Build Include="ProductCode.sql" />
+    <Build Include="Interim.sql" />
+    <Build Include="ReadingField.sql" />
+    <Build Include="SolutionRecipe.sql" />
+    <Build Include="SolutionTest.sql" />
+    <Build Include="Ingredient.sql" />
+    <Build Include="RawMaterial.sql" />
+    <Build Include="Unit.sql" />
+    <Build Include="QualityEvent.sql" />
+    <Build Include="Reason.sql" />
+    <Build Include="RecipeReading.sql" />
+    <Build Include="CasingTest.sql" />
+    <Build Include="OilSTD.sql" />
+    <Build Include="CasingGroup.sql" />
+    <Build Include="Series.sql" />
+    <Build Include="Slide.sql" />
+    <Build Include="Deck.sql" />
+    <Build Include="SlideSeries.sql" />
+    <Build Include="Sample.sql" />
+    <Build Include="Reading.sql" />
+    <Build Include="Parameter.sql" />
+    <Build Include="ReadingTag.sql" />
+    <None Include="Data\J2DateTime.sql" />
+    <Build Include="LineLoad Query.sql" />
+    <Build Include="LineOperation.sql" />
+    <Build Include="LineStatus.sql" />
+    <Build Include="UpdateLineStatus.sql" />
+    <Build Include="LabResult.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mesdb.publish.xml" />
+    <None Include="Data\dbo.Line.data.sql" />
+    <None Include="Data\dbo.System.data.sql" />
+    <None Include="Data\dbo.Unit.data.sql" />
+    <None Include="Snapshots\mesdb_20141105_14-47-22.dacpac">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="mesdb.publish.production.publish.xml" />
+    <None Include="Data\dbo.LineTest.testdata.sql" />
+    <None Include="Data\dbo.ProductCode.data.sql" />
+    <None Include="Data\dbo.ProductCode.update.data.sql" />
+    <None Include="Data\SolutionBatches.sql" />
+    <None Include="AgentJobs.sql" />
+    <None Include="Data\InsertTriggerOnLineOperation.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="mesdb.refactorlog" />
+  </ItemGroup>
+</Project>

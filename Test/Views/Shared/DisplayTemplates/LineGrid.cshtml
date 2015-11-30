@@ -1,0 +1,24 @@
+﻿@model Dictionary<char, int[]>
+@{
+    Layout = null;
+}
+
+@foreach (var kvp in Model)
+{
+    <tr><td>Unit @kvp.Key</td>
+    @{var i = 0;}
+    @foreach (var cid in kvp.Value)
+    {
+        i++;
+        if (cid > 0)
+        {<td>
+            <i class="fa fa-2x fa-circle-o text-primary" data-id="@cid" data-name="@(kvp.Key+i.ToString())"></i>
+        </td>
+        }
+        else
+        {<td>
+        </td>
+        }
+    }
+    </tr>
+}

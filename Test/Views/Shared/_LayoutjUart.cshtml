@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Testing App</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<script type="text/javascript">
+    var ser;
+    var $focusInput;
+    function plugin0() {
+        return document.getElementById('plugin0');
+    }
+    plugin = plugin0;
+    function recv(bytes, size) {
+        console.log('received: ' + bytes + '.');
+        $focusInput.val(bytes.replace('S', '').trim() + '\t');
+    }
+    function pluginLoaded() {
+        ser = plugin().Serial;// Get a Serial object
+        console.log('serial port gotten');
+        ser.open("COM4");// Open a port
+        ser.set_option(9600, 0, 8, 0, 0);// Set port options 
+        ser.recv_callback(recv); // Callback function for recieve data
+    }
+    function pluginValid() {
+        if (plugin().valid) {
+            alert(plugin().echo("This plugin seems to be working!"));
+        } else {
+            alert("Plugin is not working :(");
+        }
+    }
+
+</script>
+<body>
+    <object id="plugin0" type="application/x-juart" width="0" height="0">
+        <param name="onload" value="pluginLoaded" />
+    </object>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Casings", "CasingSamples", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Solutions", "SolutionBatches", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Samples", "Samples", "Home", new { area = "" }, new { @class ="navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                @*<ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    </ul>*@
+                <ul class="nav navbar-nav pull-right">
+                    @RenderSection("actions", required: false)
+                    @*<li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
+                    <li><a href="#"><i class="icon-user icon-white"></i> @Model.User</a></li>
+                    <li><a href="#"><i class="icon-question icon-white"></i></a></li>*@
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @Html.Partial("_Alerts")
+        @RenderBody()
+        <hr />
+        <footer>
+                &copy; @DateTime.Now.Year - Nitta Casings Inc<div class="pull-right">built @ViewBag.built</div>
+        </footer>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/dataTables")
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

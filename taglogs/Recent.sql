@@ -1,0 +1,12 @@
+﻿CREATE TABLE [Recent](
+	[RecentId] [int] IDENTITY(1,1) NOT NULL,
+	[TagId] [int] NOT NULL,
+	[Value] [varchar](64) NOT NULL,
+	[Stamp] [datetime] NOT NULL,
+	[Quality] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[RecentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY], 
+    CONSTRAINT [FK_Recent_ToTag] FOREIGN KEY ([TagId]) REFERENCES [Tag]([TagId])
+) ON [PRIMARY]

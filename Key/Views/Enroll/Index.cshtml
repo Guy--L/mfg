@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Biometric Enrollment";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Enroll").Id("enroll").Style(ButtonStyle.Success),
+            Html.Raw(" "),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("GetBio", "Enroll").Id("enrollform")))
+    {
+        <div class="fieldset">
+        <div class="row">
+            <div class="col-xs-5">
+                @Html.Bootstrap().TextBox("id")
+                <br />
+                @(form.FormGroup().CustomControls(buttons.ToArray()))
+                </div>
+            </div>
+            </div>
+    }
+</div>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<servermain:Project xmlns:servermain="http://www.kepware.com/schemas/servermain">
+  <servermain:Title>NJ Production Tags</servermain:Title>
+  <servermain:Comments></servermain:Comments>
+  <servermain:AliasList></servermain:AliasList>
+  <servermain:ChannelList>
+  </servermain:ChannelList>
+  <servermain:PlugInList>
+    <servermain:PlugIn>
+      <servermain:FriendlyName>Advanced Tags Plug-in</servermain:FriendlyName>
+      <servermain:CustomPlugInProperties xmlns:advanced_tags="http://www.kepware.com/schemas/advanced_tags">
+        <advanced_tags:Configuration>
+          <advanced_tags:TagList>
+          </advanced_tags:TagList>
+        </advanced_tags:Configuration>
+      </servermain:CustomPlugInProperties>
+    </servermain:PlugIn>
+    <servermain:PlugIn>
+      <servermain:FriendlyName>Data Logger Plug-in</servermain:FriendlyName>
+      <servermain:CustomPlugInProperties xmlns:datalogger="http://www.kepware.com/schemas/datalogger">
+        <datalogger:Configuration>
+          <datalogger:LogGroupList>
+          </datalogger:LogGroupList>
+        </datalogger:Configuration>
+      </servermain:CustomPlugInProperties>
+    </servermain:PlugIn>
+    <servermain:PlugIn>
+      <servermain:FriendlyName>Alarms &amp; Events Plug-in</servermain:FriendlyName>
+      <servermain:CustomPlugInProperties></servermain:CustomPlugInProperties>
+    </servermain:PlugIn>
+    <servermain:PlugIn>
+      <servermain:FriendlyName>Media Level Redundancy Plug-in</servermain:FriendlyName>
+      <servermain:CustomPlugInProperties></servermain:CustomPlugInProperties>
+    </servermain:PlugIn>
+    <servermain:PlugIn>
+      <servermain:FriendlyName>Connection Sharing Plug-in</servermain:FriendlyName>
+      <servermain:CustomPlugInProperties></servermain:CustomPlugInProperties>
+    </servermain:PlugIn>
+    <servermain:PlugIn>
+      <servermain:FriendlyName>Local Historian Plug-in</servermain:FriendlyName>
+      <servermain:CustomPlugInProperties></servermain:CustomPlugInProperties>
+    </servermain:PlugIn>
+  </servermain:PlugInList>
+</servermain:Project>

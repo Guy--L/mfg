@@ -1,0 +1,12 @@
+﻿@model Nullable<Double>
+@{
+    var ro = ViewData["ro"] as bool?;
+}
+@if (ro.HasValue && ro.Value)
+{
+    @Html.Bootstrap().TextBoxFor(m=> m).Class((string)@ViewData["class"]).Disabled()
+}
+else
+{
+    @Html.Bootstrap().TextBoxFor(m => m).Class((string)@ViewData["class"])
+}

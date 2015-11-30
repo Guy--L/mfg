@@ -1,0 +1,155 @@
+﻿@model Test.Models.UnitView
+
+@using (var form = Html.Bootstrap().Begin(new Form("SaveLineTests", "Home").Id("linetestsform").Type(FormType.Horizontal).LabelWidthXs(3)))
+{
+<div class="container-fluid">
+    <br />
+    @using (Html.Bootstrap().Begin(new Table().Hover().Condensed().Striped().Class("readingstable")))
+    {
+        <thead>
+            <tr>
+                <th colspan="6">
+                    <div class="form-inline">
+                    <strong>@(Model.group.TestGroupId == 0 ? "Add" : "Edit") Unit @Model.unit._Unit Readings</strong>
+                    </div>
+                </th>
+                <th colspan="7"><div class="form-inline">
+                    @if (Model.prior.HasValue) { 
+                        <button class="btn btn-success btn-small" id="priorgroup" title="Click to edit prior reading">
+                            <i class="fa fa-step-backward fa-th-large"></i>
+                        </button>
+                    }
+                    @if (Model.group.TestGroupId == 0)
+                    {
+                        @Html.Bootstrap().TextBoxFor(m => m.group.TimeStamp).Class("datepicker").Size(InputSize.Small)
+                        @Html.Bootstrap().TextBoxFor(m => m.group.TimeOnly).Size(InputSize.Small)
+                    }
+                    else
+                    {
+                        @Model.group.TimeStamp
+                    }
+                    @if (Model.next.HasValue)
+                    {
+                        <button class="btn btn-success btn-small" id="nextgroup" title="Click to edit next reading">
+                            <i class="fa fa-step-forward fa-th-large"></i>
+                        </button>
+                    }
+                    else if (Model.group.TestGroupId != 0)
+                    {
+                        <button class="btn btn-success btn-small" id="addgroup" title="Click to start adding new readings">
+                            <i class="fa fa-plus fa-th-large"></i>
+                        </button>
+
+                    }</div>
+                </th>
+                <th colspan="2" class="casing">Casing</th>
+                <th colspan="2" class="oil">Oil</th>
+                <th></th>
+            </tr>
+            <tr class="headers">
+                <th>Line</th>
+                <th class="productid">Product</th>
+                <th>System</th>
+                <th>Std Speed</th>
+                <th>Computer</th>
+                <th>Belt Speed</th>
+                <th>DryEnd Speed</th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>Wet Door#</th>
+                <th>Casing Temp</th>
+                <th>Delm</th>
+                <th class="casing">Moisture</th>
+                <th class="casing">Glycerin</th>
+                <th class="oil">Setpoint</th>
+                <th class="oil">Actual</th>
+                <th class="notes">Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.EditorFor(m=>m.readings)
+        </tbody>
+    }
+    @(form.FormGroup().CustomControls(
+        Html.Bootstrap().SubmitButton().Text("Save").Id("savereadings").Style(ButtonStyle.Success),
+        Html.Bootstrap().Button().Text("Cancel").Style(ButtonStyle.Danger))
+    )
+</div>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('.alert-success').delay(6000).fadeOut('slow');
+            $('input.n41').inputmask('decimal', { digits: 1, integerDigits: 3 });
+            $('input.n31').inputmask('decimal', { digits: 1, integerDigits: 2 });
+            $('input.n3').inputmask('decimal', { digits: 0, integerDigits: 3 });
+            $('input.n1').inputmask('decimal', { digits: 0, integerDigits: 1 });
+            $('input.n2').inputmask('decimal', { digits: 2, integerDigits: 2 });
+            $('input.productid').inputmask('99a99[a]');
+            $('#group_TimeOnly').inputmask("h:s", { "placeholder": "hh/mm" });
+
+            $('.datepicker').datepicker();
+            $('#priorgroup').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Unit", "Home", new { id = Model.unit.UnitId, group = Model.prior })';
+            });
+            $('#addgroup').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Unit", "Home", new { id = Model.unit.UnitId })';
+            });
+            $('#nextgroup').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Unit", "Home", new { id = Model.unit.UnitId, group = Model.next })';
+            });
+            //$('#group_TimeOnly').on('blur', function (e) {
+            //    var hours = $(this).val().substr(0, 2) + 0;
+            //    var mins = $(this).val().substr(4, 2) + 0;
+            //    if (hours < 0 || hours > 23 || mins < 0 || mins > 59) {
+            //        alert("Please use 24 hour format HH:mm");
+            //        return false;
+            //    }
+            //    return true;
+            //});
+            $("table.readingstable input[type='text']").on("change keyup paste", function (e) {
+                var changed = '#' + e.target.id.split('_', 2).join('_') + '__Dirty';
+                $(changed).val(true);
+            });
+            //$('.productid').on('blur', function (e) {
+            //    if ($(this).text().length > 4)
+            //        return false;
+            //});
+            $(":input").on("keydown", function (event) {
+                if (event.which == 38) {
+                    event.stopPropagation();
+                    event.preventDefault();
+
+                    var ntabindex = parseInt($(this).attr('tabindex'));
+                    var nextinput;
+                    var count = 0;
+                    do {
+                        ntabindex--; count++;
+                        nextinput = $('input[tabindex=' + ntabindex + ']');
+                    } while (nextinput.length == 0 && count < 10);
+                    nextinput.focus();
+                    nextinput.select();
+                }
+                if (event.which == 40 || (event.which === 13 && !$(this).is("textarea, :button, :submit"))) {
+                    event.stopPropagation();
+                    event.preventDefault();
+
+                    var ntabindex = parseInt($(this).attr('tabindex'));
+                    var nextinput;
+                    var count = 0;
+                    do {
+                        ntabindex++; count++;
+                        nextinput = $('input[tabindex=' + ntabindex + ']');
+                    } while (nextinput.length==0 && count<10);
+                    nextinput.focus();
+                    nextinput.select();
+                }
+            });
+        });
+    </script>
+}

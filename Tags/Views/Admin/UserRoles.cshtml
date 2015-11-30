@@ -1,0 +1,44 @@
+﻿@model Tags.Models.RoleView
+
+@{
+    ViewBag.Title = "Roles for "+Model.usr.Identity;
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+        Html.Bootstrap().SubmitButton().Text("Save").Id("saveuserroles").Style(ButtonStyle.Success),
+        Html.Raw("&nbsp;"),
+        Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("UserRoleUpdate", "Admin").Id("userroleform").Type(FormType.Horizontal).LabelWidthXs(5)))
+    {
+        @Html.HiddenFor(m => m.usr.UserId)
+        <div class="row">
+            <div class="col-xs-12 text-primary">
+                <h3>Roles for @Model.usr.Login: @Model.usr.Identity</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8">
+                @(Html.Bootstrap().CheckBoxListFor(
+                m => m.roles, m => m.roleList, r => r.RoleId, r => r._Role
+            ).SelectedValues(r => Model.roles.Contains(r.RoleId)))
+            </div>
+        </div>
+        <div class="row">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+        </div>
+    }
+</div>
+
+    @section scripts{
+        <script type="text/javascript">
+
+            $(function () {
+                $('#cancel').on('click', function (e) {
+                    e.preventDefault();
+                    location.href = '@Url.Action("Users", "Admin",null,Request.Url.Scheme)';
+                });
+            });
+        </script>
+    }

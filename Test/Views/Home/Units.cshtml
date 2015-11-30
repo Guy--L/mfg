@@ -1,0 +1,18 @@
+﻿@model List<Test.Models.Unit>
+
+<div class="container">
+    @Html.DisplayFor(m => m)
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            console.log('load');
+            $('button').on('click', function () {
+                var id = $(this).is('button')?$(this).data('id'):$(this).parent('button').data('id');
+                id = (id != '') ? id : 0;
+                location.href = '@Url.Action("Unit","Home",null,Request.Url.Scheme)/' + id;
+            });
+        });
+    </script>
+}

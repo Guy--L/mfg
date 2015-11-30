@@ -1,0 +1,80 @@
+﻿@model List<Test.Models.Reading>
+
+<div class="container">
+    <br />
+    <table id="readings" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr><th></th>
+                <th colspan="2">Readings</th>
+                <th colspan="6">
+                    <button class="btn btn-success btn-xs" id="addlayflat" title="Add LayFlats">
+                        <i class="fa fa-plus"></i> <i class="fa fa-2x fa-eraser"></i>
+                    </button>
+                    <button class="btn btn-success btn-xs" id="addtensile" title="Add Dry Tensile">
+                        <i class="fa fa-plus"></i> <i class="fa fa-2x fa-unlink"></i>
+                    </button>
+                    <button class="btn btn-success btn-xs" id="addweight" title="Add Casing Weight">
+                        <i class="fa fa-plus"></i> <i class="fa fa-2x fa-download"></i>
+                    </button>                    
+                </th>
+                <th colspan="6">Values</th>
+                <th></th>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th>Unit</th>
+                <th>Line</th>
+                <th>Reel</th>
+                <th>Scheduled</th>
+                <th>Taken</th>
+                <th title="Type of Reading"><i class="fa fa-flask"></i></th>
+                <th title="Operator"><i class="fa fa-male"></i></th>
+                <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>Avg</th>
+                <th>ProductCode</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var hyper = '@Html.Raw(@Url.Action("Reading", "Home", null, Request.Url.Scheme))';
+        function attachDT() {
+            q = $('#readings').dataTable({
+                "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+                "oSearch": { "sSearch": "active" },
+                "order": [[3, "asc"]],
+                "bPaginate": false,
+                "oLanguage": {
+                    "sInfo": "_TOTAL_ reading(s)",
+                    "sInfoFiltered": "(of _MAX_ unfiltered)",
+                    "sProcessing": "<i class='fa fa-spinner fa-spin'></i>"
+                },
+                "aoColumnDefs": [
+                    { "bVisible": false, "aTargets": [0] }
+                ]
+            });
+        }
+    $(function () {
+        $('#readings tbody').on('click', 'tr', function (e) {
+            var id = $(this).data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            location.href = hyper+'/'+id;
+        });
+        $('#addlayflat').on('click', function () {
+            console.log('layflat');
+            location.href = hyper+'?id=0&type=1';
+        });
+        $('#addtensile').on('click', function () {
+            location.href = hyper + '?id=0&type=2';
+        });
+        $('#addweight').on('click', function () {
+            location.href = hyper + '?id=0&type=3';
+        });
+        attachDT();
+    });
+</script>
+}

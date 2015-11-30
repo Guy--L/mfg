@@ -1,0 +1,38 @@
+﻿@model Key.Models.HMIView
+@{
+    ViewBag.Title = "Lines Lock";
+}
+<div class="row-fluid">
+    <h3>@ViewBag.message > Touch a line to un/lock</h3>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" data-transitiongoal="100" >1 minute timeout</div>
+    </div>
+</div>
+<div class="row-fluid">
+    <div id="timeout"></div>
+    @Html.DisplayFor(m => m.hmis)
+    <button class="btn btn-info btn-lg linebtn" data-id="0">
+        <span class="fa-stack fa-3x">
+            <i class='fa fa-key fa-2x'></i>
+        </span>
+    </button>
+</div>
+
+@section scripts {
+<script type="text/javascript">
+    $(function () {
+        $('button').on('click', function () {
+            var id = $(this).is('button') ? $(this).data('id') : $(this).parent('button').data('id');
+            id = (id != '') ? id : 0;
+            if (id == 0) location.href = '@Url.Action("Index", "Home", null, Request.Url.Scheme)';
+            else location.href = '@Url.Action("Status","Home",null,Request.Url.Scheme)/' + id;
+        });
+        $('.progress .progress-bar').progressbar(
+            {
+                transition_delay: 0,
+                done: function () { location.href = '@Url.Action("Index", "Home", null, Request.Url.Scheme)'; },
+                refresh: 1000
+            });
+    });
+</script>
+}

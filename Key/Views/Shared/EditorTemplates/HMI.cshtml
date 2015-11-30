@@ -1,0 +1,12 @@
+﻿@model Key.Models.HMI
+@{
+    var locked = Model.IsLocked;
+    var disabled = Model.Error;
+    var id = locked ? -Model.HMIId : Model.HMIId;
+}
+<button class="btn btn-success btn-lg linebtn" data-id="@id" >
+    <span class="fa-stack fa-3x">
+        <i class='fa @(locked?"fa-lock":"fa-unlock") fa-stack-2x'></i>
+        <strong class='fa-stack-1x line-text @(locked ? "" : "locked")'>@Model.ChannelName</strong>
+    </span>
+</button>

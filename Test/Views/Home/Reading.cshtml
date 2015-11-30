@@ -1,0 +1,145 @@
+﻿@model Test.Models.ReadingView
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("Reading", "Home").Id("readingform").Type(FormType.Inline)))
+    {
+        <div class="row-fluid">
+            <div class="col-md-6 text-primary">
+                <h3>@(Html.Raw(Model.r.ReadingId == 0 ? "<i class='fa fa-plus'></i> Add " : "<i class='fa fa-pencil'></i> Edit ")) @Model.r.Name reading <i class="fa fa-2x fa-@Model.r.Icon text-primary"></i></h3>
+                Scheduled at @Model.nextslot
+            </div>
+            <div class="col-md-3 text-primary" id="linedisplay">
+            </div>
+            <div class="col-md-3">
+                <table class="table table-condensed table-responsive table-hover table-no-border">
+                    <thead>
+                        <tr>
+                            <th>Unit/Line</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>8</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @Html.DisplayFor(m => m.grid, "ChannelGrid")
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="col-md-12">
+                @Html.HiddenFor(m => m.r.ReadingId)
+                @Html.HiddenFor(m => m.r.LineId)
+                @Html.HiddenFor(m => m.r.ParameterId)
+
+                @form.FormGroup().TextBoxFor(m => m.r.Operator).Placeholder("Operator").Label().Class("sr-only")
+                <span class="fa-stack fa">
+                    <i class="fa fa-circle-o fa-stack-1x"></i>
+                    <strong class="fa-stack reel-text">1</strong>
+                </span>
+                <span class="fa-stack fa-3x">
+                    <i class="fa fa-circle-o fa-stack-2x"></i>
+                    <strong class="fa-stack-1x reel-text">2</strong>
+                </span>
+                <span class="fa-stack fa-3x">
+                    <i class="fa fa-circle-o fa-stack-2x"></i>
+                    <strong class="fa-stack-1x reel-text">3</strong>
+                </span>
+                <span class="fa-stack fa-3x">
+                    <i class="fa fa-circle-o fa-stack-2x"></i>
+                    <strong class="fa-stack-1x reel-text">4</strong>
+                </span>
+                <span class="fa-stack fa-3x">
+                    <i class="fa fa-circle-o fa-stack-2x"></i>
+                    <strong class="fa-stack-1x reel-text">5</strong>
+                </span>
+                <span class="fa-stack fa-3x">
+                    <i class="fa fa-circle-o fa-stack-2x"></i>
+                    <strong class="fa-stack-1x reel-text">6</strong>
+                </span>
+
+                <br />
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="col-md-12">
+                @form.FormGroup().TextBoxFor(m => m.r.R1).Class("rdg").Placeholder("1st").Label().Class("sr-only")
+                @form.FormGroup().TextBoxFor(m => m.r.R2).Class("rdg").Placeholder("2nd").Label().Class("sr-only")
+                @form.FormGroup().TextBoxFor(m => m.r.R3).Class("rdg").Placeholder("3rd").Label().Class("sr-only")
+                @form.FormGroup().TextBoxFor(m => m.r.R4).Class("rdg").Placeholder("4th").Label().Class("sr-only")
+                @form.FormGroup().TextBoxFor(m => m.r.R5).Class("rdg").Placeholder("5th").Label().Class("sr-only")
+                @form.FormGroup().TextBoxFor(m => m.r.Average).Class("avg").Readonly().Label().LabelText("Avg")
+                <br />
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="col-md-12">
+                @Html.Bootstrap().Button().Id("cancel").Text("Return to List").Class("btn-danger")
+            </div>
+        </div>
+    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+    $(function () {
+        var rdgcnt = 0;
+        var maxcnt = @Model.r.Count;
+        
+        $('input.rdg').each(function () {
+            if (++rdgcnt > maxcnt) {
+                $(this).closest(".form-group").hide();
+            }
+        });
+        
+        var $aid = $('#@Html.IdFor(m=>m.r.Average)');
+        if (maxcnt === 1)
+            $aid.closest(".form-group").hide();
+
+        $('input.rdg').on('change', function (e) {
+            var n = 0;
+            var mean = 0;
+            var M2 = 0;
+            $('input.rdg').each(function () {
+                if (!$(this).is(":visible"))
+                    return true;
+                var v = Number($(this).val());
+                if (v == 0)
+                    return true;
+                n++;
+                var d = v - mean;
+                mean += d/n;
+                M2 += d*(v - mean);
+            });
+            M2 = n>1?Math.sqrt(M2/(n-1)):0;
+            if (n == 0) n = 1;
+            $aid.val(Math.round(mean));
+        });
+        $('#cancel').on('click', function (e) {
+            e.preventDefault();
+            location.href = '@Url.Action("Readings", "Home")';
+        });
+        var mask = '@Model.r.Mask';
+        $('input.rdg').inputmask(mask, {
+            'autoUnmask': true,
+            'numericInput': true,
+            'rightalign' : true
+        });
+        $('i').on('click', function () {
+            var $i = $(this);
+            if ($i.hasClass('text-primary')) {
+                $('i.text-danger').removeClass('text-danger').addClass('text-primary').removeClass('fa-circle').addClass('fa-circle-o');
+                $i.removeClass('text-primary').addClass('text-danger');
+                $i.removeClass('fa-circle-o').addClass('fa-circle');
+                $('#@Html.IdFor(m=>m.r.LineId)').val($i.data('id'));
+                $('#linedisplay').html($i.data('name')).fitText(0.2);
+            }
+        });
+        $('#linedisplay').html('Pick a Line <i class="fa fa-hand-o-right"></i>').fitText(1);
+    });
+    </script>
+}

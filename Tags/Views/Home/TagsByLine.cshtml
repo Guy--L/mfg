@@ -1,0 +1,51 @@
+﻿@model PickTagView
+
+@{
+    ViewBag.Title = "Select Tags on "+Model.Channel;
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Chart").Id("chart").Style(ButtonStyle.Success),
+            Html.Raw(" "),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
+    };
+}
+<h2>@ViewBag.Title</h2>
+<div class="row-fluid">
+@using (var form = Html.Bootstrap().Begin(new Form("PickedTags", "Home").Id("picktagform")))
+{
+    <div class="col-md-5">
+            @Html.HiddenFor(m => m.Cancel)
+            @Html.HiddenFor(m => m.Channel)
+            @Html.ListBoxFor(m => m.picked, Model.tags, new { size = 18 })
+            <br />
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+    </div>
+    <div class="col-md-6">
+            @form.FormGroup().TextBoxFor(m=>m.NewView).Tooltip("Record selected tags as a named view")
+        <hr />
+            @Html.Raw(Model.charts)
+    </div>
+}
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var charts = [];
+        @Model.snippet
+        var demo1 = $('select[name="picked"]').bootstrapDualListbox({
+            nonSelectedListLabel: 'Non-selected',
+            selectedListLabel: 'Selected',
+            preserveSelectionOnMove: true
+        });
+        $('#@Html.IdFor(m=>m.NewView)').prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length > 0));
+        $('#cancel').on('click',function () {
+            $('#@Html.IdFor(m=>m.Cancel)').val(true);
+        });
+        $('.chartbtn').on('click', function () {
+            var chart = $(this).data('id');
+            demo1.val(charts[chart]);
+        });
+        demo1.on('change', function () {
+            $('#@Html.IdFor(m=>m.NewView)').prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
+        });
+    </script>
+}

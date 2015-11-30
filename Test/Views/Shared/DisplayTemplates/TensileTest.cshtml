@@ -1,0 +1,10 @@
+﻿@model Test.Models.TensileTest
+<tr data-id="@Model.TensileTestId">
+    <td>@Model.TensileTestId</td>
+    <td>@Model.Stamp.ToString("MM/dd HH:mm")</td>
+    <td>@Model.TestNumber</td>
+    <td class="@(Model.Passed?"bg-success text-success":"bg-danger text-danger")">@((double)Model.Average/100.0)</td>
+    <td>@((double)Model.Range/100.0)</td>
+    <td>@Model.N</td>
+    <td>@Model.Tech</td>
+</tr>

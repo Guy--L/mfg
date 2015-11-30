@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Get Path";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("savepath").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("Digest", "Admin").Id("pathform").Type(FormType.Horizontal).LabelWidthXs(5)))
+    {
+        <div class="row">
+            <div class="col-xs-12 text-primary"><h3>Batch upload of Casing Data from Directory</h3></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @form.FormGroup().TextBox("s").Label().LabelText("Path")
+            </div>
+        </div>
+        <div class="row">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+        </div>
+    }
+</div>
+

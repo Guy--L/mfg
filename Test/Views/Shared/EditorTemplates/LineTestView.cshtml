@@ -1,0 +1,32 @@
+﻿@model Test.Models.LineTestView
+@{
+    var form = Html.Bootstrap().Misc().GetFormBuilderFromViewData();
+    var tab = Enumerable.Range(1, 17).Select((k, i) => (k+Model.LineNumber+(i*8)).ToString()).ToArray();
+}
+<tr class="linetestrow" data-id="@Model.LineTest.LineTestId">
+    <td>
+    @Html.HiddenFor(m => m.LineTest.LineId)
+    @Html.HiddenFor(m => m.LineTest.TestGroupId)
+    @Html.HiddenFor(m => m.LineTest.TimeStamp)
+    @Html.HiddenFor(m => m.Dirty)
+    @Html.HiddenFor(m => m.LineTest.LineTestId)
+    @Html.HiddenFor(m => m.LineUnit)
+    <div class="form-inline"><strong>@Model.LineNumber</strong></div></td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.Product).HtmlAttributes(new { tabindex = @tab[0] }).Class("input-sm productid").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.SystemId).HtmlAttributes(new { tabindex = @tab[1] }).Class("input-sm n1").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest._stdSpeed).HtmlAttributes(new { tabindex = @tab[2] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest._computer).HtmlAttributes(new { tabindex = @tab[3] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest._beltSpeed).HtmlAttributes(new { tabindex = @tab[4] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest._dryEndSpeed).HtmlAttributes(new { tabindex = @tab[5] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.ZoneA).HtmlAttributes(new { tabindex = @tab[6] }).Class("input-sm n3").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.ZoneB).HtmlAttributes(new { tabindex = @tab[7] }).Class("input-sm n3").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.ZoneC).HtmlAttributes(new { tabindex = @tab[8] }).Class("input-sm n3").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.WetDoorNumber).HtmlAttributes(new { tabindex = @tab[9] }).Class("input-sm n1").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest._casingTemp).HtmlAttributes(new { tabindex = @tab[10] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.Delm).HtmlAttributes(new { tabindex = @tab[11] }).Class("input-sm n2").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest._casingMoist).HtmlAttributes(new { tabindex = @tab[12] }).Class("input-sm n31").WidthLg(12).Label().Class("sr-only casing")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest._casingGlyc).HtmlAttributes(new { tabindex = @tab[13] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only casing")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.OilSetpoint).HtmlAttributes(new { tabindex = @tab[14] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.OilActual).HtmlAttributes(new { tabindex = @tab[15] }).Class("input-sm n41").WidthLg(12).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.LineTest.Notes).HtmlAttributes(new { tabindex = @tab[16] }).Class("input-sm notes").WidthLg(12).Label().Class("sr-only")</td>
+</tr>

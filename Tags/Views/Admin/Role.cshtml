@@ -1,0 +1,40 @@
+﻿@model Tags.Models.Role
+
+@{
+    ViewBag.Title = "Role";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("saverole").Style(ButtonStyle.Success),
+            Html.Raw("&nbsp;"),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
+    };
+}
+
+<div class="container">
+    @using (var form = Html.Bootstrap().Begin(new Form("RoleUpdate", "Admin").Id("roleform").Type(FormType.Horizontal).LabelWidthXs(5)))
+    {
+        @Html.HiddenFor(m => m.RoleId)
+        <div class="row">
+            <div class="col-xs-12 text-primary"><h3>@(Model.RoleId == 0 ? "Add " : "Edit ")Worker</h3></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8">
+                @form.FormGroup().TextBoxFor(m => m._Role).Size(InputSize.Small)
+                @form.FormGroup().TextBoxFor(m => m.ADGroup).Size(InputSize.Small)
+            </div>
+        </div>
+        <div class="row">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+        </div>
+    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+
+        $(function () {
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Roles", "Admin",null,Request.Url.Scheme)';
+            });
+        });
+    </script>
+}

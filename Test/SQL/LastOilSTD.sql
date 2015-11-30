@@ -1,0 +1,1 @@
+﻿select top 3 Concentration, Area from OilSTD order by CasingGroupId desc

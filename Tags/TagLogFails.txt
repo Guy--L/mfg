@@ -1,0 +1,12 @@
+D8.Dry.casing_temp3_f_pv
+D8.Dry.casing_temp2_f_pv
+D7.Dry.casing_temp3_f_pv
+D7.Dry.casing_temp2_f_pv
+D6.Dry.casing_temp3_f_pv
+D6.Dry.casing_temp2_f_pv
+D5.Dry.casing_temp3_f_pv
+D5.Dry.casing_temp2_f_pv
+C3.Dry.recycle_temp_f
+C3.Dry.recycle_temp_f
+C3.Dry.Nitrogen_flowrate
+C3.Dry.Nitrogen_flowrate

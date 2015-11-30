@@ -1,0 +1,36 @@
+﻿@model PickFieldView
+
+@{
+    ViewBag.Title = "Select Fields in records for "+Model.Record;
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Chart").Id("chart").Style(ButtonStyle.Success),
+            Html.Raw(" "),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
+    };
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="row-fluid">
+    <div class="col-md-6">
+@using (var form = Html.Bootstrap().Begin(new Form("PickedFields", "Home").Id("picktagform")))
+{
+    @Html.HiddenFor(m => m.Cancel)
+    @Html.HiddenFor(m => m.Channel)
+    @Html.ListBoxFor(m => m.picked, Model.tags, new { size = 18 })
+    @(form.FormGroup().CustomControls(buttons.ToArray()))
+}
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var demo1 = $('select[name="picked"]').bootstrapDualListbox({
+            nonSelectedListLabel: 'Non-selected',
+            selectedListLabel: 'Selected',
+            preserveSelectionOnMove: true
+        });
+        $('#cancel').on('click',function () {
+            $('#@Html.IdFor(m=>m.Cancel)').val(true);
+        });
+    </script>
+}

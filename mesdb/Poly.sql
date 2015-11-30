@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[Poly]
+(
+	[PolyId] INT NOT NULL PRIMARY KEY, 
+    [CoA] NCHAR(10) NOT NULL
+)
