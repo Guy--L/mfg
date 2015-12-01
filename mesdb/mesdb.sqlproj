@@ -113,7 +113,7 @@
     <Build Include="LineOperation.sql" />
     <Build Include="LineStatus.sql" />
     <Build Include="UpdateLineStatus.sql" />
-    <Build Include="LabResult.sql" />
+    <None Include="LabResult.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />

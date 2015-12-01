@@ -80,10 +80,10 @@
     <Build Include="Group.sql" />
     <Build Include="TagGroup.sql" />
     <Build Include="CurrentValueTrigger.sql" />
-    <Build Include="Data\SyncChannel2Line.sql" />
-    <Build Include="Data\AddLabNHMIAsDevice.sql" />
-    <Build Include="Data\AddLabTags.sql" />
-    <Build Include="Data\SwipeQuery.sql" />
+    <None Include="Data\SyncChannel2Line.sql" />
+    <None Include="Data\AddLabNHMIAsDevice.sql" />
+    <None Include="Data\AddLabTags.sql" />
+    <None Include="Data\SwipeQuery.sql" />
     <Build Include="UnpluggedTrigger.sql" />
   </ItemGroup>
   <ItemGroup>
