@@ -27,6 +27,12 @@ namespace Test.Controllers
             return View(ln);
         }
 
+        public ActionResult Conversions()
+        {
+            var c = new Conversions();
+            return View(c);
+        }
+
         public ActionResult Products()
         {
             return View();

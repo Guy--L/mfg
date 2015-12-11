@@ -34,6 +34,10 @@ textarea {
     margin-bottom: 1px;
 }
 
+select#line_ProductCodeId {
+    min-width: 550px;
+}
+
 input#note.form-control.popup {
     max-width: 100%;
 }

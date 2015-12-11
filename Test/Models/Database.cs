@@ -230,7 +230,7 @@ namespace Test.Models
 		[Column] public int SystemId { get; set; } 		
 		[Column] public int ExtruderId { get; set; } 		
 		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public DateTime Started { get; set; } 		
+		[Column] public DateTime? Started { get; set; } 		
 		[Column] public DateTime Completed { get; set; } 		
 		[Column] public int FinishFootage { get; set; } 		
 		[Column] public bool Exempt { get; set; } 		

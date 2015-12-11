@@ -118,7 +118,7 @@ namespace Test.Models
                 line = db.Fetch<Line>(Lines._lineload + " where l.lineid = @0", lineid).SingleOrDefault();
                 systems = db.Fetch<System>(System.Current);
                 products = db.Fetch<ProductCode>(" order by productcode, productspec");
-                conversions = db.Fetch<Conversion>(" where lineid = @0", lineid);
+                conversions = db.Fetch<Conversion>(" where lineid = @0 and started is null order by scheduled", lineid);
                 statuses = db.Fetch<Status>();
             }
             productList = new SelectList(products, "ProductCodeId", "CodeSpec");
