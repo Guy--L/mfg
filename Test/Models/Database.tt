@@ -8,17 +8,19 @@
 	GeneratePocos = true;
 	GenerateCommon = true;
 	ClassPrefix = "";
-	ClassSuffix = "";
+	ClassSuffix = ""; 
 	TrackModifiedColumns = false;
 	IncludeViews = true;
 
     // Read schema 
-	var tables = LoadTables(); 
+	var tables = LoadTables();
 
 	List<string> timesheet = new List<string> {
 		 "Unit"
+		,"Extruder"
 		,"Line"
-		,"LineStatus"
+		,"LineHistory"
+		,"LineStatus" 
 		,"LineOperation"
 		,"Lineload Query"
 		,"SolutionTest"
@@ -32,14 +34,17 @@
 		,"RecipeReading"
 		,"CasingTest" 
 		,"CasingGroup"
+		,"Conversion"
 		,"OilSTD"
 		,"Sample"
 		,"Parameter" 
 		,"ProductCode"
+		,"ProductCodeTx"
 		,"Deck"
 		,"Slide"
 		,"Series"
 		,"SlideSeries"
+		,"Status"
 	};
 
 	foreach (var table in tables)

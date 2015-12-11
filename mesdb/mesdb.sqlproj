@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="ProductBatch.sql" />
-    <Build Include="Line.sql" />
+    <Build Include="LineHistory.sql" />
     <Build Include="LineTank.sql" />
     <Build Include="Cellulose.sql" />
     <Build Include="Water.sql" />
@@ -112,8 +112,14 @@
     <Build Include="LineLoad Query.sql" />
     <Build Include="LineOperation.sql" />
     <Build Include="LineStatus.sql" />
-    <Build Include="UpdateLineStatus.sql" />
+    <None Include="UpdateLineStatus.sql" />
     <None Include="LabResult.sql" />
+    <Build Include="ProductCodeTx.sql" />
+    <Build Include="LineState.sql" />
+    <Build Include="LineTx.sql" />
+    <Build Include="Conversion.sql" />
+    <Build Include="Status.sql" />
+    <Build Include="Line.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />

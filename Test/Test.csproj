@@ -229,7 +229,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\ControlController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\Line.cs" />
+    <Compile Include="Models\Status.cs" />
+    <Compile Include="Models\System.cs" />
     <Compile Include="Models\Tags.cs">
       <DependentUpon>Tags.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -589,6 +593,9 @@
     <Content Include="Views\Admin\BatchPath.cshtml" />
     <Content Include="Views\Admin\Completed.cshtml" />
     <Content Include="Views\Home\CasingLoaded.cshtml" />
+    <Content Include="Views\Control\Line.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\LineRow.cshtml" />
+    <Content Include="Views\Control\Lines.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

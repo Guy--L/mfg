@@ -830,9 +830,12 @@ namespace Test.Models
             update [sample] set completed = getdate() where sampleid in (@0)
         ";
 
-
+        // move results from lab database to tags database
+        // calculations are performed during the move 
+        // 
         private static string _labresult = @"
             insert into [All]
+            output inserted.tagid, l.sampleid into @insertedtags
             select r.tagid,
             cast((1 - l.r3 / l.r1) * 100.0 as varchar(64)) as value,
             l.stamp,
@@ -843,6 +846,7 @@ namespace Test.Models
             where f.FieldName = 'csg_moist_pct' and l.Completed is not null and l.sampleid in (@0)
 
             insert into [All]
+            output inserted.tagid, l.sampleid into @insertedtags
             select r.tagid,
             cast((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 100.0 ))) * 100.0 as varchar(64)) as value
             l.stamp,

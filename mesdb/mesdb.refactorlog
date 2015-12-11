@@ -336,4 +336,88 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Cells" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="867dcae0-695f-4531-bfd5-fcb28b2a7ce8" ChangeDateTime="12/01/2015 19:51:38">
+    <Property Name="ElementName" Value="[dbo].[ProductCodeTx].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProductCodeTx]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ProductCodeTxId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1c9117c1-f8cb-4a8d-9653-1882ca608b25" ChangeDateTime="12/01/2015 19:54:38">
+    <Property Name="ElementName" Value="[dbo].[LineState].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineState]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LineStateId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f44dd80e-6731-4398-9a42-d8ab328e9c87" ChangeDateTime="12/01/2015 19:55:53">
+    <Property Name="ElementName" Value="[dbo].[LineState].[LineStateId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineState]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LineId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1aa4bc73-a188-44ff-95a2-7846674489f6" ChangeDateTime="12/01/2015 20:21:23">
+    <Property Name="ElementName" Value="[dbo].[LineTx].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineTx]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LineTxId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7f891cc4-5ef7-4043-8444-a4bc2a8a67fc" ChangeDateTime="12/03/2015 15:11:57">
+    <Property Name="ElementName" Value="[dbo].[Conversion].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Conversion]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ConversionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4fb3ef25-2920-4fc9-b755-67e7a8ce769e" ChangeDateTime="12/03/2015 15:30:14">
+    <Property Name="ElementName" Value="[dbo].[Conversion].[ExtruderColor]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Conversion]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ExtruderId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b32a0e34-f5a7-4ede-a12c-f84b631d1123" ChangeDateTime="12/03/2015 15:56:02">
+    <Property Name="ElementName" Value="[dbo].[Extruder].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Extruder]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ExtruderId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="36c888a4-fce2-463a-a467-642b5cc5ad64" ChangeDateTime="12/03/2015 20:11:04">
+    <Property Name="ElementName" Value="[dbo].[ReadingTag].[ParameterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ReadingTag]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ReadingFieldId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="98306f0c-3ea8-41ea-9b4c-8d35424a5088" ChangeDateTime="12/07/2015 15:14:53">
+    <Property Name="ElementName" Value="[dbo].[Status].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Status]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="StatusId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="198fa20e-4e2e-483c-9be2-12c808d0fd30" ChangeDateTime="12/07/2015 15:31:24">
+    <Property Name="ElementName" Value="[dbo].[LineState].[State]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineState]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="StatusId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="79282eeb-d95d-4dfb-b741-4e486f1bcd4c" ChangeDateTime="12/10/2015 16:42:19">
+    <Property Name="ElementName" Value="[dbo].[LineHistory].[Commenat]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineHistory]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Comment" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2745139b-95dd-41e8-867a-e6902c8551ef" ChangeDateTime="12/10/2015 17:58:34">
+    <Property Name="ElementName" Value="[dbo].[Status].[Colro]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Status]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Color" />
+  </Operation>
 </Operations>

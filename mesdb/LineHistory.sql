@@ -1,6 +1,7 @@
-﻿CREATE TABLE [dbo].[Line]
+﻿CREATE TABLE [dbo].[LineHistory]
 (
-	[LineId] int not null primary key identity,
+	[LineHistoryId] int not null primary key identity,
+	[LineId] INT NOT NULL, 
     [LineTankId] INT NULL, 
     [UnitId] INT NOT NULL, 
     [LineNumber] INT NOT NULL, 
@@ -8,5 +9,7 @@
     [StatusId] INT NOT NULL, 
     [ProductCodeId] INT NOT NULL, 
     [Stamp] DATETIME NOT NULL, 
-    CONSTRAINT [FK_Line_Unit] FOREIGN KEY ([UnitId]) REFERENCES [Unit]([UnitId])
+    [UserId] INT NOT NULL, 
+    [Comment] VARCHAR(50) NULL, 
+    [Taken] DATETIME NOT NULL
 )

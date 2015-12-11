@@ -18,6 +18,5 @@
     [SystemId] INT NULL, 
     [NextScheduled] DATETIME NULL, 
     [Reading3] INT NULL, 
-    CONSTRAINT [FK_Sample_ToLine] FOREIGN KEY ([LineId]) REFERENCES [Line]([LineId]), 
-    CONSTRAINT [FK_Sample_ToProductCode] FOREIGN KEY ([ProductCodeId]) REFERENCES [ProductCode]([ProductCodeId])
+    CONSTRAINT [FK_Sample_ToLine] FOREIGN KEY ([LineId]) REFERENCES [Line]([LineId])
 )

@@ -45,6 +45,7 @@
     [BlowShirr_Aim]    NVARCHAR (255) NULL,
     [BlowShirr_Min]    NVARCHAR (255) NULL,
     [BlowShirr_Max]    NVARCHAR (255) NULL,
-    [DT_LCL]           REAL           NULL
+    [DT_LCL]           REAL           NULL, 
+    CONSTRAINT [PK_ProductCode] PRIMARY KEY ([ProductCodeId])
 );
 

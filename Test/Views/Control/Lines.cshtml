@@ -1,0 +1,42 @@
+﻿@model Test.Models.Lines
+
+@{
+    ViewBag.Title = "Current Line Load";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="col-xs-12 text-primary"><h3>Assign Product to Line</h3></div>
+    </div>
+    <div class="row-fluid">
+        <div class="col-md-3">
+            @Html.DisplayFor(m => m.systems)
+        </div>
+        <div class="col-md-5">
+            <table class="table table-condensed table-responsive" id="linetable">
+                <thead><tr>
+                    <th>Unit/Line</th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                </tr></thead>
+                <tbody>
+                    @Html.DisplayFor(m=>m.lines, "LineRow")
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            $('button').on('click', function () {
+                var id = $(this).data('id');
+                location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
+            });
+        });
+    </script>
+}

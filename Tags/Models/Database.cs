@@ -104,26 +104,17 @@ namespace Tags.Models
 	}
 	
 
-	[TableName("All")]
-	[PrimaryKey("AllId")]
+	[TableName("Keptest")]
+	[PrimaryKey("id")]
 	[ExplicitColumns]
-    public partial class All : tagDB.Record<All>  
+    public partial class Keptest : tagDB.Record<Keptest>  
     {		
-		[Column] public int AllId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public string Value { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int Quality { get; set; } 	
-	}
-
-	[TableName("Channel")]
-	[PrimaryKey("ChannelId")]
-	[ExplicitColumns]
-    public partial class Channel : tagDB.Record<Channel>  
-    {		
-		[Column] public int ChannelId { get; set; } 		
-		[Column] public string Name { get; set; } 		
-		[Column] public int? PlantId { get; set; } 	
+		[Column] public int id { get; set; } 		
+		[Column] public string _NAME { get; set; } 		
+		[Column] public int? _NUMERICID { get; set; } 		
+		[Column] public string _VALUE { get; set; } 		
+		[Column] public DateTime? _TIMESTAMP { get; set; } 		
+		[Column] public int? _QUALITY { get; set; } 	
 	}
 
 	[TableName("Chart")]
@@ -136,41 +127,60 @@ namespace Tags.Models
 		[Column] public int OwnerId { get; set; } 	
 	}
 
-	[TableName("Control")]
+	[TableName("Series")]
+	[PrimaryKey("SeriesId")]
 	[ExplicitColumns]
-    public partial class Control : tagDB.Record<Control>  
+    public partial class Series : tagDB.Record<Series>  
     {		
-		[Column] public int ControlId { get; set; } 		
+		[Column] public int SeriesId { get; set; } 		
+		[Column] public int ChartId { get; set; } 		
 		[Column] public int TagId { get; set; } 		
-		[Column] public string StringValue { get; set; } 		
-		[Column] public int? BCDValue { get; set; } 		
-		[Column] public double? FloatValue { get; set; } 		
-		[Column] public bool? BooleanValue { get; set; } 		
-		[Column] public int? WordValue { get; set; } 	
+		[Column] public bool YAxis { get; set; } 		
+		[Column] public string Relabel { get; set; } 		
+		[Column] public int Scale { get; set; } 		
+		[Column] public int MinY { get; set; } 		
+		[Column] public int MaxY { get; set; } 	
 	}
 
-	[TableName("Current")]
-	[PrimaryKey("TagId", AutoIncrement=false)]
+	[TableName("User")]
+	[PrimaryKey("UserId")]
 	[ExplicitColumns]
-    public partial class Current : tagDB.Record<Current>  
+    public partial class User : tagDB.Record<User>  
+    {		
+		[Column] public int UserId { get; set; } 		
+		[Column] public string Identity { get; set; } 		
+		[Column] public string Login { get; set; } 	
+	}
+
+	[TableName("UserChart")]
+	[PrimaryKey("UserChartId")]
+	[ExplicitColumns]
+    public partial class UserChart : tagDB.Record<UserChart>  
+    {		
+		[Column] public int UserChartId { get; set; } 		
+		[Column] public int UserId { get; set; } 		
+		[Column] public int ChartId { get; set; } 		
+		[Column] public bool Shared { get; set; } 	
+	}
+
+	[TableName("SubMinute")]
+	[ExplicitColumns]
+    public partial class SubMinute : tagDB.Record<SubMinute>  
     {		
 		[Column] public int TagId { get; set; } 		
-		[Column] public string Name { get; set; } 		
+		[Column("SubMinute")] public int _SubMinute { get; set; }
+	
+	}
+
+	[TableName("sample")]
+	[ExplicitColumns]
+    public partial class sample : tagDB.Record<sample>  
+    {		
+		[Column] public int AllId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
 		[Column] public string Value { get; set; } 		
 		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int SubMinute { get; set; } 	
-	}
-
-	[TableName("Device")]
-	[PrimaryKey("DeviceId")]
-	[ExplicitColumns]
-    public partial class Device : tagDB.Record<Device>  
-    {		
-		[Column] public int DeviceId { get; set; } 		
-		[Column] public int ChannelId { get; set; } 		
-		[Column] public string Name { get; set; } 		
-		[Column] public string IPAddress { get; set; } 		
-		[Column] public string Model { get; set; } 	
+		[Column] public int Quality { get; set; } 	
 	}
 
 	[TableName("HMI")]
@@ -187,15 +197,50 @@ namespace Tags.Models
 		[Column] public DateTime Expires { get; set; } 	
 	}
 
-	[TableName("Past")]
-	[PrimaryKey("PastId", AutoIncrement=false)]
+	[TableName("Channel")]
+	[PrimaryKey("ChannelId")]
 	[ExplicitColumns]
-    public partial class Past : tagDB.Record<Past>  
+    public partial class Channel : tagDB.Record<Channel>  
     {		
-		[Column] public int PastId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public string Value { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 	
+		[Column] public int ChannelId { get; set; } 		
+		[Column] public string Name { get; set; } 		
+		[Column] public int? PlantId { get; set; } 	
+	}
+
+	[TableName("Device")]
+	[PrimaryKey("DeviceId")]
+	[ExplicitColumns]
+    public partial class Device : tagDB.Record<Device>  
+    {		
+		[Column] public int DeviceId { get; set; } 		
+		[Column] public int ChannelId { get; set; } 		
+		[Column] public string Name { get; set; } 		
+		[Column] public string IPAddress { get; set; } 		
+		[Column] public string Model { get; set; } 	
+	}
+
+	[TableName("Operation")]
+	[PrimaryKey("OperationId")]
+	[ExplicitColumns]
+    public partial class Operation : tagDB.Record<Operation>  
+    {		
+		[Column] public int OperationId { get; set; } 		
+		[Column] public int HMIId { get; set; } 		
+		[Column] public int UserId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int ApproverId { get; set; } 		
+		[Column] public string Notes { get; set; } 	
+	}
+
+	[TableName("Role")]
+	[PrimaryKey("RoleId")]
+	[ExplicitColumns]
+    public partial class Role : tagDB.Record<Role>  
+    {		
+		[Column] public int RoleId { get; set; } 		
+		[Column("Role")] public string _Role { get; set; }
+		
+		[Column] public string ADGroup { get; set; } 	
 	}
 
 	[TableName("Recent")]
@@ -210,19 +255,14 @@ namespace Tags.Models
 		[Column] public int Quality { get; set; } 	
 	}
 
-	[TableName("Series")]
-	[PrimaryKey("SeriesId")]
+	[TableName("UserRole")]
+	[PrimaryKey("UserRoleId")]
 	[ExplicitColumns]
-    public partial class Series : tagDB.Record<Series>  
+    public partial class UserRole : tagDB.Record<UserRole>  
     {		
-		[Column] public int SeriesId { get; set; } 		
-		[Column] public int ChartId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public bool YAxis { get; set; } 		
-		[Column] public string Relabel { get; set; } 		
-		[Column] public int Scale { get; set; } 		
-		[Column] public int MinY { get; set; } 		
-		[Column] public int MaxY { get; set; } 	
+		[Column] public int UserRoleId { get; set; } 		
+		[Column] public int UserId { get; set; } 		
+		[Column] public int RoleId { get; set; } 	
 	}
 
 	[TableName("Tag")]
@@ -253,61 +293,6 @@ namespace Tags.Models
 		[Column] public int Type { get; set; } 	
 	}
 
-	[TableName("User")]
-	[PrimaryKey("UserId")]
-	[ExplicitColumns]
-    public partial class User : tagDB.Record<User>  
-    {		
-		[Column] public int UserId { get; set; } 		
-		[Column] public string Identity { get; set; } 		
-		[Column] public string Login { get; set; } 	
-	}
-
-	[TableName("UserChart")]
-	[PrimaryKey("UserChartId")]
-	[ExplicitColumns]
-    public partial class UserChart : tagDB.Record<UserChart>  
-    {		
-		[Column] public int UserChartId { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public int ChartId { get; set; } 		
-		[Column] public bool Shared { get; set; } 	
-	}
-
-	[TableName("Operation")]
-	[PrimaryKey("OperationId")]
-	[ExplicitColumns]
-    public partial class Operation : tagDB.Record<Operation>  
-    {		
-		[Column] public int OperationId { get; set; } 		
-		[Column] public int HMIId { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int ApproverId { get; set; } 		
-		[Column] public string Notes { get; set; } 	
-	}
-
-	[TableName("Role")]
-	[PrimaryKey("RoleId")]
-	[ExplicitColumns]
-    public partial class Role : tagDB.Record<Role>  
-    {		
-		[Column] public int RoleId { get; set; } 		
-		[Column("Role")] public string _Role { get; set; }
-		
-		[Column] public string ADGroup { get; set; } 	
-	}
-
-	[TableName("UserRole")]
-	[PrimaryKey("UserRoleId")]
-	[ExplicitColumns]
-    public partial class UserRole : tagDB.Record<UserRole>  
-    {		
-		[Column] public int UserRoleId { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public int RoleId { get; set; } 	
-	}
-
 	[TableName("Group")]
 	[PrimaryKey("GroupId")]
 	[ExplicitColumns]
@@ -326,6 +311,64 @@ namespace Tags.Models
 		[Column] public int TagGroupId { get; set; } 		
 		[Column] public int GroupId { get; set; } 		
 		[Column] public int TagId { get; set; } 	
+	}
+
+	[TableName("CurrentValues")]
+	[ExplicitColumns]
+    public partial class CurrentValue : tagDB.Record<CurrentValue>  
+    {		
+		[Column] public string Name { get; set; } 		
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int TagId { get; set; } 	
+	}
+
+	[TableName("Control")]
+	[ExplicitColumns]
+    public partial class Control : tagDB.Record<Control>  
+    {		
+		[Column] public int ControlId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public string StringValue { get; set; } 		
+		[Column] public int? BCDValue { get; set; } 		
+		[Column] public double? FloatValue { get; set; } 		
+		[Column] public bool? BooleanValue { get; set; } 		
+		[Column] public int? WordValue { get; set; } 	
+	}
+
+	[TableName("Past")]
+	[PrimaryKey("PastId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class Past : tagDB.Record<Past>  
+    {		
+		[Column] public int PastId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 	
+	}
+
+	[TableName("Current")]
+	[PrimaryKey("TagId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class Current : tagDB.Record<Current>  
+    {		
+		[Column] public int TagId { get; set; } 		
+		[Column] public string Name { get; set; } 		
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int SubMinute { get; set; } 	
+	}
+
+	[TableName("All")]
+	[PrimaryKey("AllId")]
+	[ExplicitColumns]
+    public partial class All : tagDB.Record<All>  
+    {		
+		[Column] public int AllId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int Quality { get; set; } 	
 	}
 
 }
