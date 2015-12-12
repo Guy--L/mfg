@@ -597,6 +597,8 @@
     <Content Include="Views\Control\Line.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\LineRow.cshtml" />
     <Content Include="Views\Control\Lines.cshtml" />
+    <Content Include="Views\Control\Conversions.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Conversion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

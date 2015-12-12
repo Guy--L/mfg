@@ -4,6 +4,7 @@
     [LineId] INT NOT NULL, 
     [ProductCodeId] INT NOT NULL, 
     [SystemId] INT NOT NULL, 
+	[SolutionRecipeId] int not null,
     [ExtruderId] INT NOT NULL, 
     [Scheduled] DATETIME NOT NULL, 
     [Started] DATETIME NULL, 

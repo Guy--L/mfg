@@ -165,6 +165,26 @@ namespace Test.Models
 		[Column] public string Color { get; set; } 	
 	}
 
+	[TableName("Conversion")]
+	[PrimaryKey("ConversionId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class Conversion : labDB.Record<Conversion>  
+    {		
+		[Column] public int ConversionId { get; set; } 		
+		[Column] public int LineId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public int SystemId { get; set; } 		
+		[Column] public int SolutionRecipeId { get; set; } 		
+		[Column] public int ExtruderId { get; set; } 		
+		[Column] public DateTime Scheduled { get; set; } 		
+		[Column] public DateTime? Started { get; set; } 		
+		[Column] public DateTime Completed { get; set; } 		
+		[Column] public int FinishFootage { get; set; } 		
+		[Column] public bool Exempt { get; set; } 		
+		[Column] public string ExemptCode { get; set; } 		
+		[Column] public string Note { get; set; } 	
+	}
+
 	[TableName("Sample")]
 	[PrimaryKey("SampleId")]
 	[ExplicitColumns]
@@ -217,25 +237,6 @@ namespace Test.Models
 		[Column] public int? Concentration { get; set; } 		
 		[Column] public double Area { get; set; } 		
 		[Column] public int? CasingGroupId { get; set; } 	
-	}
-
-	[TableName("Conversion")]
-	[PrimaryKey("ConversionId", AutoIncrement=false)]
-	[ExplicitColumns]
-    public partial class Conversion : labDB.Record<Conversion>  
-    {		
-		[Column] public int ConversionId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public int ExtruderId { get; set; } 		
-		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public DateTime? Started { get; set; } 		
-		[Column] public DateTime Completed { get; set; } 		
-		[Column] public int FinishFootage { get; set; } 		
-		[Column] public bool Exempt { get; set; } 		
-		[Column] public string ExemptCode { get; set; } 		
-		[Column] public string Note { get; set; } 	
 	}
 
 	[TableName("ProductCodeTx")]

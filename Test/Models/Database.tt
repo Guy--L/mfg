@@ -13,7 +13,7 @@
 	IncludeViews = true;
 
     // Read schema 
-	var tables = LoadTables();
+	var tables = LoadTables(); 
 
 	List<string> timesheet = new List<string> {
 		 "Unit"

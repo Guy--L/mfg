@@ -1,0 +1,88 @@
+﻿@model Test.Models.Conversions
+
+<div class="container">
+    <br />
+    <table id="conversions" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr><th></th>
+                <th colspan="2">List of Conversions</th>
+                <th colspan="4">
+                    <button class="btn btn-success btn-xs" id="addconversion">
+                        <i class="fa fa-plus"></i> Add New Conversion
+                    </button>
+                </th>
+                <th></th>
+            </tr>
+            <tr>
+                <th>ID</th>
+                <th title="Status">Status</th>
+                <th>Line</th>
+                <th>Scheduled</th>
+                <th>Started</th>
+                <th>Completed</th>
+                <th>Product</th>
+                <th>Extruder</th>
+                <th>Reqd Ft</th>
+                <th>Exempt</th>
+                <th>System</th>                
+                <th>Solution Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m.conversions)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+    function attachDT() {
+        q = $('#sbatches').dataTable({
+            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+            "oSearch": { "sSearch": "active" },
+            "order": [[3, "asc"]],
+            "bPaginate": false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ batch(es)",
+                "sInfoFiltered": "(of _MAX_ unfiltered)",
+                "sProcessing": "<i class='fa fa-spinner fa-spin'></i>"
+            },
+            "aoColumnDefs": [
+                { "bVisible": false, "aTargets": [0] }
+            ]
+        });
+    }
+    function charter(e) {
+        e.stopPropagation();
+        var chart = $(this).data('button');
+        var id = $(this).closest('tr').data('id');
+        id = (id != '' && typeof id !== 'undefined') ? id : 0;
+        location.href = '@Url.Action("SolutionChart","Home",null,Request.Url.Scheme)/' + id + '/' + chart;
+    }
+    $(function () {
+        $('button.chart').on('click', charter);
+        $('#sbatches tbody').on('click', 'tr', function (e) {
+            var id = $(this).data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            var hyper = $(e.target).parents('.stest').length ? "SolutionTests" : "SBatch";
+            location.href = '@Url.Action("stub","Home",null,Request.Url.Scheme)/'.replace('stub', hyper) + id;
+        });
+        $('#addconversion').on('click', function () {
+            location.href = '@Url.Action("Conversion","Control",null,Request.Url.Scheme)/0';
+        });
+        $('.stest').on('click', function (e) {
+            e.preventDefault();
+            var id = $(this).data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            location.href = '@Url.Action("SolutionTests","Home",null,Request.Url.Scheme)/' + id;
+        });
+        $('.stopbatch').on('click', function (e) {
+            e.stopPropagation();
+            var id = $(this).closest('tr').data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            location.href = '@Url.Action("StopBatch","Home",null,Request.Url.Scheme)/' + id;
+        });
+        attachDT();
+    });
+</script>
+}

@@ -2,6 +2,10 @@
 @{
     ViewBag.Title = "Modify Line "+Model.line.Name;
     Layout = "~/Views/Shared/_Layout2.cshtml";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("saveline").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+    };
 }
 
 @helper ButtonGroup()
@@ -38,7 +42,7 @@
             </div>
         </div>
         <div class="row">
-            @*@(form.FormGroup().CustomControls(buttons.ToArray()))*@
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
         </div>
     }
 </div>
@@ -53,6 +57,10 @@
                 $(this).addClass('active').siblings().removeClass('active');
                 $('i.fa-check-square','#lineform').removeClass('fa-check-square').addClass('fa-square');
                 $('i.fa-2x', $(this)).removeClass('fa-square').addClass('fa-check-square');
+            });
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Lines", "Control", null, Request.Url.Scheme)';
             });
         });
     </script>

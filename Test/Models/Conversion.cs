@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using NPoco;
 
 namespace Test.Models
 {
     public partial class Conversion
     {
-        public string System { get; set; }
-        public string Color { get; set; }
+        [ResultColumn] public string System { get; set; }
+        [ResultColumn] public string SolutionType { get; set; }
+        [ResultColumn] public string Color { get; set; }
         public Line line { get; set; }
         public ProductCode product { get; set; }
     }
@@ -30,6 +32,8 @@ namespace Test.Models
                   ,l.[LineNumber]
                   ,s.[SystemId]
                   ,s.[System]
+                  ,r.[SolutionRecipeId]
+                  ,r.[SolutionType]
                   ,p.[ProductCodeId]
                   ,p.[ProductCode]
                   ,p.[ProductSpec]
@@ -58,9 +62,9 @@ namespace Test.Models
               from [dbo].[Conversion] c
               join [dbo].[Line] l on c.LineId = l.LineId
               left join [dbo].[Extruder] e on e.ExtruderId = c.ExtruderId
-              left join [dbo].[Status] i on i.StatusId = l.StatusId
-              left join [dbo].[ProductCode] p on p.ProductCodeId = l.ProductCodeId
-              left join [dbo].[System] s on s.SystemId = l.SystemId
+              left join [dbo].[ProductCode] p on p.ProductCodeId = c.ProductCodeId
+              left join [dbo].[System] s on s.SystemId = c.SystemId
+              left join [dbo].[SolutionRecipe] r on r.SolutionRecipeId = c.SolutionRecipeId
         ";
 
         public static string _pending = _all + @"

@@ -1,0 +1,15 @@
+﻿@model Test.Models.Conversion
+<tr data-id="@Model.ConversionId">
+    <td>@Model.ConversionId</td>
+    @Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stopbatch'><i class='stopbatch fa fa-power-off'> Stop</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))
+    <td>@Model.line.Name</td>
+    <td>@Model.Scheduled</td>
+    <td>@Model.Started</td>
+    <td>@Model.Completed</td>
+    <th>@Model.product.CodeSpec</th>
+    <th>@Model.Color</th>
+    <th>@Model.FinishFootage</th>
+    <th>@Model.ExemptCode</th>
+    <th>@Model.System</th>
+    <td>@Model.SolutionType</td>
+</tr>
