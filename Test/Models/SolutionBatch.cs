@@ -10,10 +10,35 @@ namespace Test.Models
     public class SolutionBatches
     {
         public List<SolutionBatch> list { get; set; }
-    }
 
+        public SolutionBatches()
+        {
+            using (labDB db = new labDB())
+            {
+                list = db.Fetch<SolutionBatch>(SolutionBatch._all + " order by s.[System] asc");
+            }
+        }
+    }
+    
     public partial class SolutionBatch
     {
+        public static string _all = @"
+            SELECT b.[SolutionBatchId]
+                    ,b.[DateTime]
+                    ,b.[SolutionRecipeId]
+                    ,b.[OperatorId]
+                    ,b.[CoA]
+                    ,s.[SystemId]
+                    ,s.[System]
+		            ,b.[Completed]
+                    ,r.[SolutionType]
+                    ,ROW_NUMBER() OVER(PARTITION BY b.[SystemId] ORDER BY b.[DateTime] DESC) AS Row
+		            ,(select count(t.solutiontestid) from [dbo].[SolutionTest] t where t.SolutionBatchId = b.SolutionBatchId) as TestCount
+                FROM [dbo].[SolutionBatch] b
+                join [dbo].[SolutionRecipe] r on b.[SolutionRecipeId] = r.[SolutionRecipeId]
+	            join [dbo].[System] s on b.[SystemId] = s.[Systemid]
+        ";
+
         [ResultColumn] public string SolutionType { get; set; }
         [ResultColumn] public int Row { get; set; }
         [ResultColumn] public int TestCount { get; set; }

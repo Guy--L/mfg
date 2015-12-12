@@ -29,6 +29,12 @@
             <div class="col-md-12">
                 @form.FormGroup().CustomControls(ButtonGroup()).CustomLabel("Status")
                 @form.FormGroup().DropDownListFor(m => m.line.ProductCodeId, Model.productList).Size(InputSize.Large).Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-gift'></i> Product"))
+                @form.FormGroup().RadioButtonListFor(
+                    m => m.line.SystemId,
+                    m => m.systems,
+                    s => s.SystemId,
+                    s => s.Pretty).SelectedValues(
+                    n => n.SystemId == Model.line.SystemId.Value).DisplayInlineBlock().Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-flask'></i> System"))
             </div>
         </div>
         <div class="row">

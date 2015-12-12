@@ -92,7 +92,7 @@ namespace Test.Models
                         return l;
                     },
                     _lineload + " order by l.LineNumber, l.UnitId");
-                systems = labdb.Fetch<System>(System.Active);
+                systems = labdb.Fetch<System>(System._active);
             }
         }
     }
@@ -116,7 +116,7 @@ namespace Test.Models
             using (var db = new labDB())
             {
                 line = db.Fetch<Line>(Lines._lineload + " where l.lineid = @0", lineid).SingleOrDefault();
-                systems = db.Fetch<System>(System.Current);
+                systems = db.Fetch<System>(System._active);
                 products = db.Fetch<ProductCode>(" order by productcode, productspec");
                 conversions = db.Fetch<Conversion>(" where lineid = @0 and started is null order by scheduled", lineid);
                 statuses = db.Fetch<Status>();

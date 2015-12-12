@@ -84,10 +84,6 @@ namespace Test.Controllers
         public ActionResult SolutionBatches()
         {
             SolutionBatches s = new SolutionBatches();
-            using (labDB db = new labDB())
-            {
-                s.list = db.Fetch<SolutionBatch>(Resources.SolutionBatches);
-            }
             return View(s);
         }
 
