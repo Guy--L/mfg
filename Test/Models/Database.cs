@@ -181,7 +181,7 @@ namespace Test.Models
 		[Column] public DateTime Completed { get; set; } 		
 		[Column] public int FinishFootage { get; set; } 		
 		[Column] public bool Exempt { get; set; } 		
-		[Column] public string ExemptCode { get; set; } 		
+		[Column] public int? ExemptId { get; set; } 		
 		[Column] public string Note { get; set; } 	
 	}
 
@@ -225,6 +225,16 @@ namespace Test.Models
 		[Column] public string Icon { get; set; } 		
 		[Column] public bool ReadNow { get; set; } 		
 		[Column] public string Cells { get; set; } 	
+	}
+
+	[TableName("Exempt")]
+	[PrimaryKey("ExemptId")]
+	[ExplicitColumns]
+    public partial class Exempt : labDB.Record<Exempt>  
+    {		
+		[Column] public int ExemptId { get; set; } 		
+		[Column] public string ExemptCode { get; set; } 		
+		[Column] public int Diameter { get; set; } 	
 	}
 
 	[TableName("OilSTD")]

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using NPoco;
 
 namespace Test.Models
@@ -7,6 +8,7 @@ namespace Test.Models
     {
         [ResultColumn] public string System { get; set; }
         [ResultColumn] public string SolutionType { get; set; }
+        [ResultColumn] public string Code { get; set; }
         [ResultColumn] public string Color { get; set; }
         public Line line { get; set; }
         public ProductCode product { get; set; }
@@ -23,7 +25,8 @@ namespace Test.Models
                   ,c.[Completed]
                   ,c.[FinishFootage]
                   ,c.[Exempt]
-                  ,c.[ExemptCode]
+                  ,x.[ExemptId]
+                  ,x.[ExemptCode]
                   ,c.[Note]
                   ,e.[Color] 
                   ,l.[Stamp]
@@ -64,6 +67,7 @@ namespace Test.Models
               left join [dbo].[Extruder] e on e.ExtruderId = c.ExtruderId
               left join [dbo].[ProductCode] p on p.ProductCodeId = c.ProductCodeId
               left join [dbo].[System] s on s.SystemId = c.SystemId
+              left join [dbo].[Exempt] x on x.ExemptId = c.ExemptId
               left join [dbo].[SolutionRecipe] r on r.SolutionRecipeId = c.SolutionRecipeId
         ";
 
@@ -81,9 +85,37 @@ namespace Test.Models
                     {
                         c.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
                         c.line = l;
+                        
                         return c;
                     },
                     _all);
+            }
+        }
+    }
+
+    public class ConversionView
+    {
+        public Conversion c { get; set; }
+        public List<System> systems { get; set; }
+        public SelectList products { get; set; }
+        public SelectList recipes { get; set; }
+        public SelectList exempt { get; set; }
+        public SelectList extruders { get; set; }
+        public List<Line> lines { get; set; }
+
+        public ConversionView(int id)
+        {
+            var lns = new Lines();
+            lines = lns.lines;
+
+            using (var db = new labDB())
+            {
+                c = id > 0 ? db.SingleOrDefaultById<Conversion>(id) : new Conversion() { SolutionRecipeId = 0 };
+                systems = db.Fetch<System>(System._active);
+                products = new SelectList(db.Fetch<ProductCode>(" order by productcode, productspec"), "ProductCodeId", "CodeSpec", c.ProductCodeId);
+                exempt = new SelectList(db.Fetch<Exempt>(), "ExemptId", "Code", c.ExemptId ?? 1);
+                recipes = new SelectList(db.Fetch<SolutionRecipe>(), "SolutionRecipeId", "SolutionType", c.SolutionRecipeId);
+                extruders = new SelectList(db.Fetch<Extruder>(), "ExtruderId", "Color", c.ExtruderId);
             }
         }
     }

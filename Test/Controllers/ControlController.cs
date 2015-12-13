@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Test.Models;
 
 namespace Test.Controllers
@@ -30,6 +26,12 @@ namespace Test.Controllers
         public ActionResult Conversions()
         {
             var c = new Conversions();
+            return View(c);
+        }
+
+        public ActionResult Conversion(int id)
+        {
+            var c = new ConversionView(id);
             return View(c);
         }
 

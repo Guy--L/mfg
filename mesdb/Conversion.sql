@@ -11,6 +11,6 @@
     [Completed] DATETIME NOT NULL, 
     [FinishFootage] INT NOT NULL, 
     [Exempt] BIT NOT NULL, 
-    [ExemptCode] VARCHAR(20) NULL, 
+    [ExemptId] INT NULL, 
     [Note] VARCHAR(50) NULL
 )

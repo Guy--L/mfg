@@ -11,13 +11,14 @@
 	ClassSuffix = ""; 
 	TrackModifiedColumns = false;
 	IncludeViews = true;
-
+ 
     // Read schema 
 	var tables = LoadTables(); 
 
 	List<string> timesheet = new List<string> {
 		 "Unit"
 		,"Extruder" 
+		,"Exempt"
 		,"Line"
 		,"LineHistory"
 		,"LineStatus" 

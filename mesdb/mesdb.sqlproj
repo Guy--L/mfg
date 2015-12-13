@@ -120,6 +120,7 @@
     <Build Include="Conversion.sql" />
     <Build Include="Status.sql" />
     <Build Include="Line.sql" />
+    <Build Include="Exempt.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />

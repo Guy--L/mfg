@@ -11,7 +11,7 @@
                         <i class="fa fa-plus"></i> Add New Conversion
                     </button>
                 </th>
-                <th></th>
+                <th colspan="5"></th>
             </tr>
             <tr>
                 <th>ID</th>
@@ -37,7 +37,7 @@
 @section scripts {
     <script type="text/javascript">
     function attachDT() {
-        q = $('#sbatches').dataTable({
+        q = $('#conversions').dataTable({
             "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
             "oSearch": { "sSearch": "active" },
             "order": [[3, "asc"]],
@@ -52,16 +52,8 @@
             ]
         });
     }
-    function charter(e) {
-        e.stopPropagation();
-        var chart = $(this).data('button');
-        var id = $(this).closest('tr').data('id');
-        id = (id != '' && typeof id !== 'undefined') ? id : 0;
-        location.href = '@Url.Action("SolutionChart","Home",null,Request.Url.Scheme)/' + id + '/' + chart;
-    }
     $(function () {
-        $('button.chart').on('click', charter);
-        $('#sbatches tbody').on('click', 'tr', function (e) {
+        $('#conversions tbody').on('click', 'tr', function (e) {
             var id = $(this).data('id');
             id = (id != '' && typeof id !== 'undefined') ? id : 0;
             var hyper = $(e.target).parents('.stest').length ? "SolutionTests" : "SBatch";

@@ -1,0 +1,18 @@
+﻿@model Test.Models.ConversionView
+
+@{
+    var width = Model.lines.Count / Model.lines.Select(s => s.LineNumber).Distinct().Count();
+}
+
+@for (int i=0; i < Model.lines.Count/width; i++)
+{
+    <tr>
+        <td>@(i + 1)</td>
+        @foreach (var ls in Model.lines.Skip(i * width).Take(width)) {
+            <td data-id="@ls.LineId" class="sys-@ls.SystemId">
+                <button class="btn btn-xs btn-@ls.status.Color sys-@ls.SystemId" data-id="@ls.LineId">
+                    <i class="fa fa-2x fa-@(ls.LineId==Model.c.LineId?"check-":"")square"></i> @ls.product._ProductCode <i class="fa fa-@ls.status.Icon"></i></button>
+            </td>
+        }        
+    </tr>
+}

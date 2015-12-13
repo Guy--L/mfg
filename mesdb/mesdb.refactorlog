@@ -420,4 +420,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Color" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f2823226-d276-44e6-a9bb-24abe499412c" ChangeDateTime="12/13/2015 14:33:30">
+    <Property Name="ElementName" Value="[dbo].[Exempt].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Exempt]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ExemptId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="16b3e0d3-9d95-47a6-87d3-5ab494de84c9" ChangeDateTime="12/13/2015 14:35:26">
+    <Property Name="ElementName" Value="[dbo].[Conversion].[ExemptCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Conversion]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ExemptId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="db46ef5b-d8ae-4fc9-9c0e-33e3ba85d40e" ChangeDateTime="12/13/2015 15:06:34">
+    <Property Name="ElementName" Value="[dbo].[Exempt].[Code]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Exempt]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ExemptCode" />
+  </Operation>
 </Operations>
