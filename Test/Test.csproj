@@ -340,6 +340,7 @@
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\jquery.datetimepicker.css" />
     <Content Include="Content\loading.gif" />
     <Content Include="Content\t01.png" />
     <Content Include="Content\themes\base\images\animated-overlay.gif" />
@@ -486,6 +487,9 @@
     <Content Include="Scripts\jquery-ui-1.10.4.js" />
     <Content Include="Scripts\jquery-ui-1.10.4.min.js" />
     <Content Include="Scripts\jquery.bootstrap-duallistbox.min.js" />
+    <Content Include="Scripts\jquery.datetimepicker.full.min.js" />
+    <Content Include="Scripts\jquery.datetimepicker.js" />
+    <Content Include="Scripts\jquery.datetimepicker.min.js" />
     <Content Include="Scripts\jquery.fittext.js" />
     <Content Include="Scripts\jquery.inputmask\jquery.inputmask.date.extensions.js" />
     <Content Include="Scripts\jquery.inputmask\jquery.inputmask.extensions.js" />

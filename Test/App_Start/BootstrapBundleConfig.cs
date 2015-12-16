@@ -14,7 +14,7 @@ namespace Test.App_Start
             // When <compilation debug="true" />, MVC4 will render the full readable version. When set to <compilation debug="false" />, the minified version will be rendered automatically
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.js",
-                "~/Scripts/bootstrap-datepicker.js",
+                "~/Scripts/jquery-datetimepicker.js",
                 "~/Scripts/jquery.inputmask/jquery.inputmask.js",
                 "~/Scripts/jquery.inputmask/jquery.inputmask.extensions.js",
                 "~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions.js",

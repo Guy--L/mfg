@@ -9,7 +9,8 @@ namespace Test
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+                        "~/Scripts/jquery-{version}.js"
+                        ,"~/Scripts/jquery.datetimepicker.full.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
@@ -26,6 +27,7 @@ namespace Test
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/datepicker.css",
+                      "~/Content/jquery.datetimepicker.css",
                       "~/Content/site.css",
                       "~/Content/DataTables-1.10.2/css/jquery.dataTables.css",
                       "~/Content/DataTables-1.10.2/css/dataTables.bootstrap.css",

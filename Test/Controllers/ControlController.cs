@@ -23,6 +23,12 @@ namespace Test.Controllers
             return View(ln);
         }
 
+        public ActionResult SaveLine(Line ln)
+        {
+            ln.Save();
+            return RedirectToAction("Lines");
+        }
+
         public ActionResult Conversions()
         {
             var c = new Conversions();
@@ -35,9 +41,16 @@ namespace Test.Controllers
             return View(c);
         }
 
+        public ActionResult SaveConversion(Conversion c)
+        {
+            c.Save();
+            return RedirectToAction("Conversions");
+        }
+
         public ActionResult Products()
         {
-            return View();
+            var p = new Products();
+            return View(p);
         }
 
         public ActionResult Product()

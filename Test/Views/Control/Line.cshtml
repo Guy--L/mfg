@@ -22,7 +22,7 @@
 }
 
 <div class="container">
-    @using (var form = Html.Bootstrap().Begin(new Form("AssignLine", "Control").Id("lineform").Type(FormType.Horizontal).LabelWidthMd(3)))
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveLine", "Control").Id("lineform").Type(FormType.Horizontal).LabelWidthMd(3)))
     {
         @Html.HiddenFor(m => m.line.LineId)
         @Html.HiddenFor(m => m.line.StatusId)
