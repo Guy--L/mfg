@@ -95,19 +95,11 @@ namespace Test.Models
               order by c.Scheduled
         ";
 
-        public Conversions()
+        public Products()
         {
             using (var labdb = new labDB())
             {
-                conversions = labdb.Fetch<Conversion, Line, ProductCode, Conversion>(
-                    (c, l, p) =>
-                    {
-                        c.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
-                        c.line = l;
-
-                        return c;
-                    },
-                    _all);
+                products = labdb.Fetch<ProductCode>(_all);
             }
         }
 
@@ -115,6 +107,14 @@ namespace Test.Models
 
     public class ProductView
     {
+        public ProductCode p { get; set; }
 
+        public ProductView(int id)
+        {
+            using (var db = new labDB())
+            {
+                p = db.SingleOrDefaultById<ProductCode>(id);
+            }
+        }
     }
 }

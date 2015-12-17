@@ -204,9 +204,9 @@
     <Reference Include="TwitterBootstrapMVC.Eyecon.Datepicker.MVC5">
       <HintPath>..\packages\TwitterBootstrapMVC.Eyecon.Datepicker.MVC5.1.0.16\lib\net40\TwitterBootstrapMVC.Eyecon.Datepicker.MVC5.dll</HintPath>
     </Reference>
-    <Reference Include="TwitterBootstrapMVC5">
-      <HintPath>..\packages\TwitterBootstrapMVC5.3.8.0\lib\net40\TwitterBootstrapMVC5.dll</HintPath>
-      <Aliases>global,tbmvc5</Aliases>
+    <Reference Include="TwitterBootstrapMVC5, Version=3.16.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitterBootstrapMVC5.3.16.4\lib\net40\TwitterBootstrapMVC5.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebActivatorEx">
       <HintPath>..\packages\WebActivatorEx.2.0.5\lib\net40\WebActivatorEx.dll</HintPath>
@@ -510,6 +510,7 @@
     <Content Include="Scripts\portHub.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\TwitterBootstrapMvcJs.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="SQL\LinesAll.sql" />
     <Content Include="SQL\LineTestInsert.sql" />
@@ -605,6 +606,9 @@
     <Content Include="Views\Shared\DisplayTemplates\Conversion.cshtml" />
     <Content Include="Views\Control\Conversion.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\LinePick.cshtml" />
+    <Content Include="Views\Control\Products.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ProductCode.cshtml" />
+    <Content Include="Views\Control\Product.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

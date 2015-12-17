@@ -53,9 +53,10 @@ namespace Test.Controllers
             return View(p);
         }
 
-        public ActionResult Product()
+        public ActionResult Product(int id)
         {
-            return View();
+            var p = new ProductView(id);
+            return View(p);
         }
 
     }

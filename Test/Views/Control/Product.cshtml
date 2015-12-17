@@ -1,0 +1,71 @@
+﻿@model Test.Models.ProductView
+
+@{
+    ViewBag.Title = "Product";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("saveproduct").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
+            //Html.Bootstrap().SubmitButton().Text("Ignore").Id("ignoreconversion").Style(ButtonStyle.Info),
+            //Html.Bootstrap().SubmitButton().Text("Start").Id("startconversion").Style(ButtonStyle.Primary)
+    };
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 text-primary"><h3>Edit Product @Model.p._ProductCode @Model.p.ProductSpec Specs for Lab</h3></div>
+    </div>
+@using (var form = Html.Bootstrap().Begin(new Form("SaveProduct", "Control").Id("productform").Type(FormType.Horizontal).LabelWidthXs(0).InputWidthXs(7)))
+        {
+    <div class="row">
+        <div class="col-xs-6">
+            @Html.HiddenFor(m => m.p.ProductCodeId)
+        @Model.p.CodeSpec
+            <table class="table table-responsive">
+                <thead><tr>
+                           <th>Parameter</th>
+                           <th>Min</th>
+                           <th>Aim</th>
+                           <th>Max</th>
+                </tr></thead>
+                <tbody><tr>
+    <td>Reel Moisture</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Min).Label().Class("sr-only") </td>
+    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Aim).Label().Class("sr-only")</td>
+    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Max).Label().Class("sr-only") </td>
+</tr><tr>
+         <td>Glycerin</td>
+         <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Min).Label().Class("sr-only")</td>
+         <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Aim).Label().Class("sr-only")</td>
+         <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Max).Label().Class("sr-only")</td>
+                    </tr>
+                <tr>
+                    <td>Parameter</td>
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Min).Label().Class("sr-only")
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Aim).Label().Class("sr-only")
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Max).Label().Class("sr-only")
+</tr>
+                </tbody>
+            </table>
+</div>
+     </div>
+     <div class="row">
+         <div class="col-xs-12">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+         </div>
+     </div>
+}
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            @*$('#@Html.IdFor(m=>m.c.Scheduled)').datetimepicker({
+                timepicker: false
+            });*@
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Products", "Control", null, Request.Url.Scheme)';
+            });
+        });
+    </script>
+}
