@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using NPoco;
 
@@ -25,6 +26,8 @@ namespace Test.Models
                   ,c.[Completed]
                   ,c.[FinishFootage]
                   ,c.[Exempt]
+                  ,r.[SolutionType]
+                  ,s.[System]
                   ,x.[ExemptId]
                   ,x.[ExemptCode]
                   ,c.[Note]
@@ -34,9 +37,7 @@ namespace Test.Models
                   ,l.[UnitId]
                   ,l.[LineNumber]
                   ,s.[SystemId]
-                  ,s.[System]
                   ,r.[SolutionRecipeId]
-                  ,r.[SolutionType]
                   ,p.[ProductCodeId]
                   ,p.[ProductCode]
                   ,p.[ProductSpec]
@@ -103,6 +104,8 @@ namespace Test.Models
         public SelectList extruders { get; set; }
         public List<Line> lines { get; set; }
 
+        public ConversionView() { }
+
         public ConversionView(int id)
         {
             var lns = new Lines();
@@ -110,7 +113,11 @@ namespace Test.Models
 
             using (var db = new labDB())
             {
-                c = id > 0 ? db.SingleOrDefaultById<Conversion>(id) : new Conversion() { SolutionRecipeId = 0 };
+                c = id > 0 ? db.SingleOrDefaultById<Conversion>(id) : new Conversion() {
+                    SolutionRecipeId = 0,
+                    Started = DateTime.MaxValue,
+                    Completed = DateTime.MaxValue
+                };
                 systems = db.Fetch<System>(System._active);
                 products = new SelectList(db.Fetch<ProductCode>(" order by productcode, productspec"), "ProductCodeId", "CodeSpec", c.ProductCodeId);
                 exempt = new SelectList(db.Fetch<Exempt>(), "ExemptId", "Code", c.ExemptId ?? 1);

@@ -20,7 +20,9 @@
     <div class="row">
         <div class="col-xs-6">
             @Html.HiddenFor(m => m.p.ProductCodeId)
-        @Model.p.CodeSpec
+            @Html.HiddenFor(m => m.p._ProductCode)
+            @Html.HiddenFor(m => m.p.ProductSpec)
+            @Model.p.CodeSpec
             <table class="table table-responsive">
                 <thead><tr>
                            <th>Parameter</th>
@@ -29,22 +31,21 @@
                            <th>Max</th>
                 </tr></thead>
                 <tbody><tr>
-    <td>Reel Moisture</td>
-    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Min).Label().Class("sr-only") </td>
-    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Aim).Label().Class("sr-only")</td>
-    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Max).Label().Class("sr-only") </td>
-</tr><tr>
-         <td>Glycerin</td>
-         <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Min).Label().Class("sr-only")</td>
-         <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Aim).Label().Class("sr-only")</td>
-         <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Max).Label().Class("sr-only")</td>
-                    </tr>
-                <tr>
-                    <td>Parameter</td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Min).Label().Class("sr-only")
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Aim).Label().Class("sr-only")
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Max).Label().Class("sr-only")
-</tr>
+                    <td><b>Reel Moisture</b></td>
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Min).Label().Class("sr-only") </td>
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Aim).Label().Class("sr-only")</td>
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Max).Label().Class("sr-only") </td>
+                </tr><tr>
+                     <td><b>Glycerin</b></td>
+                     <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Min).Label().Class("sr-only")</td>
+                     <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Aim).Label().Class("sr-only")</td>
+                     <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Max).Label().Class("sr-only")</td>
+                </tr><tr>
+                    <td><b>Parameter</b></td>
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Min).Label().Class("sr-only")</td>
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Aim).Label().Class("sr-only")</td>
+                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Max).Label().Class("sr-only")</td>
+                </tr>
                 </tbody>
             </table>
 </div>

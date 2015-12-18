@@ -109,6 +109,7 @@ namespace Test.Models
     {
         public ProductCode p { get; set; }
 
+        public ProductView() { }
         public ProductView(int id)
         {
             using (var db = new labDB())

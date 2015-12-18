@@ -10,8 +10,9 @@
         <td>@(i + 1)</td>
         @foreach (var ls in Model.lines.Skip(i * width).Take(width)) {
             <td data-id="@ls.LineId" class="sys-@ls.SystemId">
-                <button class="btn btn-xs btn-@ls.status.Color sys-@ls.SystemId" data-id="@ls.LineId">
-                    <i class="fa fa-2x fa-@(ls.LineId==Model.c.LineId?"check-":"")square"></i> @ls.product._ProductCode <i class="fa fa-@ls.status.Icon"></i></button>
+                <button class="btn btn-xs btn-@ls.status.Color sys-@ls.SystemId linebtn" data-id="@ls.LineId">
+                    <i class="fa fa-2x fa-@(ls.LineId==Model.c.LineId?"check-":"")square"></i> @ls.product._ProductCode <i class="fa fa-@ls.status.Icon"></i>
+                </button>
             </td>
         }        
     </tr>

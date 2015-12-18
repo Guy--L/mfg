@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using Test.Models;
 
 namespace Test.Controllers
@@ -23,9 +24,11 @@ namespace Test.Controllers
             return View(ln);
         }
 
-        public ActionResult SaveLine(Line ln)
+        [HttpPost]
+        public ActionResult SaveLine(LineView ln)
         {
-            ln.Save();
+            ln.line.Stamp = DateTime.Now;
+            ln.line.Save();
             return RedirectToAction("Lines");
         }
 
@@ -41,6 +44,7 @@ namespace Test.Controllers
             return View(c);
         }
 
+        [HttpPost]
         public ActionResult SaveConversion(Conversion c)
         {
             c.Save();
@@ -59,5 +63,11 @@ namespace Test.Controllers
             return View(p);
         }
 
+        [HttpPost]
+        public ActionResult SaveProduct(ProductCode p)
+        {
+            p.Save();
+            return RedirectToAction("Products","Control");
+        }
     }
 }

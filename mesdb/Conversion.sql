@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Conversion]
 (
-	[ConversionId] INT NOT NULL PRIMARY KEY, 
+	[ConversionId] INT NOT NULL PRIMARY KEY identity, 
     [LineId] INT NOT NULL, 
     [ProductCodeId] INT NOT NULL, 
     [SystemId] INT NOT NULL, 

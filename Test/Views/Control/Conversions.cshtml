@@ -4,18 +4,16 @@
     <br />
     <table id="conversions" class="table table-striped table-hover table-condensed table-bordered">
         <thead>
-            <tr><th></th>
+            <tr>
                 <th colspan="2">List of Conversions</th>
                 <th colspan="4">
                     <button class="btn btn-success btn-xs" id="addconversion">
                         <i class="fa fa-plus"></i> Add New Conversion
                     </button>
                 </th>
-                <th colspan="5"></th>
+                <th colspan="4"></th>
             </tr>
             <tr>
-                <th>ID</th>
-                <th title="Status">Status</th>
                 <th>Line</th>
                 <th>Scheduled</th>
                 <th>Started</th>
@@ -39,17 +37,13 @@
     function attachDT() {
         q = $('#conversions').dataTable({
             "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
-            "oSearch": { "sSearch": "active" },
             "order": [[3, "asc"]],
             "bPaginate": false,
             "oLanguage": {
                 "sInfo": "_TOTAL_ batch(es)",
                 "sInfoFiltered": "(of _MAX_ unfiltered)",
                 "sProcessing": "<i class='fa fa-spinner fa-spin'></i>"
-            },
-            "aoColumnDefs": [
-                { "bVisible": false, "aTargets": [0] }
-            ]
+            }
         });
     }
     $(function () {

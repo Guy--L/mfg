@@ -39,6 +39,8 @@
         <div class="col-xs-6">
             @Html.HiddenFor(m => m.c.ConversionId)
             @Html.HiddenFor(m => m.c.LineId)
+            @Html.HiddenFor(m => m.c.Completed)
+            @Html.HiddenFor(m => m.c.Started)
             @form.FormGroup().TextBoxFor(m => m.c.Scheduled)
             @form.FormGroup().RadioButtonListFor(
                      m => m.c.SystemId,
@@ -78,7 +80,7 @@
                 timepicker: false
             });
             recheck($('#isExempt'));
-            $('button').on('click', function (e) {
+            $('button.linebtn').on('click', function (e) {
                 e.preventDefault();
                 var id = $(this).data('id');
                 var linepost = $('#@Html.IdFor(m => m.c.LineId)');

@@ -108,6 +108,7 @@ namespace Test.Models
         public SelectList productList { get; set; }
         public SelectList systemList { get; set; }
 
+        public LineView() { }
         public LineView(int lineid)
         {
             if (lineid == 0)

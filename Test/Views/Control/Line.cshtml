@@ -15,7 +15,7 @@
         <div class=btn-group>
         @foreach(var b in Model.statuses)
         {
-            @g.Button().Data(new { id = b.StatusId }).Class("btn-" + b.Color).Text(b.Pretty(Model.line.StatusId == b.StatusId))
+            @g.Button().Data(new { id = b.StatusId }).Class("linebtn btn-" + b.Color).Text(b.Pretty(Model.line.StatusId == b.StatusId))
         }
         </div>
     }
@@ -25,6 +25,8 @@
     @using (var form = Html.Bootstrap().Begin(new Form("SaveLine", "Control").Id("lineform").Type(FormType.Horizontal).LabelWidthMd(3)))
     {
         @Html.HiddenFor(m => m.line.LineId)
+        @Html.HiddenFor(m => m.line.UnitId)
+        @Html.HiddenFor(m => m.line.LineNumber)
         @Html.HiddenFor(m => m.line.StatusId)
         <div class="row">
             <div class="col-md-12 text-primary"><h3>Modify Line @Model.line.Name</h3></div>
@@ -49,7 +51,7 @@
 @section scripts{
     <script type="text/javascript">
         $(function () {
-            $('button').on('click', function (e) {
+            $('button.linebtn').on('click', function (e) {
                 e.preventDefault();
                 var id = $(this).data('id');
                 var statusfld = $('#@Html.IdFor(m => m.line.StatusId)');
