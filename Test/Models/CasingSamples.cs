@@ -10,6 +10,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using System.Web.Mvc;
+using NPoco;
 
 namespace Test.Models
 {
@@ -21,7 +22,7 @@ namespace Test.Models
         private static int _type = Reading.TypeOf[casingType];
         private static int oiltype = Reading.TypeOf["Oil"];
 
-        public static string Icon = Reading.IconML(_type);
+        public static string Symbol = Reading.IconML(_type);
 
         public Reading Gly { get; set; }
         public Reading Oil { get; set; }
@@ -45,10 +46,19 @@ namespace Test.Models
         public string _moistspec;
         public string _glyspec;
 
+        public string Tooltip { get; set; }
+        public string System { get; set; }
+        public string StatIcon { get; set; }
+        public string StatColor { get; set; }
+        public string LineName { get; set; }
+
+        public ProductCode product { get; set; }
+
         public string MoistSpec {
             get
             {
-                return _moistspec;
+                if (product == null) return "0<50<100";
+                return product.MoistSpec;
             }
             set
             {
@@ -60,7 +70,8 @@ namespace Test.Models
         public string GlySpec {
             get
             {
-                return _glyspec;
+                if (product == null) return "0<50<100";
+                return product.GlySpec;
             }
             set
             {
@@ -183,6 +194,17 @@ namespace Test.Models
         }
 
         public CasingSample() { }
+
+        public CasingSample(Line ln)
+        {
+            product = ln.product;
+            Gly = new Reading(0, _type);
+            StatColor = ln.status.Color;
+            StatIcon = ln.status.Icon;
+            LineId = ln.LineId;
+            UnitId = ln.UnitId;
+            LineName = ln.Name;
+        }
 
         public CasingSample(int id)
         {
@@ -548,12 +570,13 @@ namespace Test.Models
 
     public class CasingSamplesView
     {
+        public string Symbol { get { return CasingSample.Symbol; } }
+
         private static string _batch = @"
             SELECT s.[SampleId]
                   ,s.[Scheduled]
                   ,s.[Stamp]
                   ,s.[LineId]
-                  ,s.[ProductCodeId]
                   ,s.[Note]
                   ,s.[Tech]
                   ,s.[Completed]
@@ -569,6 +592,11 @@ namespace Test.Models
                   ,s.[NextScheduled]
                   ,l.[UnitId]
 				  ,l.[LineNumber]
+                  ,x.[StatusId]
+                  ,x.[Code]
+                  ,x.[Description]
+                  ,x.[Icon]
+                  ,x.[Color]
                   ,r.[ReadingId]
                   ,r.[LineId]
                   ,r.[Stamp]
@@ -582,9 +610,23 @@ namespace Test.Models
                   ,r.[Operator]
                   ,r.[EditCount]
                   ,r.[Scheduled]
+                  ,p.[ProductCodeId]
+                  ,p.[ProductCode]
+                  ,p.[ProductSpec]
+                  ,p.[ReelMoist_Min]
+                  ,p.[ReelMoist_Aim]
+                  ,p.[ReelMoist_Max]
+                  ,p.[Gly_Min]
+                  ,p.[Gly_Aim]
+                  ,p.[Gly_Max]
+                  ,p.[Oil_Min]
+                  ,p.[Oil_Aim]
+                  ,p.[Oil_Max]
               FROM [dbo].[Sample] s
               left join [dbo].[Reading] r on r.SampleId = s.SampleId
               left join [Line] l on l.LineId = s.LineId
+              left join [Status] x on l.StatusId = x.StatusId
+              left join [ProductCode] p on p.ProductCodeId = s.ProductCodeId
         ";
 
         private static string _bysample = @"
@@ -605,10 +647,6 @@ namespace Test.Models
             set { _tech = value; }
         }
 
-        public string Icon
-        {
-            get { return CasingSample.Icon; }
-        }
         public DateTime ScheduleTime { get; set; }
         public int Julian { get { return ScheduleTime.AddHours(6).DayOfYear; } }
         public int Shift { get { return ((ScheduleTime.AddHours(6).Hour - 1) / 6) + 1; } }
@@ -633,7 +671,7 @@ namespace Test.Models
         public static IEnumerable<CasingSample> blanks;
 
         private static CasingSample peg = null;
-        private static CasingSample Link(Sample s, Reading r)
+        private static CasingSample Link(Sample s, Status x, Reading r, ProductCode p)
         {
             if (peg == null || peg.SampleId != s.SampleId)
             {
@@ -642,6 +680,13 @@ namespace Test.Models
                 if (!string.IsNullOrWhiteSpace(s.Tech))
                     _tech = s.Tech;
             }
+            if (p == null)
+                p = new ProductCode() { ProductCodeId = 0, _ProductCode = "00?00" };
+            peg.product = p;
+            peg.LineName = s.Line;
+            peg.StatColor = x.Color;
+            peg.StatIcon = x.Icon;
+
             return peg.Apply(r);
         }
 
@@ -730,100 +775,46 @@ namespace Test.Models
             return path;
         }
 
-        private ILookup<int, CasingSample> Active(IEnumerable<CasingSample> set)
-        {
-            ScheduleTime = (set != null && set.Count() > 0)? set.First().Scheduled : CasingSample.NextSlot();
-
-            List<CasingSample> complete = new List<CasingSample>();
-            LineStatus.Refresh();
-            for (int line = blanks.First().LineId; line <= blanks.Last().LineId; line++)
-            {
-                var status = LineStatus.lineStatus.Single(n => n.LineId == line);
-
-                var add = set?.Where(s => s.LineId == line).Select(s => s);
-                if (add?.Count() > 0)
-                {
-                    add.All(r => {
-                        r.SampledProduct = status.markup;
-                        r.MoistSpec = status.MoistSpec;
-                        r.GlySpec = status.GlySpec;
-                        r.ProductCodeId = status.ProductCodeId??0;
-                        return true;
-                    });
-                    complete.AddRange(add);
-                    continue;
-                }
-                var c = blanks.Single(b => b.LineId == line);
-                c.Scheduled = ScheduleTime;
-                c.SampledProduct = status.markup;
-                c.ProductCodeId = status.ProductCodeId ?? 0;
-                complete.Add(c);
-            }
-            return complete.ToLookup(k => k.UnitId, v => v);
-        }
-
-        private ILookup<int, CasingSample> Sealed(IEnumerable<CasingSample> set)
-        {
-            if (set == null || !set.Any())
-            {
-                ScheduleTime = CasingSample.NextSlot();
-            }
-            else
-            {
-                ScheduleTime = set.First().Scheduled;
-                ProductCode.Cache(set.Select(s => s.ProductCodeId));
-            }
-            List<CasingSample> complete = new List<CasingSample>();
-            for (int line = blanks.First().LineId; line <= blanks.Last().LineId; line++)
-            {
-                var add = set?.Where(s => s.LineId == line).Select(s => s);
-                if (add?.Count() > 0)
-                {
-                    add.All(r => {
-                        if (r.ProductCodeId == 0)
-                        {
-                            r.SampledProduct = new HtmlString("<td class='Sample product'>00000</td>");
-                            r.MoistSpec = "0<50<100";
-                            r.GlySpec = "0<50<100";
-                            return true;
-                        }
-                        var p = ProductCode.products[r.ProductCodeId];
-                        r.SampledProduct = new HtmlString(p.ProductSpec);
-                        r.MoistSpec = p.MoistSpec;
-                        r.GlySpec = p.GlySpec;
-                        return true;
-                    });
-                    complete.AddRange(add);
-                    continue;
-                }
-                var c = blanks.Single(b => b.LineId == line);
-                c.Scheduled = ScheduleTime;
-                c.SampledProduct = new HtmlString("<td class='Sample product'>00000</td>");
-                complete.Add(c);
-            }
-            return complete.ToLookup(k => k.UnitId, v => v);
-        }
-
         public CasingSamplesView(int id)
         {
             allCompleted = false;
             IEnumerable<CasingSample> sset = null;
+            List<CasingSample> complete = new List<CasingSample>();
+            var lines = new Lines();
 
             using (labDB d = new labDB())
             {
-                peg = null;
-                products = new SelectList(d.Fetch<ProductCode>(" order by productcode, productspec"), "ProductCodeId", "CodeSpec");
                 if (id == 0)
                 {
-                    var stamp = CasingSample.NextSlot();
-                    var time = stamp.ToString("yyyy-MM-dd HH:mm:ss");
-                    sset = d.Fetch<Sample, Reading, CasingSample>(Link, _batch + _bytime, time);
+                    ScheduleTime = CasingSample.NextSlot();
+                    var time = ScheduleTime.ToString("yyyy-MM-dd HH:mm:ss");
+                    sset = d.Fetch<Sample, Status, Reading, ProductCode, CasingSample>(Link, _batch + _bytime, time);
                 }
                 else
-                    sset = d.Fetch<Sample, Reading, CasingSample>(Link, _batch + _bysample, id);
+                {
+                    sset = d.Fetch<Sample, Status, Reading, ProductCode, CasingSample>(Link, _batch + _bysample, id);
+                    ScheduleTime = sset.First().Scheduled;
+                }
             }
             allCompleted = sset != null && sset.Count() > 0 && !sset.Any(s => (s.Completed ?? DateTime.MaxValue) > DateTime.Now);
-            samples = allCompleted ? Sealed(sset) : Active(sset);
+
+            if (allCompleted)
+            {
+                samples = sset.ToLookup(k => k.UnitId, v => v);
+                return;
+            }
+                    
+            foreach (var line in lines.lines)
+            {
+                var add = sset?.Where(s => s.LineId == line.LineId).Select(s => s);
+                if (add?.Count() > 0)
+                {
+                    complete.AddRange(add);
+                    continue;
+                }
+                complete.Add(new CasingSample(line));
+            }
+            samples = complete.ToLookup(k => k.UnitId, v => v);
         }
 
         private static string _complete = @"

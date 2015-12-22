@@ -154,17 +154,6 @@ namespace Test.Models
 		[Column] public string Name { get; set; } 	
 	}
 
-	[TableName("Extruder")]
-	[PrimaryKey("ExtruderId", AutoIncrement=false)]
-	[ExplicitColumns]
-    public partial class Extruder : labDB.Record<Extruder>  
-    {		
-		[Column] public int ExtruderId { get; set; } 		
-		[Column] public int ExtruderType { get; set; } 		
-		[Column] public int Nozzle { get; set; } 		
-		[Column] public string Color { get; set; } 	
-	}
-
 	[TableName("Sample")]
 	[PrimaryKey("SampleId")]
 	[ExplicitColumns]
@@ -259,6 +248,17 @@ namespace Test.Models
 		[Column] public DateTime Stamp { get; set; } 		
 		[Column] public string UserId { get; set; } 		
 		[Column] public string Delta { get; set; } 	
+	}
+
+	[TableName("Extruder")]
+	[PrimaryKey("ExtruderId")]
+	[ExplicitColumns]
+    public partial class Extruder : labDB.Record<Extruder>  
+    {		
+		[Column] public int ExtruderId { get; set; } 		
+		[Column] public int ExtruderType { get; set; } 		
+		[Column] public int Nozzle { get; set; } 		
+		[Column] public string Color { get; set; } 	
 	}
 
 	[TableName("Reading")]

@@ -2,7 +2,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-12 text-primary">@Html.Raw(Model.Icon) Casing Samples from <b>@Model.ScheduleTime.ToString("dd-MMM-yy hh:mm tt") (@Model.JulianShift)</b></div>
+        <div class="col-md-12 text-primary">@Html.Raw(Model.Symbol) Casing Samples from <b>@Model.ScheduleTime.ToString("dd-MMM-yy hh:mm tt") (@Model.JulianShift)</b></div>
     </div>
     <hr />
     <div class="row form-inline">
@@ -33,7 +33,6 @@
                             <th style="width:15px;" class="Sample text-primary" title="Click on line to add sample"></th>
                             <th style="width:35px;" class="linecol"><i class="fa fa-map-marker text-primary"></i></th>
                             <th style="width:150px;" class="Sample text-primary">Product</th>
-                            <th style="width:70px;" class="Sample text-primary"><i class="fa fa-anchor"></i></th>
                             <th style="width:15px;" class="Sample text-primary">Reel</th>
                             <th style="width:160px;" class="Sample text-primary">Feet</th>
                             <th style="width:50px;" class="Sample text-primary">Del</th>
@@ -77,33 +76,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" id="savenote" class="btn btn-primary" data-id="">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-@Html.HiddenFor(m => m.productCode)
-<div class="modal fade" id="CodeModal" tabindex="-1"
-     role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">
-                        &times;
-                    </span><span class="sr-only">
-                        Close
-                    </span>
-                </button>
-                <h4 class="modal-title" id="CodeLabel">
-                    Product Code for Line 
-                </h4>
-            </div>
-            <div class="modal-body">
-                @Html.Bootstrap().DropDownListFor(m=>m.productCode, Model.products).Id("recode").Class("popup")
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="savecode" class="btn btn-primary" data-id="">Save</button>
             </div>
         </div>
     </div>
@@ -176,7 +148,7 @@
             var $elem = $('#' + pageid);
             var $row = $elem.closest('tr');
             $row.data('id', sid);
-            
+
             $elem.val(value);
             $elem.siblings('i.noter').removeClass('fa-file-o').removeClass('fa-file-text').addClass(value === '' ? 'fa-file-o' : 'fa-file-text');
             $elem.parent().attr('title', value);
@@ -248,7 +220,7 @@
                 if (margin < 0) { low = 0 + lohi[0]; high = 0 + lohi[2]; }
                 else { low = high = 0 + lohi[1]; }
 
-                if (actual < 0 + lohi[0] || 0 + lohi[2] < actual) 
+                if (actual < 0 + lohi[0] || 0 + lohi[2] < actual)
                     cellstatus = 'oospec';
                 else if ((actual < low - (margin / 10) || high + (margin / 10) < actual))
                     cellstatus = 'oocontrol';
@@ -393,6 +365,10 @@
                 return false;
             }
         });
+        $('button.productbtn').on('click', function () {
+            var id = $(this).closest('tr').data('lineid');
+            location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
+        });
         $('button.sampled').on('click', function () {
             var $other = $(this).siblings().eq(0);
             var up = $other.hasClass('lineup');
@@ -445,29 +421,8 @@
             modal.find('.modal-title').text('Note for ' + $('td.linecol', $row).text());
             modal.find('.modal-body input').val(note);
         });
-        $('#CodeModal').on('show.bs.modal', function (event) {
-            var modal = $(this);
-            var alnk = $(event.relatedTarget); // Button that triggered the modal
-            var $row = alnk.closest('tr');
-            var pid = $row.data('productcodeid');
-            var button = $('#savecode');
-            $('#recode').val(pid);
-            var sid = $row.data('id');
-            if (sid == "") {
-                $('#CodeModal').modal('toggle');
-                modal.find('.modal-title').text('Please enter sample data before changing product on line');
-                return;
-            }
-            $row.addClass('recoding');
-            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-            modal.find('.modal-title').text('Product Code for ' + $('td.linecol', $row).text());
-        });
         $('#NoteModal').on('shown.bs.modal', function () {
             $('input#note').focus();
-        });
-        $('#CodeModal').on('shown.bs.modal', function () {
-            $('input#recode').focus();
         });
     });
 </script>

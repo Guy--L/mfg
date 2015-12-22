@@ -24,6 +24,7 @@
                 <th>Exempt</th>
                 <th>System</th>                
                 <th>Solution Type</th>
+                <th><i>Action</i></th>
             </tr>
         </thead>
         <tbody>
@@ -48,25 +49,11 @@
     }
     $(function () {
         $('#conversions tbody').on('click', 'tr', function (e) {
-            var id = $(this).data('id');
-            id = (id != '' && typeof id !== 'undefined') ? id : 0;
-            var hyper = $(e.target).parents('.stest').length ? "SolutionTests" : "SBatch";
-            location.href = '@Url.Action("stub","Home",null,Request.Url.Scheme)/'.replace('stub', hyper) + id;
+            var id = $(this).closest('tr').data('id');
+            location.href = '@Url.Action("Conversion","Control",null,Request.Url.Scheme)/'+id;
         });
         $('#addconversion').on('click', function () {
             location.href = '@Url.Action("Conversion","Control",null,Request.Url.Scheme)/0';
-        });
-        $('.stest').on('click', function (e) {
-            e.preventDefault();
-            var id = $(this).data('id');
-            id = (id != '' && typeof id !== 'undefined') ? id : 0;
-            location.href = '@Url.Action("SolutionTests","Home",null,Request.Url.Scheme)/' + id;
-        });
-        $('.stopbatch').on('click', function (e) {
-            e.stopPropagation();
-            var id = $(this).closest('tr').data('id');
-            id = (id != '' && typeof id !== 'undefined') ? id : 0;
-            location.href = '@Url.Action("StopBatch","Home",null,Request.Url.Scheme)/' + id;
         });
         attachDT();
     });

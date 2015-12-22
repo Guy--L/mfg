@@ -12,7 +12,7 @@
 	TrackModifiedColumns = false;
 	IncludeViews = true;
  
-    // Read schema 
+    // Read schema
 	var tables = LoadTables();  
 
 	List<string> timesheet = new List<string> {
