@@ -1,7 +1,14 @@
 ﻿@model Test.Models.ProductCode
+@{
+    var spec = "";
+    if (Model.ProductSpec != null )
+    {
+        spec = Model.ProductSpec;
+    }
+}
 <tr data-id="@Model.ProductCodeId">
     <td>@Model._ProductCode.Trim()</td>
-    <td>@Model.ProductSpec.Trim()</td>
+    <td>@spec</td>
     <td>@Model.LineName</td>
     <td>@Model.Scheduled</td>
     <td>@Model.ReelMoist_Min</td>

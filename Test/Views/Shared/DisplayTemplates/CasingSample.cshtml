@@ -4,14 +4,23 @@
     var glyid = Model.Gly == null ? 0 : Model.Gly.ReadingId;
     var oilid = Model.Oil == null ? 0 : Model.Oil.ReadingId;
     var note = string.IsNullOrWhiteSpace(Model.Note) ? "fa-file-o" : "fa-file-text";
-    var moistpct = Model.MoistPct.HasValue?Model.MoistPct.Value.ToString("n1"):null;
-    var glypct = Model.GlyPct.HasValue?Model.GlyPct.Value.ToString("n1"):null;
+    var moistpct = Model.MoistPct.HasValue ? Model.MoistPct.Value.ToString("n1") : null;
+    var glypct = Model.GlyPct.HasValue ? Model.GlyPct.Value.ToString("n1") : null;
+
+    var pid = 0;
+    var pcd = "00?00";
+
+    if (Model.product != null)
+    {
+        pid = Model.product.ProductCodeId;
+        pcd = Model.product._ProductCode;
+    }
 }
 
 <tr data-id="@Model.SampleId" 
     data-lineid="@Model.LineId" 
     data-readingid="@glyid" 
-    data-productcodeid="@Model.product.ProductCodeId" 
+    data-productcodeid="@Model.product?.ProductCodeId" 
     class="casingsample @Model.SpecStatus sys-@Model.System">
     <td   class="Sample lineadd text-primary"><i class="fa fa-plus-circle" title="Click on line to add sample"></i></td>
     <td   class="linecol text-primary">@Model.LineName</td>

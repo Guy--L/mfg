@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[ProductCode] (
     [ProductCodeId]    INT            IDENTITY (1, 1) NOT NULL,
-    [ProductCode]      NVARCHAR (6)   NULL,
+    [ProductCode]      NVARCHAR (7)   NULL,
     [ProductSpec]      NVARCHAR (6)   NULL,
     [PlastSpec]        NVARCHAR (5)   NULL,
     [WetLayflat_Aim]   FLOAT (53)     NULL,

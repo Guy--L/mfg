@@ -18,7 +18,7 @@ namespace Test.Models
 
         public HtmlString CodeSpec { get {
                 return new HtmlString(string.Format("{0,8} {1}  \t........\t{2}<{3}<{4}\t{5}<{6}<{7}\t{8}<{9}<{10}",
-                    _ProductCode.Trim(), ProductSpec.Trim(),
+                    _ProductCode.Trim(), ProductSpec?.Trim()??"",
                     ReelMoist_Min, ReelMoist_Aim, ReelMoist_Max,
                     Gly_Min, Gly_Aim, Gly_Max,
                     Oil_Min, Oil_Aim, Oil_Max)); } }
