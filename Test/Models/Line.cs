@@ -38,10 +38,10 @@ namespace Test.Models
         ";
 
         public static string _lineload = @"
-            SELECT l.[Stamp]
-                  ,l.[LineId]
+            SELECT l.[LineId]
                   ,l.[UnitId]
                   ,l.[LineNumber]
+                  ,l.[Stamp]
                   ,i.[StatusId]
                   ,i.[Code]
                   ,i.[Icon]

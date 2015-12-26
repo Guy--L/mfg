@@ -20,13 +20,13 @@
 <tr data-id="@Model.SampleId" 
     data-lineid="@Model.LineId" 
     data-readingid="@glyid" 
-    data-productcodeid="@Model.product?.ProductCodeId" 
+    data-productcodeid="@pid" 
     class="casingsample @Model.SpecStatus sys-@Model.System">
     <td   class="Sample lineadd text-primary"><i class="fa fa-plus-circle" title="Click on line to add sample"></i></td>
     <td   class="linecol text-primary">@Model.LineName</td>
     <td class="Sample product line-@Model.LineId" title='@Model.Tooltip' data-moist='@Model.MoistSpec' data-glyc='@Model.GlySpec'>
         <button class="btn btn-xs btn-@Model.StatColor sys-@Model.SystemId productbtn" data-id="@Model.LineId" tabindex="-1">
-            <i class="fa fa-@Model.StatIcon"></i> @Model.product._ProductCode
+            <i class="fa fa-@Model.StatIcon"></i> @pcd
         </button>
     </td>
     <td class="Sample">@Html.Bootstrap().TextBoxFor(m => m.ReelNumber).Data(new { inputmask = Model.InputMask("n2") }).Class("reel").Label().Class("sr-only")</td>

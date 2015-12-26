@@ -39,7 +39,7 @@ namespace Test
             Unit.ips = ConfigurationManager.AppSettings["unitstations"].Split(',');
             Unit.setLineIds();
 
-            LineStatus.Initialize();
+            //LineStatus.Initialize();
             //    LineTestView.Lines = db.Fetch<Line>();
         }
 

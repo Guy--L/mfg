@@ -123,13 +123,13 @@ namespace Test.Models
 
         public bool OutOfSpec(double? actual, double[] spec)
         {
-            if (!actual.HasValue) return false;
+            if (!actual.HasValue || spec == null) return false;
             return actual.Value < spec[0] || spec[2] < actual.Value;
         }
 
         public bool OutOfControl(double? actual, double[] spec, int margin)
         {
-            if (!actual.HasValue) return false;
+            if (!actual.HasValue || spec == null) return false;
             double? low, high;
             if (margin < 0) { low = spec[0]; high = spec[2]; }
             else { low = high = spec[1]; }
@@ -809,6 +809,12 @@ namespace Test.Models
                 var add = sset?.Where(s => s.LineId == line.LineId).Select(s => s);
                 if (add?.Count() > 0)
                 {
+                    add.Any(n =>
+                    {
+                        n.ProductCodeId = line.ProductCodeId;
+                        n.product = line.product;
+                        return false;
+                    });
                     complete.AddRange(add);
                     continue;
                 }
