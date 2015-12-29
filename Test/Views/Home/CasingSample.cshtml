@@ -217,13 +217,15 @@
                 var lohi = spect.split('<');
                 var low, high;
 
-                if (margin < 0) { low = 0 + lohi[0]; high = 0 + lohi[2]; }
-                else { low = high = 0 + lohi[1]; }
+                if (margin < 0) { low = parseFloat(lohi[0]); high = parseFloat(lohi[2]); }
+                else { low = high = parseFloat(lohi[1]); }
 
-                if (actual < 0 + lohi[0] || 0 + lohi[2] < actual)
+                if (actual < low || high < actual)
                     cellstatus = 'oospec';
                 else if ((actual < low - (margin / 10) || high + (margin / 10) < actual))
                     cellstatus = 'oocontrol';
+
+                console.log('restatus cellstatus: ' + cellstatus+'.');
             }
             spec.removeClass('oocontrol').removeClass('oospec').addClass(cellstatus);
             var row = spec.closest('tr');

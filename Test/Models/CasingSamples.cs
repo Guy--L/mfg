@@ -52,7 +52,17 @@ namespace Test.Models
         public string StatColor { get; set; }
         public string LineName { get; set; }
 
-        public ProductCode product { get; set; }
+        public ProductCode _product; 
+        public ProductCode product
+        {
+            get { return _product; }
+            set
+            {
+                _product = value;
+                MoistSpec = _product.MoistSpec;
+                GlySpec = _product.GlySpec;
+            }
+        }
 
         public string MoistSpec {
             get
@@ -62,9 +72,12 @@ namespace Test.Models
             }
             set
             {
-                _moistspec = value;
-                if (_moist == null)
-                    _moist = _moistspec.Split('<').Select(i => double.Parse(i)).ToArray();
+                var newm = value;
+                if (_moist == null || newm != _moistspec)
+                {
+                    _moist = newm.Split('<').Select(i => string.IsNullOrWhiteSpace(i) ? 0.0 : double.Parse(i)).ToArray();
+                    _moistspec = newm;
+                }
             }
         }
         public string GlySpec {
@@ -75,9 +88,12 @@ namespace Test.Models
             }
             set
             {
-                _glyspec = value;
-                if (_glyc == null)
-                    _glyc = _glyspec.Split('<').Select(i => double.Parse(i)).ToArray();
+                var newg = value;
+                if (_glyc == null || newg != _glyspec)
+                {
+                    _glyc = newg.Split('<').Select(i => string.IsNullOrWhiteSpace(i) ? 0.0 : double.Parse(i)).ToArray();
+                    _glyspec = newg;
+                }
             }
         }
         public string MoistStatus
@@ -108,6 +124,7 @@ namespace Test.Models
                     speclass = "oocontrol";
                 if (OutOfSpec(MoistPct, _moist) || OutOfSpec(GlyPct, _glyc))
                     speclass = "oospec";
+
                 return speclass;
             }
         }
@@ -225,6 +242,20 @@ namespace Test.Models
             ParameterId = _type;
         }
 
+        public void Select()
+        {
+            var time = Scheduled.ToString("yyyy-MM-dd HH:mm:ss");
+
+            var s = new Sample();
+            using (labDB d = new labDB())
+            {
+                s = d.SingleOrDefault<Sample>(" where scheduled = @0 and lineid = @1", time, LineId);
+            }
+            if (s != null) 
+                this.InjectFrom(s);
+            return;
+        }
+
         public CasingSample(IRow r, DateTime sampled, string tech) : base(0)
         {
             Stamp = sampled;
@@ -244,6 +275,8 @@ namespace Test.Models
                 return;
             }
             LineId = Unit.lineids[(int)line];
+
+            Select(); 
 
             var meter = r.GetCell(1).StringCellValue.Replace("--","-").Split('-');
 
@@ -281,8 +314,9 @@ namespace Test.Models
             }
 
             try
-            {
-                Gly = new Reading(0, _type);
+            {   // replace if already in database
+
+                Gly = new Reading(SampleId, _type);
                 Gly.SampleId = SampleId;
                 Moist = (int)(r.GetCell(3).NumericCellValue * Gly.factor[0]);
                 GlyWt = (int)(r.GetCell(6).NumericCellValue * Gly.factor[1]);
@@ -782,6 +816,11 @@ namespace Test.Models
             List<CasingSample> complete = new List<CasingSample>();
             var lines = new Lines();
 
+            foreach (var ln in lines.lines)
+            {
+                Debug.WriteLine("line " + ln.UnitId + ln.LineNumber + ": " + ln.product.MoistSpec + ", " + ln.product.GlySpec);
+            }
+
             using (labDB d = new labDB())
             {
                 if (id == 0)
@@ -813,6 +852,8 @@ namespace Test.Models
                     {
                         n.ProductCodeId = line.ProductCodeId;
                         n.product = line.product;
+                        n.MoistSpec = line.product.MoistSpec;
+                        n.GlySpec = line.product.GlySpec;
                         return false;
                     });
                     complete.AddRange(add);

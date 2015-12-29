@@ -122,8 +122,18 @@ namespace Test.Models
 
         public Reading() { }
         
-        public Reading(int id) : this(id<0?0:id, id<0?-id : 0)
-        {}
+        public Reading(int sampleid, int parameterid)
+        {
+            Reading nr = null;
+            using (labDB d = new labDB())
+            {
+                nr = d.SingleOrDefault<Reading>(" where sampleid = @0", sampleid);
+            }
+            ParameterId = parameterid;
+            parameter();
+            if (nr != null)
+                this.InjectFrom(nr);
+        }
 
         public Reading(int id, string name) : this(id, TypeOf[name])
         {}
