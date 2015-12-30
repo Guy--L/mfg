@@ -13,6 +13,19 @@ namespace Test.Models
         [ResultColumn] public string Color { get; set; }
         public Line line { get; set; }
         public ProductCode product { get; set; }
+
+        public void Future()
+        {
+            var diff = DateTime.MaxValue - Completed;
+            Completed = (diff.TotalMinutes < 1) ? DateTime.MaxValue : Completed;
+
+            if (!Started.HasValue) Started = DateTime.MaxValue;
+            else
+            {
+                diff = DateTime.MaxValue - Started.Value;
+                Started = (diff.TotalMinutes < 1) ? DateTime.MaxValue : Started;
+            }
+        }
     }
 
     public class Conversions
@@ -77,6 +90,7 @@ namespace Test.Models
               order by c.Scheduled
         ";
 
+
         public Conversions()
         {
             using (var labdb = new labDB())
@@ -86,7 +100,7 @@ namespace Test.Models
                     {
                         c.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
                         c.line = l;
-                        
+                        c.Future();
                         return c;
                     },
                     _all);
@@ -118,6 +132,8 @@ namespace Test.Models
                     Started = DateTime.MaxValue,
                     Completed = DateTime.MaxValue
                 };
+                if (c != null || id > 0)
+                    c.Future();
                 systems = db.Fetch<System>(System._active);
                 products = new SelectList(db.Fetch<ProductCode>(" order by productcode, productspec"), "ProductCodeId", "CodeSpec", c.ProductCodeId);
                 exempt = new SelectList(db.Fetch<Exempt>(), "ExemptId", "Code", c.ExemptId ?? 1);

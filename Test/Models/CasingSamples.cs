@@ -823,6 +823,7 @@ namespace Test.Models
 
             using (labDB d = new labDB())
             {
+                products = new SelectList(d.Fetch<ProductCode>(" order by productcode, productspec"), "ProductCodeId", "CodeSpec");
                 if (id == 0)
                 {
                     ScheduleTime = CasingSample.NextSlot();

@@ -25,7 +25,7 @@
     <td   class="Sample lineadd text-primary"><i class="fa fa-plus-circle" title="Click on line to add sample"></i></td>
     <td   class="linecol text-primary">@Model.LineName</td>
     <td class="Sample product line-@Model.LineId" title='@Model.Tooltip' data-moist='@Model.MoistSpec' data-glyc='@Model.GlySpec'>
-        <button class="btn btn-xs btn-@Model.StatColor sys-@Model.SystemId productbtn" data-id="@Model.LineId" tabindex="-1">
+        <button class="btn btn-xs btn-@Model.StatColor sys-@Model.SystemId productbtn" data-id="@Model.LineId" data-toggle="modal" data-target="#CodeModal" tabindex="-1">
             <i class="fa fa-@Model.StatIcon"></i> @pcd
         </button>
     </td>

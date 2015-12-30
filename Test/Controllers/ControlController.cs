@@ -67,7 +67,7 @@ namespace Test.Controllers
         public ActionResult SaveProduct(ProductCode p)
         {
             p.Save();
-            return RedirectToAction("Products","Control");
+            return RedirectToAction("Products", "Control");
         }
     }
 }

@@ -1,15 +1,23 @@
 ﻿@model Test.Models.Conversion
+
+@{ 
+    var isStarted = !(Model.Started.Value == DateTime.MaxValue);
+    var isCompleted = !(Model.Completed == DateTime.MaxValue);
+    var started = (!Model.Started.HasValue || !isStarted)?"":Model.Started.Value.ToString("MM-dd HH:mm");
+    var completed = (Model.Completed == null || !isCompleted) ? "" : Model.Completed.ToString("MM-dd HH:mm");
+    var diff = Model.Completed - DateTime.MaxValue;
+}
 <tr data-id="@Model.ConversionId">
     @*@Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stopbatch'><i class='stopbatch fa fa-power-off'> Stop</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))*@
     <td>@Model.line.Name</td>
-    <td>@Model.Scheduled</td>
-    <td>@Model.Started</td>
-    <td>@Model.Completed</td>
+    <td>@Model.Scheduled.ToString("yy-MM-dd")</td>
+    <td>@started</td>
+    <td>@completed</td>
     <th>@Model.product._ProductCode @Model.product.ProductSpec</th>
     <th>@Model.Color</th>
     <th>@Model.FinishFootage</th>
     <th>@Model.Exempt</th>
     <th>@Model.System</th>
     <td>@Model.SolutionType</td>
-    <td></td>
+    <td>@diff.TotalMinutes</td>
 </tr>

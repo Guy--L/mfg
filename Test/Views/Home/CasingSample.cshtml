@@ -80,6 +80,33 @@
         </div>
     </div>
 </div>
+@Html.HiddenFor(m => m.productCode)
+<div class="modal fade" id="CodeModal" tabindex="-1"
+     role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">
+                        &times;
+                    </span><span class="sr-only">
+                        Close
+                    </span>
+                </button>
+                <h4 class="modal-title" id="CodeLabel">
+                    Product Code for Line
+                </h4>
+            </div>
+            <div class="modal-body">
+                @Html.Bootstrap().DropDownListFor(m => m.productCode, Model.products).Id("recode").Class("popup")
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="savecode" class="btn btn-primary" data-id="">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts{
 <script src="~/Scripts/jquery.signalR-2.2.0.min.js" type="text/javascript"></script>
@@ -331,7 +358,9 @@
             var parsed = txt.split('\t');
             var reparsed = parsed[0].trim().split(' ');
 
-            var $prd = $('td.product', $row);
+            console.log('reparsed: ' + reparsed);
+
+            var $prd = $('button.productbtn', $row);
             $prd.html('');
             $prd.append(reparsed[0]);
 
@@ -367,10 +396,10 @@
                 return false;
             }
         });
-        $('button.productbtn').on('click', function () {
+        @*$('button.productbtn').on('click', function () {
             var id = $(this).closest('tr').data('lineid');
             location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
-        });
+        });*@
         $('button.sampled').on('click', function () {
             var $other = $(this).siblings().eq(0);
             var up = $other.hasClass('lineup');
@@ -423,8 +452,29 @@
             modal.find('.modal-title').text('Note for ' + $('td.linecol', $row).text());
             modal.find('.modal-body input').val(note);
         });
+        $('#CodeModal').on('show.bs.modal', function (event) {
+            var modal = $(this);
+            var alnk = $(event.relatedTarget); // Button that triggered the modal
+            var $row = alnk.closest('tr');
+            var pid = $row.data('productcodeid');
+            var button = $('#savecode');
+            $('#recode').val(pid);
+            var sid = $row.data('id');
+            if (sid == "") {
+                $('#CodeModal').modal('toggle');
+                modal.find('.modal-title').text('Please enter sample data before changing product on line');
+                return;
+            }
+            $row.addClass('recoding');
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            modal.find('.modal-title').text('Product Code for ' + $('td.linecol', $row).text());
+        });
         $('#NoteModal').on('shown.bs.modal', function () {
             $('input#note').focus();
+        });
+        $('#CodeModal').on('shown.bs.modal', function () {
+            $('input#recode').focus();
         });
     });
 </script>
