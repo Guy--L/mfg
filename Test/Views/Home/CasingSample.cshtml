@@ -244,7 +244,7 @@
                 var lohi = spect.split('<');
                 var low, high;
 
-                if (margin < 0) { low = parseFloat(lohi[0]); high = parseFloat(lohi[2]); }
+                if (margin < 0) { low = parseFloat(lohi[0]); high = parseFloat(lohi[2]); margin = -margin; }
                 else { low = high = parseFloat(lohi[1]); }
 
                 if (actual < low || high < actual)

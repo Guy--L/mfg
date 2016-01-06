@@ -35,7 +35,7 @@
                 {
                     @form.FormGroup().TextBoxFor(m => m.t.ConsolepH).Class("input-sm n32").WidthLg(3).Label().LabelText("Console pH")
                 }
-                @form.FormGroup().TextBoxFor(m => m.t.Viscoscity).Class("input-sm n2").WidthLg(3)
+                @form.FormGroup().TextBoxFor(m => m.t.Viscoscity).Class("input-sm n3").WidthLg(3)
                 @form.FormGroup().TextBoxFor(m => m.t.Conductivity).Class("input-sm n4").WidthLg(3)
                 @form.FormGroup().TextBoxFor(m => m.t.Hypochlorite).Class("input-sm n21").WidthLg(3)
                 @if (!Model.t.isGr) { 
@@ -62,6 +62,7 @@
             $('input.n54').inputmask('decimal', { digits: 4, integerDigits: 1 });
             $('input.n4').inputmask('decimal', { digits: 0, integerDigits: 4 });
             $('input.n2').inputmask('decimal', { digits: 0, integerDigits: 2 });
+            $('input.n3').inputmask('decimal', { digits: 0, integerDigits: 3 });
             $('input.n21').inputmask('decimal', { digits: 1, integerDigits: 2 });
 
             $('#cancel').on('click', function (e) {

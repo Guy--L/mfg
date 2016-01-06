@@ -103,6 +103,12 @@ namespace Test.Models
                 string speclass = "";
                 if (OutOfControl(MoistPct, _moist, -5)) speclass = "oocontrol";
                 if (OutOfSpec(MoistPct, _moist)) speclass = "oospec";
+                Debug.Write("line " + LineName + " moisture: " + speclass + ". "+MoistPct + " in ");
+                foreach (var d in _moist)
+                {
+                    Debug.Write(d + " < ");
+                }
+                Debug.WriteLine(".");
                 return speclass;
             }
         }
@@ -148,9 +154,13 @@ namespace Test.Models
         {
             if (!actual.HasValue || spec == null) return false;
             double? low, high;
-            if (margin < 0) { low = spec[0]; high = spec[2]; }
+            if (margin < 0) {
+                low = spec[0];
+                high = spec[2];
+            }
             else { low = high = spec[1]; }
-            return actual.Value < low - (margin / 10) || high + (margin / 10) < actual.Value;
+            Debug.WriteLine("actual: " + actual.Value + ", low: " + (low - ((double)margin / 10.0)) + ", high: " + (high + ((double)margin / 10.0)));
+            return actual.Value < low - ((double)margin / 10.0) || high + ((double)margin / 10.0) < actual.Value;
         }
 
         public double? GlyPct {
@@ -815,11 +825,6 @@ namespace Test.Models
             IEnumerable<CasingSample> sset = null;
             List<CasingSample> complete = new List<CasingSample>();
             var lines = new Lines();
-
-            foreach (var ln in lines.lines)
-            {
-                Debug.WriteLine("line " + ln.UnitId + ln.LineNumber + ": " + ln.product.MoistSpec + ", " + ln.product.GlySpec);
-            }
 
             using (labDB d = new labDB())
             {

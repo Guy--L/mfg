@@ -5,7 +5,14 @@
     var isCompleted = !(Model.Completed == DateTime.MaxValue);
     var started = (!Model.Started.HasValue || !isStarted)?"":Model.Started.Value.ToString("MM-dd HH:mm");
     var completed = (Model.Completed == null || !isCompleted) ? "" : Model.Completed.ToString("MM-dd HH:mm");
-    var diff = Model.Completed - DateTime.MaxValue;
+    var actions = "";
+    if (!isStarted)
+    {
+        actions += "<button class='btn btn-warning'><i class='fa fa-'></i> Ignore</button>";
+        actions += "<button class='btn btn-success'><i class='fa fa-play'></i> Start</button>";
+        actions += "<button class='btn btn-success'><i class='fa fa-play'></i> Start</button>";
+    }
+
 }
 <tr data-id="@Model.ConversionId">
     @*@Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stopbatch'><i class='stopbatch fa fa-power-off'> Stop</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))*@
@@ -19,5 +26,5 @@
     <th>@Model.Exempt</th>
     <th>@Model.System</th>
     <td>@Model.SolutionType</td>
-    <td>@diff.TotalMinutes</td>
+    <td>@(isStarted?</td>
 </tr>
