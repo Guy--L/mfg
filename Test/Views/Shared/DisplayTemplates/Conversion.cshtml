@@ -8,11 +8,13 @@
     var actions = "";
     if (!isStarted)
     {
-        actions += "<button class='btn btn-warning'><i class='fa fa-'></i> Ignore</button>";
-        actions += "<button class='btn btn-success'><i class='fa fa-play'></i> Start</button>";
-        actions += "<button class='btn btn-success'><i class='fa fa-play'></i> Start</button>";
+        actions += "<button class='btn btn-xs btn-danger' title='Ignore'><i class='fa fa-ban'></i></button> ";
+        actions += "<button class='btn btn-xs btn-info' title='Start'><i class='fa fa-random'></i></button> ";
     }
-
+    if (!isCompleted)
+    {
+        actions += "<button class='btn btn-xs btn-success' title='Complete'><i class='fa fa-arrow-up'></i></button> ";
+    }
 }
 <tr data-id="@Model.ConversionId">
     @*@Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stopbatch'><i class='stopbatch fa fa-power-off'> Stop</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))*@
@@ -26,5 +28,5 @@
     <th>@Model.Exempt</th>
     <th>@Model.System</th>
     <td>@Model.SolutionType</td>
-    <td>@(isStarted?</td>
+    <td>@Html.Raw(actions)</td>
 </tr>

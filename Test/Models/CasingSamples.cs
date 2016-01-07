@@ -871,49 +871,77 @@ namespace Test.Models
         }
 
         private static string _complete = @"
-            update [sample] set completed = getdate() where sampleid in (@0)
+            update [sample] set completed = getdate() where sampleid in ({0})
         ";
 
         // move results from lab database to tags database
         // calculations are performed during the move 
         // 
         private static string _labresult = @"
-            insert into [All]
-            output inserted.tagid, l.sampleid into @insertedtags
-            select r.tagid,
-            cast((1 - l.r3 / l.r1) * 100.0 as varchar(64)) as value,
-            l.stamp,
-            192
-            from mesdb.dbo.[LabResult] l
-            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-            where f.FieldName = 'csg_moist_pct' and l.Completed is not null and l.sampleid in (@0)
+            declare @insertedtags table
+            (
+	            tagid int, 
+	            sampleid int
+            )
 
-            insert into [All]
-            output inserted.tagid, l.sampleid into @insertedtags
-            select r.tagid,
-            cast((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 100.0 ))) * 100.0 as varchar(64)) as value
-            l.stamp,
-            192
-            from mesdb.dbo.[LabResult] l
-            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-            where f.FieldName = 'csg_glyc_pct' and l.Completed is not null and l.sampleid in (@0)
+            merge into [All] as target
+            using (
+	            select l.sampleid, r.tagid,
+	            cast((1 - l.r3 / l.r1) * 100.0 as varchar(64)) as value,
+	            l.stamp,
+	            192 as quality
+	            from mesdb.dbo.[LabResult] l
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_moist_pct' 
+		            and l.Completed is not null 
+		            and l.sampleid in ({0})	
+	            ) as source (sampleid, tagid, value, stamp, quality)
+            on 1 = 0
+            when not matched then
+	            insert (tagid, value, stamp, quality)
+	            values (tagid, value, stamp, quality)
+            output inserted.tagid, source.sampleid into @insertedtags;
+
+            merge into [All] as target
+            using (
+	            select l.sampleid, r.tagid,
+                cast((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 100.0 ))) * 100.0 as varchar(64)) as value,
+	            l.stamp,
+	            192 as quality
+	            from mesdb.dbo.[LabResult] l
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_glyc_pct' 
+		            and l.Completed is not null 
+		            and l.sampleid in ({0})	
+	            ) as source (sampleid, tagid, value, stamp, quality)
+            on 1 = 0
+            when not matched then
+	            insert (tagid, value, stamp, quality)
+	            values (tagid, value, stamp, quality)
+            output inserted.tagid, source.sampleid into @insertedtags;
+
+            update t 
+            set t.relatedtagid = i.sampleid 
+            from tag t
+            join @insertedtags i on t.tagid = i.tagid
         ";        
 
         public void Seal()
         {
-            var ids = string.Join(",",samples.SelectMany(x => x.Select(y => y.SampleId)).ToArray());
+            
+            var ids = string.Join(",",samples.SelectMany(x => x.Select(y => y.SampleId)).Where(k => k != 0).Distinct().ToArray());
             if (ids.Length == 0)
                 return;
 
             using (labDB d = new labDB())
             {
-                d.Execute(_complete, ids);
+                d.Execute(string.Format(_complete, ids));
             }
             using (tagDB t = new tagDB())
             {
-                t.Execute(_labresult, ids);
+                t.Execute(string.Format(_labresult, ids));
             }
         }
     }
