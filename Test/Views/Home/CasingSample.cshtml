@@ -244,15 +244,13 @@
                 var lohi = spect.split('<');
                 var low, high;
 
-                if (margin < 0) { low = parseFloat(lohi[0]); high = parseFloat(lohi[2]); margin = -margin; }
+                if (margin < 0) { low = parseFloat(lohi[0]); high = parseFloat(lohi[2]); }
                 else { low = high = parseFloat(lohi[1]); }
 
-                if (actual < low || high < actual)
+                if (actual < parseFloat(lohi[0]) || parseFloat(lohi[2]) < actual)
                     cellstatus = 'oospec';
-                else if ((actual < low - (margin / 10) || high + (margin / 10) < actual))
+                else if ((actual < low - (margin / 10.0) || high + (margin / 10.0) < actual))
                     cellstatus = 'oocontrol';
-
-                console.log('restatus cellstatus: ' + cellstatus+'.');
             }
             spec.removeClass('oocontrol').removeClass('oospec').addClass(cellstatus);
             var row = spec.closest('tr');
@@ -276,9 +274,10 @@
                 return;
             }
             var result = 100 * (1 - $('#' + left + 'r3').val() / denom);
-            var value = parseFloat(result).toFixed(1);
-            console.log('rem'+$moist);
-            restatus(value, $moist, -1);
+            var value = Math.round(parseFloat(result*10.0)) / 10.0;                      // use round not tofixed
+            console.log('not: ' + result + ', round: ' + value);
+
+            restatus(value, $moist, -5.0);
             $moist.text(value);
         }
         function glycerin() {
@@ -303,10 +302,11 @@
             if (typeof oil == 'undefined' || oil === '')
                 oil = 0;
             var num = ($('#' + left + 'r4').val()) / d5 / 2;
-            var den = (d3/d1 * d2 * (1 - oil/1000.0));
-            var value = parseFloat(100 * num / den).toFixed(1);
+            var den = (d3 / d1 * d2 * (1 - oil / 1000.0));
+            var value = Math.round(parseFloat(1000 * num / den))/10.0;
+            console.log('not: ' + parseFloat(100 * num / den) + ', round: ' + value);
 
-            restatus(value, $glyc, -1);
+            restatus(value, $glyc, 10.0);
             $glyc.text(value);
         }
         function updater() {

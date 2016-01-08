@@ -147,20 +147,27 @@ namespace Test.Models
         public bool OutOfSpec(double? actual, double[] spec)
         {
             if (!actual.HasValue || spec == null) return false;
-            return actual.Value < spec[0] || spec[2] < actual.Value;
+            var spc = spec.Select(s => Math.Round(s, 1)).ToArray();
+            var val = Math.Round(actual.Value, 1);
+            //Debug.WriteLine("round: " + spc[0] + " < " + val + " < " + spc[2] + ", not: " + spec[0] + " < " + actual.Value + " < " + spec[2]);
+            return val < spc[0] || spc[2] < val;
         }
 
         public bool OutOfControl(double? actual, double[] spec, int margin)
         {
             if (!actual.HasValue || spec == null) return false;
-            double? low, high;
+            double low, high;
             if (margin < 0) {
                 low = spec[0];
                 high = spec[2];
             }
             else { low = high = spec[1]; }
-            Debug.WriteLine("actual: " + actual.Value + ", low: " + (low - ((double)margin / 10.0)) + ", high: " + (high + ((double)margin / 10.0)));
-            return actual.Value < low - ((double)margin / 10.0) || high + ((double)margin / 10.0) < actual.Value;
+            var val = Math.Round(actual.Value, 1);
+            low -= ((double)margin / 10.0);
+            high += ((double)margin / 10.0);
+            var result =  (val < low || high < val);
+            Debug.WriteLine("actual: " + actual.Value + ", round: "+ val+", low: " + low + ", high: " + high+", result: "+result);
+            return result;
         }
 
         public double? GlyPct {
@@ -616,6 +623,10 @@ namespace Test.Models
     {
         public string Symbol { get { return CasingSample.Symbol; } }
 
+        private static string _setproduct = @"
+            update [sample] set productcodeid = {0} where sampleid = {1}
+        ";
+
         private static string _batch = @"
             SELECT s.[SampleId]
                   ,s.[Scheduled]
@@ -848,7 +859,9 @@ namespace Test.Models
                 samples = sset.ToLookup(k => k.UnitId, v => v);
                 return;
             }
-                    
+
+            var noProduct = sset.Where(s => s.ProductCodeId == 0).ToList();
+
             foreach (var line in lines.lines)
             {
                 var add = sset?.Where(s => s.LineId == line.LineId).Select(s => s);
@@ -867,6 +880,16 @@ namespace Test.Models
                 }
                 complete.Add(new CasingSample(line));
             }
+
+            if (noProduct.Any())
+            {
+                var setproduct = string.Join("", noProduct.Select(p => string.Format(_setproduct, p.ProductCodeId, p.SampleId)).ToArray());
+                using (labDB d = new labDB())
+                {
+                    d.Execute(setproduct);
+                }
+            }
+
             samples = complete.ToLookup(k => k.UnitId, v => v);
         }
 
@@ -878,7 +901,7 @@ namespace Test.Models
         // calculations are performed during the move 
         // 
         private static string _labresult = @"
-            declare @insertedtags table
+            declare @@insertedtags table
             (
 	            tagid int, 
 	            sampleid int
@@ -887,7 +910,7 @@ namespace Test.Models
             merge into [All] as target
             using (
 	            select l.sampleid, r.tagid,
-	            cast((1 - l.r3 / l.r1) * 100.0 as varchar(64)) as value,
+	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
 	            192 as quality
 	            from mesdb.dbo.[LabResult] l
@@ -901,12 +924,12 @@ namespace Test.Models
             when not matched then
 	            insert (tagid, value, stamp, quality)
 	            values (tagid, value, stamp, quality)
-            output inserted.tagid, source.sampleid into @insertedtags;
+            output inserted.tagid, source.sampleid into @@insertedtags;
 
             merge into [All] as target
             using (
 	            select l.sampleid, r.tagid,
-                cast((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 100.0 ))) * 100.0 as varchar(64)) as value,
+                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 100.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
 	            192 as quality
 	            from mesdb.dbo.[LabResult] l
@@ -920,12 +943,12 @@ namespace Test.Models
             when not matched then
 	            insert (tagid, value, stamp, quality)
 	            values (tagid, value, stamp, quality)
-            output inserted.tagid, source.sampleid into @insertedtags;
+            output inserted.tagid, source.sampleid into @@insertedtags;
 
             update t 
             set t.relatedtagid = i.sampleid 
             from tag t
-            join @insertedtags i on t.tagid = i.tagid
+            join @@insertedtags i on t.tagid = i.tagid
         ";        
 
         public void Seal()

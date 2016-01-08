@@ -90,6 +90,7 @@ namespace Test.Models
                         l.status = s;
                         l.system = y;
                         l.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
+                        l.ProductCodeId = l.product.ProductCodeId;
                         return l;
                     },
                     _lineload + " order by l.LineNumber, l.UnitId");
