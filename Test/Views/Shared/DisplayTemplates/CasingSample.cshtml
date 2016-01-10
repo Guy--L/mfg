@@ -9,11 +9,17 @@
 
     var pid = 0;
     var pcd = "00?00";
+    var toggle = "";
 
     if (Model.product != null)
     {
         pid = Model.product.ProductCodeId;
         pcd = Model.product._ProductCode;
+    }
+
+    if (!Model.isPublished)
+    {
+        toggle = " data-toggle = 'modal' data-target = '#CodeModal'";
     }
 }
 
@@ -25,7 +31,7 @@
     <td   class="Sample lineadd text-primary"><i class="fa fa-plus-circle" title="Click on line to add sample"></i></td>
     <td   class="linecol text-primary">@Model.LineName</td>
     <td class="Sample product line-@Model.LineId" title='@Model.Tooltip' data-moist='@Model.MoistSpec' data-glyc='@Model.GlySpec'>
-        <button class="btn btn-xs btn-@Model.StatColor sys-@Model.SystemId productbtn" data-id="@Model.LineId" data-toggle="modal" data-target="#CodeModal" tabindex="-1">
+        <button class="btn btn-xs btn-@Model.StatColor sys-@Model.SystemId productbtn" data-id="@Model.LineId" @toggle tabindex="-1">
             <i class="fa fa-@Model.StatIcon"></i> @pcd
         </button>
     </td>

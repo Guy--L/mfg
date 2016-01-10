@@ -52,6 +52,7 @@ namespace Test.Models
         public string StatColor { get; set; }
         public string LineName { get; set; }
 
+        public bool isPublished { get { return !((Completed ?? DateTime.MaxValue) > DateTime.Now); } }
         public ProductCode _product; 
         public ProductCode product
         {
@@ -394,6 +395,7 @@ namespace Test.Models
         public int wet { get; set; }
         public int dry { get; set; }
         public int gly { get; set; }
+        public bool complete { get; set; }
 
         public CasingSurvey() { }
     }
@@ -418,6 +420,7 @@ namespace Test.Models
                 ,sum(q.wet) as wet
                 ,sum(q.dry) as dry
                 ,sum(q.gly) as gly
+                ,case when sum(case when s.completed is null then 0 else 1 end) = count(s.sampleid) then 1 else 0 end as complete
             from sample s
             left join rdg q on s.sampleid = q.sampleid
             group by s.scheduled
