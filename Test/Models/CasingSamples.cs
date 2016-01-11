@@ -936,7 +936,7 @@ namespace Test.Models
             merge into [All] as target
             using (
 	            select l.sampleid, r.tagid,
-                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 100.0 ))) * 100.0, 1) as varchar(64)) as value,
+                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
 	            192 as quality
 	            from mesdb.dbo.[LabResult] l
