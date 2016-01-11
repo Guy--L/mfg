@@ -19,7 +19,7 @@
     <div class="row">
         <div class="col-xs-6">
             <div class="form-group">
-                <table class="table table-condensed table-no-border" id="linetable">
+                <table class="table table-condensed table-no-border" id="conversiontable">
                     <thead>
                         <tr>
                             <th>For *</th>
@@ -51,7 +51,6 @@
             @form.FormGroup().Class("solutionrecipe").DropDownListFor(m => m.c.SolutionRecipeId, Model.recipes).Size(InputSize.Small).WidthXs(3).Label().LabelText("Solution Type")
             @form.FormGroup().CheckBoxFor(m => m.c.Exempt).Id("isExempt")
             @form.FormGroup().Id("productlist").DropDownListFor(m => m.c.ProductCodeId, Model.products).Size(InputSize.Small).WidthXs(3).Label().LabelText("Product Code")
-            @form.FormGroup().Id("exemptlist").DropDownListFor(m => m.c.ExemptId, Model.exempt).Size(InputSize.Small).WidthXs(3).Label().LabelText("Exempt Code")
             @form.FormGroup().TextBoxFor(m => m.c.FinishFootage)
             @form.FormGroup().Id("extruderlist").DropDownListFor(m => m.c.ExtruderId, Model.extruders).Size(InputSize.Small).WidthXs(3).Label().LabelText("Extruder Color")
         </div>
@@ -65,21 +64,10 @@
 </div>
 @section scripts{
     <script type="text/javascript">
-        function recheck(e) {
-            if (e.is(':checked')) {
-                $('#productlist').hide();
-                $('#exemptlist').show();
-            }
-            else {
-                $('#productlist').show();
-                $('#exemptlist').hide();
-            }
-        }
         $(function () {
             $('#@Html.IdFor(m=>m.c.Scheduled)').datetimepicker({
                 timepicker: false
             });
-            recheck($('#isExempt'));
             $('button.linebtn').on('click', function (e) {
                 e.preventDefault();
                 var id = $(this).data('id');
@@ -88,9 +76,6 @@
                 $(this).addClass('active').siblings().removeClass('active');
                 $('i.fa-check-square', '#linetable').removeClass('fa-check-square').addClass('fa-square');
                 $('i.fa-2x', $(this)).removeClass('fa-square').addClass('fa-check-square');
-            });
-            $('#isExempt').on('click', function (e) {
-                recheck($(this));
             });
             $('#cancel').on('click', function (e) {
                 e.preventDefault();

@@ -833,6 +833,10 @@ namespace Test.Models
             return path;
         }
 
+        /// <summary>
+        /// Merge data from product, line, sample into one UI.
+        /// </summary>
+        /// <param name="id">Id of one of the samples in the collection used to retrieve collection</param>
         public CasingSamplesView(int id)
         {
             allCompleted = false;
@@ -863,7 +867,7 @@ namespace Test.Models
                 return;
             }
 
-            var noProduct = sset.Where(s => s.ProductCodeId == 0).ToList();
+            var noProduct = sset.Where(s => s.ProductCodeId == 0).ToList();             // not lazy evaluation
 
             foreach (var line in lines.lines)
             {

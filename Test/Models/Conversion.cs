@@ -41,8 +41,6 @@ namespace Test.Models
                   ,c.[Exempt]
                   ,r.[SolutionType]
                   ,s.[System]
-                  ,x.[ExemptId]
-                  ,x.[ExemptCode]
                   ,c.[Note]
                   ,e.[Color] 
                   ,l.[Stamp]
@@ -81,7 +79,6 @@ namespace Test.Models
               left join [dbo].[Extruder] e on e.ExtruderId = c.ExtruderId
               left join [dbo].[ProductCode] p on p.ProductCodeId = c.ProductCodeId
               left join [dbo].[System] s on s.SystemId = c.SystemId
-              left join [dbo].[Exempt] x on x.ExemptId = c.ExemptId
               left join [dbo].[SolutionRecipe] r on r.SolutionRecipeId = c.SolutionRecipeId
         ";
 
@@ -114,7 +111,6 @@ namespace Test.Models
         public List<System> systems { get; set; }
         public SelectList products { get; set; }
         public SelectList recipes { get; set; }
-        public SelectList exempt { get; set; }
         public SelectList extruders { get; set; }
         public List<Line> lines { get; set; }
 
@@ -136,7 +132,6 @@ namespace Test.Models
                     c.Future();
                 systems = db.Fetch<System>(System._active);
                 products = new SelectList(db.Fetch<ProductCode>(" order by productcode, productspec"), "ProductCodeId", "CodeSpec", c.ProductCodeId);
-                exempt = new SelectList(db.Fetch<Exempt>(), "ExemptId", "Code", c.ExemptId ?? 1);
                 recipes = new SelectList(db.Fetch<SolutionRecipe>(), "SolutionRecipeId", "SolutionType", c.SolutionRecipeId);
                 extruders = new SelectList(db.Fetch<Extruder>(), "ExtruderId", "Color", c.ExtruderId);
             }
