@@ -402,10 +402,15 @@
                 return false;
             }
         });
-        @*$('button.productbtn').on('click', function () {
-            var id = $(this).closest('tr').data('lineid');
-            location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
-        });*@
+        @if (!Model.allCompleted)
+        {
+            <text>
+            $('button.productbtn').on('click', function () {
+                var id = $(this).closest('tr').data('lineid');
+                location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
+            });
+            </text>
+        }
         $('button.sampled').on('click', function () {
             var $other = $(this).siblings().eq(0);
             var up = $other.hasClass('lineup');
@@ -440,13 +445,13 @@
         $('input#note').on('keyup', function (e) {
             /* ENTER PRESSED*/
             if (e.keyCode == 27) {
-                /* FOCUS ELEMENT */
-                $('#NoteModal').modal('toggle');
+            /* FOCUS ELEMENT */
+            $('#NoteModal').modal('toggle');
                 return false;
             }
         });
         $('#NoteModal').on('show.bs.modal', function (event) {
-            var alnk = $(event.relatedTarget); // Button that triggered the modal
+                var alnk = $(event.relatedTarget); // Button that triggered the modal
             var $elem = alnk.children('input[type="hidden"]');
             var note = $elem.val();
             var $row = alnk.closest('tr');
@@ -459,8 +464,8 @@
             modal.find('.modal-body input').val(note);
         });
         $('#CodeModal').on('show.bs.modal', function (event) {
-            var modal = $(this);
-            var alnk = $(event.relatedTarget); // Button that triggered the modal
+                var modal = $(this);
+                var alnk = $(event.relatedTarget); // Button that triggered the modal
             var $row = alnk.closest('tr');
             var pid = $row.data('productcodeid');
             var button = $('#savecode');

@@ -182,4 +182,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="TagGroupId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d244e227-fdf6-4699-ba5f-60f526e140e8" ChangeDateTime="01/12/2016 14:46:41">
+    <Property Name="ElementName" Value="[dbo].[Limits].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Limits]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="LimitId" />
+  </Operation>
 </Operations>

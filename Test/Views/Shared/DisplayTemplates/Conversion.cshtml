@@ -16,14 +16,14 @@
     {
         actions += "<button class='btn btn-xs btn-success' title='Complete'><i class='fa fa-arrow-up'></i></button> ";
     }
-    if (Model.Note.Length > 0)
+    if (Model.Note != null && Model.Note.Length > 0)
     {
         note = "<i class='fa fa-file-text'></i>";
     }
 }
 <tr data-id="@Model.ConversionId" title="@Model.Note">
     @*@Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stopbatch'><i class='stopbatch fa fa-power-off'> Stop</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))*@
-    <td>@Model.line.Name @note</td>
+    <td>@Model.line.Name @Html.Raw(note)</td>
     <td>@Model.Scheduled.ToString("yy-MM-dd")</td>
     <td>@started</td>
     <td>@completed</td>

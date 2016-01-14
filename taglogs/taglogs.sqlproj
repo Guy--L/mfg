@@ -85,6 +85,7 @@
     <None Include="Data\AddLabTags.sql" />
     <None Include="Data\SwipeQuery.sql" />
     <Build Include="UnpluggedTrigger.sql" />
+    <Build Include="Limit.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="taglogs.refactorlog" />

@@ -142,6 +142,21 @@ namespace Tags.Models
 		[Column] public int MaxY { get; set; } 	
 	}
 
+	[TableName("Limit")]
+	[PrimaryKey("LimitId")]
+	[ExplicitColumns]
+    public partial class Limit : tagDB.Record<Limit>  
+    {		
+		[Column] public int LimitId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public double LoLo { get; set; } 		
+		[Column] public double Lo { get; set; } 		
+		[Column] public double Aim { get; set; } 		
+		[Column] public double Hi { get; set; } 		
+		[Column] public double HiHi { get; set; } 	
+	}
+
 	[TableName("User")]
 	[PrimaryKey("UserId")]
 	[ExplicitColumns]
