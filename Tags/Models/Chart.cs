@@ -24,13 +24,14 @@ namespace Tags.Models
 
         private static string _nopoints = "[new Date({0}),{2}],[new Date({1}),{2}]";
         private static string _somepoints = "[new Date({0}),{1}],{2},[new Date({3}),{4}]";
+        private static string _somestring = "[new Date({0}),'{1}'],{2},[new Date({3}),'{4}']";
 
         public static string _data = @"select TagId, Value, Stamp from [All] where TagId in ({0}) 
                                                     union all
                                                     select TagId, Value, Stamp from [Current]
-                                                    where TagId in ({0}) order by TagId, Stamp";
+                                                    where TagId in ({0}) and rtrim(Value) != '' order by TagId, Stamp";
         public static string _index = @"
-            select t.TagId, t.Name, left(reverse(t.Name),2) as [SetPoint], c.Name as Channel 
+            select t.TagId, t.Name, left(reverse(t.Name),2) as [SetPoint], c.Name as Channel, t.DataType 
                 from [Tag] t 
                 join [Device] d on d.DeviceId = t.DeviceId
                 join [Channel] c on c.ChannelId = d.ChannelId
@@ -44,6 +45,7 @@ namespace Tags.Models
                 join [Channel] c on c.ChannelId = v.ChannelId
                 where c.ChannelId = {0} and s.Tag in ({1})";
 
+        public Dictionary<int, bool> stringdata { get; set; }
         public Dictionary<int, string> index { get; set; }
         public ILookup<int, All> data { get; set;}
         public Dictionary<int, string> current { get; set; }
@@ -51,6 +53,7 @@ namespace Tags.Models
         public string axes { get; set; }
         public string charts { get; set; }
         public string series { get; set; }
+        public bool isEmpty { get; set; }
 
         public string exportName;
 
@@ -86,24 +89,30 @@ namespace Tags.Models
 
         public Chart(string include) 
         {
-            DateTime max=DateTime.Now;
+            DateTime max = DateTime.Now;
             DateTime min = max.AddDays(-28);
 
             using (tagDB t = new tagDB()) {
-                var tags = t.Fetch<Tag>(string.Format(_index, include));
-                exportName = string.Join("_", tags.Select(v => v.Channel).Distinct().ToArray());
+                var tags = t.Fetch<Tag>(string.Format(_index, include));                            // list of tags being charted
+                exportName = string.Join("_", tags.Select(v => v.Channel).Distinct().ToArray());    // set up name for spreadsheet download
 
-                if (tags.Select(v=>v.Channel).Distinct().Count() > 1)
-                    index = tags.ToDictionary(i => i.TagId, i => i.Channel + "." + i.Name);
-                else
-                    index = tags.ToDictionary(i => i.TagId, i => i.Name);
+                var multichannel = tags.Select(v=>v.Channel).Distinct().Count() > 1;                // multiple channel queries?
+                // multidevice needed: layflat tag is used in both wet and dry devices
+
+                index = tags.ToDictionary(i => i.TagId, i => (multichannel?(i.Channel + "."):"") + i.Name);
+
+                stringdata = tags.ToDictionary(i => i.TagId, v => v.DataType == "String");
+
                 var samples = t.Fetch<All>(string.Format(_data, include));
 
                 if (!samples.Any())
                 {
-                    series = "$('#ChartContainer').html('<h3>No data</h3>');";
+                    var taglist = string.Join(", ", index.Values.ToArray()); 
+                    series = "$('#ChartContainer').html('<h2><br />No data in last 28 days</h2><h4><i>for</i> " + taglist+"</h4>');";                      // explicit notice
+                    isEmpty = true;
                     return;
                 }
+                isEmpty = false;
                 min = samples.Min(d => d.Stamp);
                 max = samples.Max(d => d.Stamp);
 

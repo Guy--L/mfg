@@ -42,7 +42,10 @@
             var container = document.getElementById('ChartContainer');
 
             @Html.Raw(Model.series)
-
+        
+            @if (!Model.isEmpty)
+            {
+            <text>
             var
                 options,
                 graph,
@@ -116,6 +119,8 @@
 
             // When graph is clicked, draw the graph with default area.
             Flotr.EventAdapter.observe(container, 'flotr:click', function () { graph = drawGraph(); });
-        });
+            </text>
+            }
+    });
     </script>
 }
