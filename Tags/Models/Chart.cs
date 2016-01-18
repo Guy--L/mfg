@@ -24,7 +24,6 @@ namespace Tags.Models
 
         private static string _nopoints = "[new Date({0}),{2}],[new Date({1}),{2}]";
         private static string _somepoints = "[new Date({0}),{1}],{2},[new Date({3}),{4}]";
-        private static string _somestring = "[new Date({0}),'{1}'],{2},[new Date({3}),'{4}']";
 
         public static string _data = @"select TagId, Value, Stamp from [All] where TagId in ({0}) 
                                                     union all
@@ -45,19 +44,6 @@ namespace Tags.Models
                 join [Channel] c on c.ChannelId = v.ChannelId
                 where c.ChannelId = {0} and s.Tag in ({1})";
 
-        public static string _limits = @"
-        select [LimitId]
-              ,[TagId]
-              ,[Stamp]
-              ,[LoLo]
-              ,[Lo]
-              ,[Aim]
-              ,[Hi]
-              ,[HiHi]
-          FROM [dbo].[Limit]
-GO
-
-        ";
         public Dictionary<int, string> index { get; set; }
         public ILookup<int, All> data { get; set;}
         public Dictionary<int, string> current { get; set; }
@@ -126,7 +112,7 @@ GO
                 min = samples.Min(d => d.Stamp);
                 max = samples.Max(d => d.Stamp);
 
-                var limits = t.Fetch<Limit>(string.Format(_limits, include, min, max));
+                var limits = Limit.Specs(t, include, min, DateTime.Now);
 
                 data = samples.ToLookup(d => d.TagId);
                 current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);

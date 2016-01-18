@@ -165,6 +165,7 @@
     <Compile Include="Models\Chart.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\HMI.cs" />
+    <Compile Include="Models\Limit.cs" />
     <Compile Include="Models\LogGroup.cs" />
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\Database.cs">
