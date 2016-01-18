@@ -45,7 +45,19 @@ namespace Tags.Models
                 join [Channel] c on c.ChannelId = v.ChannelId
                 where c.ChannelId = {0} and s.Tag in ({1})";
 
-        public Dictionary<int, bool> stringdata { get; set; }
+        public static string _limits = @"
+        select [LimitId]
+              ,[TagId]
+              ,[Stamp]
+              ,[LoLo]
+              ,[Lo]
+              ,[Aim]
+              ,[Hi]
+              ,[HiHi]
+          FROM [dbo].[Limit]
+GO
+
+        ";
         public Dictionary<int, string> index { get; set; }
         public ILookup<int, All> data { get; set;}
         public Dictionary<int, string> current { get; set; }
@@ -101,8 +113,6 @@ namespace Tags.Models
 
                 index = tags.ToDictionary(i => i.TagId, i => (multichannel?(i.Channel + "."):"") + i.Name);
 
-                stringdata = tags.ToDictionary(i => i.TagId, v => v.DataType == "String");
-
                 var samples = t.Fetch<All>(string.Format(_data, include));
 
                 if (!samples.Any())
@@ -115,6 +125,8 @@ namespace Tags.Models
                 isEmpty = false;
                 min = samples.Min(d => d.Stamp);
                 max = samples.Max(d => d.Stamp);
+
+                var limits = t.Fetch<Limit>(string.Format(_limits, include, min, max));
 
                 data = samples.ToLookup(d => d.TagId);
                 current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);

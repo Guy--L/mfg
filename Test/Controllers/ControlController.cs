@@ -47,7 +47,7 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult SaveConversion(Conversion c)
         {
-            if (c.Note != null) c.Note = c.Note.Substring(0, 50);
+            if (c.Note != null && c.Note.Length > 50) c.Note = c.Note.Substring(0, 50);
             c.Save();
             return RedirectToAction("Conversions");
         }
