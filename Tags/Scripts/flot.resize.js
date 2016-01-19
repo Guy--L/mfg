@@ -1,4 +1,5 @@
-﻿/*
+﻿/// <reference path="flot.fillbetween.js" />
+/*
 Flot plugin for automatically redrawing plots when the placeholder
 size changes, e.g. on window resizes.
 

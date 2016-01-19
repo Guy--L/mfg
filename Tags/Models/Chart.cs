@@ -7,6 +7,20 @@ using ClosedXML.Excel;
 
 namespace Tags.Models
 {
+    public static class MyExtensions {
+        private static string _somepoints = "[new Date({0}),{1}],{2},[new Date({3}),{4}]";
+
+        public static string Series<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member)
+        {
+            return string.Join(",", data.Select(q => "[new Date(" + moment(q).ToJSMSecs() + ")," + member(q) + "]").ToArray());
+        }
+
+        public static string Bounded<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member, DateTime a, DateTime b)
+        {
+            return string.Format(_somepoints, a.ToJSMSecs(), member(data.First()), data.Series(moment, member), b.ToJSMSecs(), member(data.Last()));
+        }
+    }
+
     public partial class Chart
     {
         private static string _delview = @"
@@ -24,6 +38,15 @@ namespace Tags.Models
 
         private static string _nopoints = "[new Date({0}),{2}],[new Date({1}),{2}]";
         private static string _somepoints = "[new Date({0}),{1}],{2},[new Date({3}),{4}]";
+        private static string _specs = "var hihi{0}=[{1}],hi{0}=[{2}],aim{0}=[{3}],lo{0}=[{4}],lolo{0}=[{5}];";
+
+        private static string _fills = @"
+               {{ id: 'lhihi{0}', data: hihi{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(255,0,0)' }},
+               {{ id: 'lhi{0}', data: hi{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(0,255,0)' }},
+               {{ id: 'laim{0}', data: aim{0}, points:{{show: true}}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(0,0,255)' }},
+               {{ id: 'llo{0}', data: lo{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(0,255,0)' }},
+               {{ id: 'llolo{0}', data: lolo{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(255,0,0)' }}
+        ";
 
         public static string _data = @"select TagId, Value, Stamp from [All] where TagId in ({0}) 
                                                     union all
@@ -46,6 +69,7 @@ namespace Tags.Models
 
         public Dictionary<int, string> index { get; set; }
         public ILookup<int, All> data { get; set;}
+        public ILookup<int, Limit> limits { get; set; }
         public Dictionary<int, string> current { get; set; }
 
         public string axes { get; set; }
@@ -61,8 +85,22 @@ namespace Tags.Models
                 return string.Format(_nopoints, a.ToJSMSecs(), b.ToJSMSecs(), current[s.Key]);
             
             return string.Format(_somepoints, a.ToJSMSecs(), s.First().Value,
-                string.Join(",", s.Select(q => "[new Date(" + q.Stamp.ToJSMSecs() + ")," + q.Value + "]").ToArray()),
+                s.Series(t => t.Stamp, q => q.Value),
                 b.ToJSMSecs(), current[s.Key]);
+        }
+
+        private string makeBounds(IGrouping<int, Limit> g, int index, DateTime a, DateTime b)
+        {
+            if (!g.Any())
+                return "";
+
+            var hihi = g.Bounded(t => t.Stamp, v => v.HiHi.ToString(), a, b);
+            var hi = g.Bounded(t => t.Stamp, v => v.Hi.ToString(), a, b);
+            var aim = g.Bounded(t => t.Stamp, v => v.Aim.ToString(), a, b);
+            var lo = g.Bounded(t => t.Stamp, v => v.Lo.ToString(), a, b);
+            var lolo = g.Bounded(t => t.Stamp, v => v.LoLo.ToString(), a, b);
+
+            return string.Format(_specs, index, hihi, hi, aim, lo, lolo);
         }
 
         public Chart()
@@ -90,6 +128,8 @@ namespace Tags.Models
             DateTime max = DateTime.Now;
             DateTime min = max.AddDays(-28);
 
+            series = "";
+
             using (tagDB t = new tagDB()) {
                 var tags = t.Fetch<Tag>(string.Format(_index, include));                            // list of tags being charted
                 exportName = string.Join("_", tags.Select(v => v.Channel).Distinct().ToArray());    // set up name for spreadsheet download
@@ -112,14 +152,16 @@ namespace Tags.Models
                 min = samples.Min(d => d.Stamp);
                 max = samples.Max(d => d.Stamp);
 
-                var limits = Limit.Specs(t, include, min, DateTime.Now);
+                limits = Limit.Specs(t, include, min, DateTime.Now).ToLookup(l => l.TagId);
 
                 data = samples.ToLookup(d => d.TagId);
                 current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);
             }
             var sequence = data.Select((s, i) => "d" + i + "=[" + makeSeries(s, min, max) + "]").ToList();
-            series = "var " + string.Join(",\n", sequence.ToArray()) + ";";
+            var specs = limits.Select((m, j) => makeBounds(m, j, min, max)).ToList();
+            series = "var " + string.Join(",\n", sequence.ToArray()) + ";\n" + string.Join("\n", specs.ToArray());
             charts = string.Join(",\n", data.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
+            charts += (specs.Any()?",":"") + string.Join(",\n", specs.Select((t, u) => string.Format(_fills, u)).ToArray());
             axes = @"yaxis:  { autoscale: true, autoscaleMargin: .1 },";
         }
 
