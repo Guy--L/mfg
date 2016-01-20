@@ -4,7 +4,8 @@
     ViewBag.Title = "Conversion";
     List<IHtmlString> buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Save").Id("saveconversion").Style(ButtonStyle.Success),
-            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning),
+            Html.Bootstrap().SubmitButton().Text("Delete").Id("delete").Style(ButtonStyle.Danger)
             //Html.Bootstrap().SubmitButton().Text("Ignore").Id("ignoreconversion").Style(ButtonStyle.Info),
             //Html.Bootstrap().SubmitButton().Text("Start").Id("startconversion").Style(ButtonStyle.Primary)
     };
@@ -80,6 +81,10 @@
             $('#cancel').on('click', function (e) {
                 e.preventDefault();
                 location.href = '@Url.Action("Lines", "Control", null, Request.Url.Scheme)';
+            });
+            $('#delete').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("DeleteConversion", "Control", null, Request.Url.Scheme)/@Model.c.ConversionId';
             });
             $('#ignoreconversion').on('click', function (e) {
                 e.preventDefault();

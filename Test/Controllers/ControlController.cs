@@ -44,6 +44,13 @@ namespace Test.Controllers
             return View(c);
         }
 
+        public ActionResult DeleteConversion(int id)
+        {
+            var c = new ConversionView(id);
+            c.c.Delete();
+            return RedirectToAction("Conversions");
+        }
+
         [HttpPost]
         public ActionResult SaveConversion(Conversion c)
         {
