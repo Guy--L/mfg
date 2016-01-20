@@ -16,11 +16,30 @@
     white-space: normal;
 }
 
+.navbar-inverse .brand, .navbar-inverse .nav > li > a {
+    color: darkgray;
+}
+
+.navbar-inverse .brand, .navbar-inverse .nav > li > a:hover {
+    color: white;
+}
+
+.navbar-inverse .brand, .navbar-inverse .nav > li.active > a,
+.navbar-inverse .brand, .navbar-inverse .nav > li.active > a:hover,
+.navbar-inverse .brand, .navbar-inverse .nav > li.active > a:focus
+ {
+    color: orange;
+}
+
 /* Set width on the form input elements since they're 100% wide by default */
 input,
 select,
 textarea {
     max-width: 280px;
+}
+
+div.alert {
+    margin: 15px 0 0 15px;
 }
 
 #group_TimeStamp {

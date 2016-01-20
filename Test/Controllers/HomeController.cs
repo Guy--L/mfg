@@ -251,9 +251,10 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult UploadCasing(HttpPostedFileBase file)
         {
-            TempData["count"] = Models.CasingSamples.ReadExcel(file.InputStream);
+            var load = Models.CasingSamples.ReadExcel(file.InputStream);
 
-            return RedirectToAction("CasingLoaded");
+            Success(load.Item1 + " casing sample records loaded for " + load.Item2);
+            return RedirectToAction("CasingSamples");
         }
     }
 }

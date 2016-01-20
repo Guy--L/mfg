@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages.Html;
 using NPoco;
+using Omu.ValueInjecter;
 
 namespace Test.Models
 {
@@ -41,6 +42,15 @@ namespace Test.Models
         public string GlySpec
         {
             get { return Gly_Min?.ToString("N2") + " < " + Gly_Aim?.ToString("N2") + " < " + Gly_Max?.ToString("N2"); }
+        }
+
+        public bool Exists()
+        {
+            if (ProductCodeId != 0)
+                return false;
+
+            using (labDB d = new labDB())
+                return d.Fetch<ProductCode>(" where productcode = @0 and productspec = @1", _ProductCode, ProductSpec).Any();
         }
     }
 
@@ -115,6 +125,14 @@ namespace Test.Models
             {
                 p = id > 0 ? db.SingleOrDefaultById<ProductCode>(id) : new ProductCode() { ProductCodeId = 0 };
             }
+        }
+
+        public ProductView(ProductCode q)
+        {
+            p = new ProductCode();
+            p.InjectFrom(q);
+            p.ProductCodeId = 0;
+            p.ProductSpec = "";
         }
     }
 }

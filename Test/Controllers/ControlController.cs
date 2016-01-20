@@ -48,6 +48,7 @@ namespace Test.Controllers
         {
             var c = new ConversionView(id);
             c.c.Delete();
+            Success("Deleted");
             return RedirectToAction("Conversions");
         }
 
@@ -68,12 +69,30 @@ namespace Test.Controllers
         public ActionResult Product(int id)
         {
             var p = new ProductView(id);
+            ViewBag.Cloned = false;
             return View(p);
+        }
+
+        public ActionResult CloneProduct(int id)
+        {
+            var p = new ProductView(id);
+            var q = new ProductView(p.p);
+            Success(p.p._ProductCode + " " + p.p.ProductSpec + " cloned here ready to add");
+            ViewBag.Cloned = true;
+            return View("Product", q);
         }
 
         [HttpPost]
         public ActionResult SaveProduct(ProductCode p)
         {
+            // check for existing product
+            if (p.Exists())
+            {
+                Error(p._ProductCode + " " + p.ProductSpec + " already exists");
+                var q = new ProductView(p);
+                ViewBag.Cloned = true;
+                return View("Product", q);
+            }
             p.Save();
             return RedirectToAction("Products", "Control");
         }

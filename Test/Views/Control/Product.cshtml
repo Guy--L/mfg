@@ -3,20 +3,30 @@
 @{
     ViewBag.Title = "Product";
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    List<IHtmlString> buttons = new List<IHtmlString>() {
+    List<IHtmlString> buttons = null;
+    if (ViewBag.Cloned)
+    {
+        buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Save").Id("saveproduct").Style(ButtonStyle.Success),
             Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
             //Html.Bootstrap().SubmitButton().Text("Ignore").Id("ignoreconversion").Style(ButtonStyle.Info),
             //Html.Bootstrap().SubmitButton().Text("Start").Id("startconversion").Style(ButtonStyle.Primary)
-    };
+        };
+    } else
+    {
+        buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Save").Id("saveproduct").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Clone").Id("cloneproduct").Style(ButtonStyle.Primary),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
+        };
+    }
 }
-
 <div class="container">
     <div class="row">
         <div class="col-xs-12 text-primary"><h3>@(Model.p.ProductCodeId == 0 ? "Add " : "Edit ") Product and its Specs for Lab</h3></div>
     </div>
 @using (var form = Html.Bootstrap().Begin(new Form("SaveProduct", "Control").Id("productform").Type(FormType.Horizontal).LabelWidthXs(4)))
-        {
+{
     <div class="row">
         <div class="col-xs-6">
             @form.FormGroup().TextBoxFor(m => m.p._ProductCode).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Code")
@@ -27,9 +37,9 @@
             <table class="table table-responsive">
                 <thead><tr>
                            <th>Parameter</th>
-                           <th>Min</th>
-                           <th>Aim</th>
-                           <th>Max</th>
+                           <th style="text-align: center;">Min</th>
+                           <th style="text-align: center;">Aim</th>
+                           <th style="text-align: center;">Max</th>
                 </tr></thead>
                 <tbody><tr>
                     <td><b>Reel Moisture</b></td>
@@ -68,6 +78,14 @@
                 e.preventDefault();
                 location.href = '@Url.Action("Products", "Control", null, Request.Url.Scheme)';
             });
+            @if (!ViewBag.Cloned) { 
+                <text>
+                    $('#cloneproduct').on('click', function(e) {
+                        e.preventDefault();
+                        location.href = '@Url.Action("CloneProduct", "Control", null, Request.Url.Scheme)/@Model.p.ProductCodeId';
+                    });
+                </text>
+            }
         });
     </script>
 }

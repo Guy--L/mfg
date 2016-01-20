@@ -478,20 +478,22 @@ namespace Test.Models
         //    }
         //    return filecount + " files read, " + samplecount + " samples recorded";
         //}
-        public static int? ReadExcel(Stream file)
+        public static Tuple<int?, DateTime?> ReadExcel(Stream file)
         {
             var now = DateTime.Now;
             int year = now.Year;
             int day = now.DayOfYear;
 
             int samplecount = 0;
+            DateTime stamp = DateTime.MinValue;
+
             HSSFWorkbook hssfwb = null;
             try {
                 hssfwb = new HSSFWorkbook(file);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                return 0;
+                return new Tuple<int?, DateTime?>(0, DateTime.MinValue);
             }
             string linerpt = "";
             try
@@ -506,7 +508,7 @@ namespace Test.Models
 
                 if (shift < 1 || shift > 4)
                 {
-                    Debug.WriteLine("("+ linerpt + ") weird shift in ReadExcel: " + shift);
+                    Debug.WriteLine("(" + linerpt + ") weird shift in ReadExcel: " + shift);
                     return null;
                 }
                 if (day < julian - 200)         // if loading a sheet from the end of december
@@ -514,7 +516,7 @@ namespace Test.Models
                     year--;
                 }
                 DateTime batch = new DateTime(year, 1, 1, 0, 0, 0);
-                var stamp = batch.AddDays((int)julian-1).AddHours(_actual[shift - 1]);
+                stamp = batch.AddDays((int)julian - 1).AddHours(_actual[shift - 1]);
 
                 for (int row = 7; row <= s.LastRowNum && row < 56; row++)
                 {
@@ -532,8 +534,9 @@ namespace Test.Models
             {
                 Debug.WriteLine("(" + current + "," + linerpt + ") exception in ReadExcel: " + e.Message);
                 Debug.WriteLine(e.StackTrace);
+                return new Tuple<int?, DateTime?>(0, DateTime.MinValue);
             }
-            return samplecount;
+            return new Tuple<int?, DateTime?>(samplecount, stamp);
         }
 
         public static string current = "";
@@ -550,8 +553,8 @@ namespace Test.Models
                 {
                     current = set;
                     var count = ReadExcel(file);
-                    samplecount += count.HasValue ? count.Value : 0;
-                    if (count.HasValue) filecount++;
+                    samplecount += count.Item1.HasValue ? count.Item1.Value : 0;
+                    if (count.Item1.HasValue) filecount++;
                 }
             }
             return filecount + " files read, " + samplecount + " samples recorded";
