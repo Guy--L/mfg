@@ -16,7 +16,6 @@
 
 @section scripts {
     <script type="text/javascript" src='@Url.Content("~/Scripts/flotr2.min.js")'></script>
-    @*<script type="text/javascript" src='@Url.Content("~/Scripts/flot.fillbetween.js")'></script>*@
     <script type="text/javascript" src='@Url.Content("~/Scripts/html2canvas.js")'></script>
     <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.resize.min.js")'></script>
     <script type="text/javascript">
@@ -53,6 +52,7 @@
                 o;
 
             options = {
+                shadowSize: 0,
                 crosshair: { mode: 'xy' },
                 xaxis : {
                     mode: 'time',

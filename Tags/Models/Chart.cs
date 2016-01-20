@@ -41,11 +41,11 @@ namespace Tags.Models
         private static string _specs = "var hihi{0}=[{1}],hi{0}=[{2}],aim{0}=[{3}],lo{0}=[{4}],lolo{0}=[{5}];";
 
         private static string _fills = @"
-               {{ id: 'lhihi{0}', data: hihi{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(255,0,0)' }},
-               {{ id: 'lhi{0}', data: hi{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(0,255,0)' }},
-               {{ id: 'laim{0}', data: aim{0}, points:{{show: true}}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(0,0,255)' }},
-               {{ id: 'llo{0}', data: lo{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(0,255,0)' }},
-               {{ id: 'llolo{0}', data: lolo{0}, lines: {{ show: true, lineWidth: 0, fill: false }}, color: 'rgb(255,0,0)' }}
+               {{ id: 'lhihi{0}', data: hihi{0},                        lines: {{ show: true, steps: true }}, color: 'rgb(255,0,0)' }},
+               {{ id: 'lhi{0}', data: hi{0},                            lines: {{ show: true, steps: true }}, color: 'rgb(0,255,0)' }},
+               {{ id: 'laim{0}', data: aim{0}, points:{{show: true}},   lines: {{ show: true, steps: true }}, color: 'rgb(0,0,255)', markers: {{ show: true }} }},
+               {{ id: 'llo{0}', data: lo{0},                            lines: {{ show: true, steps: true }}, color: 'rgb(0,255,0)' }},
+               {{ id: 'llolo{0}', data: lolo{0},                        lines: {{ show: true, steps: true }}, color: 'rgb(255,0,0)' }}
         ";
 
         public static string _data = @"select TagId, Value, Stamp from [All] where TagId in ({0}) 
@@ -160,8 +160,8 @@ namespace Tags.Models
             var sequence = data.Select((s, i) => "d" + i + "=[" + makeSeries(s, min, max) + "]").ToList();
             var specs = limits.Select((m, j) => makeBounds(m, j, min, max)).ToList();
             series = "var " + string.Join(",\n", sequence.ToArray()) + ";\n" + string.Join("\n", specs.ToArray());
-            charts = string.Join(",\n", data.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
-            charts += (specs.Any()?",":"") + string.Join(",\n", specs.Select((t, u) => string.Format(_fills, u)).ToArray());
+            charts = string.Join(",\n", specs.Select((t, u) => string.Format(_fills, u)).ToArray()) + (specs.Any() ? "," : "");
+            charts += string.Join(",\n", data.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
             axes = @"yaxis:  { autoscale: true, autoscaleMargin: .1 },";
         }
 

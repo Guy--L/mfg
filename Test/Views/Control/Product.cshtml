@@ -13,16 +13,17 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-xs-12 text-primary"><h3>Edit Product @Model.p._ProductCode @Model.p.ProductSpec Specs for Lab</h3></div>
+        <div class="col-xs-12 text-primary"><h3>@(Model.p.ProductCodeId == 0 ? "Add " : "Edit ") Product and its Specs for Lab</h3></div>
     </div>
-@using (var form = Html.Bootstrap().Begin(new Form("SaveProduct", "Control").Id("productform").Type(FormType.Horizontal).LabelWidthXs(0).InputWidthXs(7)))
+@using (var form = Html.Bootstrap().Begin(new Form("SaveProduct", "Control").Id("productform").Type(FormType.Horizontal).LabelWidthXs(4)))
         {
     <div class="row">
         <div class="col-xs-6">
+            @form.FormGroup().TextBoxFor(m => m.p._ProductCode).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Code")
+            @form.FormGroup().TextBoxFor(m => m.p.ProductSpec).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Spec")
+        </div>
+        <div class="col-xs-6">
             @Html.HiddenFor(m => m.p.ProductCodeId)
-            @Html.HiddenFor(m => m.p._ProductCode)
-            @Html.HiddenFor(m => m.p.ProductSpec)
-            @Model.p.CodeSpec
             <table class="table table-responsive">
                 <thead><tr>
                            <th>Parameter</th>

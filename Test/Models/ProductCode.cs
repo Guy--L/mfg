@@ -102,7 +102,6 @@ namespace Test.Models
                 products = labdb.Fetch<ProductCode>(_all);
             }
         }
-
     }
 
     public class ProductView
@@ -114,7 +113,7 @@ namespace Test.Models
         {
             using (var db = new labDB())
             {
-                p = db.SingleOrDefaultById<ProductCode>(id);
+                p = id > 0 ? db.SingleOrDefaultById<ProductCode>(id) : new ProductCode() { ProductCodeId = 0 };
             }
         }
     }

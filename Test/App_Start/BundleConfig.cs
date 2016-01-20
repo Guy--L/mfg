@@ -31,7 +31,9 @@ namespace Test
                       "~/Content/site.css",
                       "~/Content/DataTables-1.10.2/css/jquery.dataTables.css",
                       "~/Content/DataTables-1.10.2/css/dataTables.bootstrap.css",
-                      "~/Content/font-awesome.css"));
+                      "~/Content/font-awesome.css",
+                      "~/Content/font-awesome-animation.css"
+                      ));
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862

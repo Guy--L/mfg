@@ -26,7 +26,7 @@ namespace Test.App_Start
             BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/base").Include(
                 "~/Content/bootstrap.css",
                 "~/Content/font-awesome.css",
-                "~/Content/"
+                "~/Content/font-awesome-animation.css"
                 ));
             //BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/theme").Include(
             //    "~/Content/bootstrap/bootstrap-theme.css"));
