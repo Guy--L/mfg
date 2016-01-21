@@ -104,138 +104,23 @@ namespace Test.Models
 	}
 	
 
-	[TableName("Booster")]
-	[PrimaryKey("BoosterId")]
+	[TableName("LineHistory")]
+	[PrimaryKey("LineHistoryId")]
 	[ExplicitColumns]
-    public partial class Booster : labDB.Record<Booster>  
+    public partial class LineHistory : labDB.Record<LineHistory>  
     {		
-		[Column] public int BoosterId { get; set; } 		
-		[Column] public int SolutionBatchId { get; set; } 		
-		[Column] public DateTime? DateTime { get; set; } 	
-	}
-
-	[TableName("CasingGroup")]
-	[PrimaryKey("CasingGroupId")]
-	[ExplicitColumns]
-    public partial class CasingGroup : labDB.Record<CasingGroup>  
-    {		
-		[Column] public int CasingGroupId { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 	
-	}
-
-	[TableName("CasingTest")]
-	[PrimaryKey("CasingTestId")]
-	[ExplicitColumns]
-    public partial class CasingTest : labDB.Record<CasingTest>  
-    {		
-		[Column] public int CasingTestId { get; set; } 		
+		[Column] public int LineHistoryId { get; set; } 		
 		[Column] public int LineId { get; set; } 		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public int? Reel { get; set; } 		
-		[Column] public decimal? Delm { get; set; } 		
-		[Column] public decimal? WetWt { get; set; } 		
-		[Column] public decimal? DryWt { get; set; } 		
-		[Column] public decimal? GlyWetWt { get; set; } 		
-		[Column] public decimal? GlyArea { get; set; } 		
-		[Column] public decimal? GlySTD { get; set; } 		
-		[Column] public decimal? OilArea { get; set; } 		
-		[Column] public decimal? Oil { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 		
-		[Column] public int? CasingGroupId { get; set; } 		
-		[Column] public int? Feet { get; set; } 	
-	}
-
-	[TableName("Deck")]
-	[PrimaryKey("DeckId")]
-	[ExplicitColumns]
-    public partial class Deck : labDB.Record<Deck>  
-    {		
-		[Column] public int DeckId { get; set; } 		
-		[Column] public string Name { get; set; } 	
-	}
-
-	[TableName("Sample")]
-	[PrimaryKey("SampleId")]
-	[ExplicitColumns]
-    public partial class Sample : labDB.Record<Sample>  
-    {		
-		[Column] public int SampleId { get; set; } 		
-		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public string Note { get; set; } 		
-		[Column] public string Tech { get; set; } 		
-		[Column] public DateTime? Completed { get; set; } 		
-		[Column] public int ReelNumber { get; set; } 		
-		[Column] public int? Footage { get; set; } 		
-		[Column] public int? BarCode { get; set; } 		
-		[Column] public int? ParameterId { get; set; } 		
-		[Column] public int? Reading1 { get; set; } 		
-		[Column] public int? Reading2 { get; set; } 		
-		[Column] public int? ProcessId { get; set; } 		
+		[Column] public int? LineTankId { get; set; } 		
+		[Column] public int UnitId { get; set; } 		
+		[Column] public int LineNumber { get; set; } 		
 		[Column] public int? SystemId { get; set; } 		
-		[Column] public DateTime? NextScheduled { get; set; } 		
-		[Column] public int? Reading3 { get; set; } 	
-	}
-
-	[TableName("Parameter")]
-	[PrimaryKey("ParameterId")]
-	[ExplicitColumns]
-    public partial class Parameter : labDB.Record<Parameter>  
-    {		
-		[Column] public int ParameterId { get; set; } 		
-		[Column] public string Name { get; set; } 		
-		[Column] public string Scale { get; set; } 		
-		[Column] public string Mask { get; set; } 		
-		[Column] public string Units { get; set; } 		
-		[Column] public string Diary { get; set; } 		
-		[Column] public int Count { get; set; } 		
-		[Column] public string Icon { get; set; } 		
-		[Column] public bool ReadNow { get; set; } 		
-		[Column] public string Cells { get; set; } 	
-	}
-
-	[TableName("Exempt")]
-	[PrimaryKey("ExemptId")]
-	[ExplicitColumns]
-    public partial class Exempt : labDB.Record<Exempt>  
-    {		
-		[Column] public int ExemptId { get; set; } 		
-		[Column] public string ExemptCode { get; set; } 		
-		[Column] public int Diameter { get; set; } 	
-	}
-
-	[TableName("OilSTD")]
-	[PrimaryKey("OilSTDId")]
-	[ExplicitColumns]
-    public partial class OilSTD : labDB.Record<OilSTD>  
-    {		
-		[Column] public int OilSTDId { get; set; } 		
-		[Column] public DateTime? DateTime { get; set; } 		
-		[Column] public int? Concentration { get; set; } 		
-		[Column] public double Area { get; set; } 		
-		[Column] public int? CasingGroupId { get; set; } 	
-	}
-
-	[TableName("Conversion")]
-	[PrimaryKey("ConversionId")]
-	[ExplicitColumns]
-    public partial class Conversion : labDB.Record<Conversion>  
-    {		
-		[Column] public int ConversionId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
 		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public int ExtruderId { get; set; } 		
-		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public DateTime? Started { get; set; } 		
-		[Column] public DateTime Completed { get; set; } 		
-		[Column] public int FinishFootage { get; set; } 		
-		[Column] public bool Exempt { get; set; } 		
-		[Column] public int? ExemptId { get; set; } 		
-		[Column] public string Note { get; set; } 	
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int UserId { get; set; } 		
+		[Column] public string Comment { get; set; } 		
+		[Column] public DateTime Taken { get; set; } 	
 	}
 
 	[TableName("ProductCodeTx")]
@@ -250,49 +135,25 @@ namespace Test.Models
 		[Column] public string Delta { get; set; } 	
 	}
 
-	[TableName("Extruder")]
-	[PrimaryKey("ExtruderId")]
+	[TableName("Status")]
+	[PrimaryKey("StatusId")]
 	[ExplicitColumns]
-    public partial class Extruder : labDB.Record<Extruder>  
+    public partial class Status : labDB.Record<Status>  
     {		
-		[Column] public int ExtruderId { get; set; } 		
-		[Column] public int ExtruderType { get; set; } 		
-		[Column] public int Nozzle { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
+		[Column] public string Code { get; set; } 		
+		[Column] public string Description { get; set; } 		
+		[Column] public string Icon { get; set; } 		
 		[Column] public string Color { get; set; } 	
 	}
 
-	[TableName("Reading")]
-	[PrimaryKey("ReadingId")]
+	[TableName("Deck")]
+	[PrimaryKey("DeckId")]
 	[ExplicitColumns]
-    public partial class Reading : labDB.Record<Reading>  
+    public partial class Deck : labDB.Record<Deck>  
     {		
-		[Column] public int ReadingId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int? R1 { get; set; } 		
-		[Column] public int? R2 { get; set; } 		
-		[Column] public int? R3 { get; set; } 		
-		[Column] public int? R4 { get; set; } 		
-		[Column] public int? R5 { get; set; } 		
-		[Column] public int? Average { get; set; } 		
-		[Column] public int ParameterId { get; set; } 		
-		[Column] public string Operator { get; set; } 		
-		[Column] public int EditCount { get; set; } 		
-		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public int SampleId { get; set; } 	
-	}
-
-	[TableName("RecipeReading")]
-	[PrimaryKey("RecipeReadingId")]
-	[ExplicitColumns]
-    public partial class RecipeReading : labDB.Record<RecipeReading>  
-    {		
-		[Column] public int RecipeReadingId { get; set; } 		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public int ReadingId { get; set; } 		
-		[Column] public string LineColor { get; set; } 		
-		[Column] public double? Low { get; set; } 		
-		[Column] public double? High { get; set; } 	
+		[Column] public int DeckId { get; set; } 		
+		[Column] public string Name { get; set; } 	
 	}
 
 	[TableName("Series")]
@@ -331,27 +192,21 @@ namespace Test.Models
 		[Column] public int SeriesId { get; set; } 	
 	}
 
-	[TableName("SolutionBatch")]
-	[PrimaryKey("SolutionBatchId")]
+	[TableName("Parameter")]
+	[PrimaryKey("ParameterId")]
 	[ExplicitColumns]
-    public partial class SolutionBatch : labDB.Record<SolutionBatch>  
+    public partial class Parameter : labDB.Record<Parameter>  
     {		
-		[Column] public int SolutionBatchId { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public int OperatorId { get; set; } 		
-		[Column] public string CoA { get; set; } 		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public DateTime? Completed { get; set; } 	
-	}
-
-	[TableName("SolutionRecipe")]
-	[PrimaryKey("SolutionRecipeId")]
-	[ExplicitColumns]
-    public partial class SolutionRecipe : labDB.Record<SolutionRecipe>  
-    {		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public string SolutionType { get; set; } 	
+		[Column] public int ParameterId { get; set; } 		
+		[Column] public string Name { get; set; } 		
+		[Column] public string Scale { get; set; } 		
+		[Column] public string Mask { get; set; } 		
+		[Column] public string Units { get; set; } 		
+		[Column] public string Diary { get; set; } 		
+		[Column] public int Count { get; set; } 		
+		[Column] public string Icon { get; set; } 		
+		[Column] public bool ReadNow { get; set; } 		
+		[Column] public string Cells { get; set; } 	
 	}
 
 	[TableName("ReadingField")]
@@ -368,41 +223,6 @@ namespace Test.Models
 		[Column] public double? High { get; set; } 	
 	}
 
-	[TableName("SolutionTest")]
-	[PrimaryKey("SolutionTestId")]
-	[ExplicitColumns]
-    public partial class SolutionTest : labDB.Record<SolutionTest>  
-    {		
-		[Column] public int SolutionTestId { get; set; } 		
-		[Column] public int SolutionBatchId { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 		
-		[Column] public decimal? SolutionRecipeId { get; set; } 		
-		[Column] public decimal? CMC { get; set; } 		
-		[Column] public decimal? DensitySetPoint { get; set; } 		
-		[Column] public decimal? ConsoleDensity { get; set; } 		
-		[Column] public decimal? pHSetPoint { get; set; } 		
-		[Column] public decimal? Viscoscity { get; set; } 		
-		[Column] public decimal? Temperature { get; set; } 		
-		[Column] public decimal? TitrationMLs { get; set; } 		
-		[Column("NaOCl Pump Set")] public decimal? NaOCl_Pump_Set { get; set; }
-		
-		[Column("NaOCl Flow")] public int? NaOCl_Flow { get; set; }
-		
-		[Column] public decimal? MeasuredDensity { get; set; } 		
-		[Column] public decimal? ConsolepH { get; set; } 		
-		[Column] public decimal? MeasuredpH { get; set; } 		
-		[Column] public decimal? Conductivity { get; set; } 		
-		[Column("Acid Pump Output")] public decimal? Acid_Pump_Output { get; set; }
-		
-		[Column("Booster Pump Output")] public int? Booster_Pump_Output { get; set; }
-		
-		[Column] public decimal? Glycerin { get; set; } 		
-		[Column] public decimal? Hypochlorite { get; set; } 		
-		[Column] public decimal? CasingGlycerin { get; set; } 		
-		[Column] public decimal? Feed { get; set; } 		
-		[Column] public int? Steam { get; set; } 	
-	}
-
 	[TableName("ReadingTag")]
 	[PrimaryKey("ReadingTagId")]
 	[ExplicitColumns]
@@ -414,71 +234,29 @@ namespace Test.Models
 		[Column] public int TagId { get; set; } 	
 	}
 
-	[TableName("System")]
-	[PrimaryKey("SystemId")]
+	[TableName("Sample")]
+	[PrimaryKey("SampleId")]
 	[ExplicitColumns]
-    public partial class System : labDB.Record<System>  
+    public partial class Sample : labDB.Record<Sample>  
     {		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public string Status { get; set; } 		
-		[Column("System")] public string _System { get; set; }
-	
-	}
-
-	[TableName("Line")]
-	[PrimaryKey("LineId")]
-	[ExplicitColumns]
-    public partial class Line : labDB.Record<Line>  
-    {		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int? LineTankId { get; set; } 		
-		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 	
-	}
-
-	[TableName("Unit")]
-	[PrimaryKey("UnitId")]
-	[ExplicitColumns]
-    public partial class Unit : labDB.Record<Unit>  
-    {		
-		[Column] public int UnitId { get; set; } 		
-		[Column("Unit")] public string _Unit { get; set; }
-	
-	}
-
-	[TableName("Status")]
-	[PrimaryKey("StatusId")]
-	[ExplicitColumns]
-    public partial class Status : labDB.Record<Status>  
-    {		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public string Code { get; set; } 		
-		[Column] public string Description { get; set; } 		
-		[Column] public string Icon { get; set; } 		
-		[Column] public string Color { get; set; } 	
-	}
-
-	[TableName("LineHistory")]
-	[PrimaryKey("LineHistoryId")]
-	[ExplicitColumns]
-    public partial class LineHistory : labDB.Record<LineHistory>  
-    {		
-		[Column] public int LineHistoryId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int? LineTankId { get; set; } 		
-		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public int SampleId { get; set; } 		
+		[Column] public DateTime Scheduled { get; set; } 		
 		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public string Comment { get; set; } 		
-		[Column] public DateTime Taken { get; set; } 	
+		[Column] public int LineId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public string Note { get; set; } 		
+		[Column] public string Tech { get; set; } 		
+		[Column] public DateTime? Completed { get; set; } 		
+		[Column] public int ReelNumber { get; set; } 		
+		[Column] public int? Footage { get; set; } 		
+		[Column] public int? BarCode { get; set; } 		
+		[Column] public int? ParameterId { get; set; } 		
+		[Column] public int? Reading1 { get; set; } 		
+		[Column] public int? Reading2 { get; set; } 		
+		[Column] public int? ProcessId { get; set; } 		
+		[Column] public int? SystemId { get; set; } 		
+		[Column] public DateTime? NextScheduled { get; set; } 		
+		[Column] public int? Reading3 { get; set; } 	
 	}
 
 	[TableName("LineOperation")]
@@ -498,26 +276,46 @@ namespace Test.Models
 		[Column] public int? ProductCodeId { get; set; } 	
 	}
 
-	[TableName("LineStatus")]
+	[TableName("Conversion")]
+	[PrimaryKey("ConversionId")]
 	[ExplicitColumns]
-    public partial class LineStatus : labDB.Record<LineStatus>  
+    public partial class Conversion : labDB.Record<Conversion>  
     {		
-		[Column] public string INUNT { get; set; } 		
-		[Column] public string INLIN { get; set; } 		
-		[Column] public decimal INDAY { get; set; } 		
-		[Column] public string INPRD { get; set; } 		
-		[Column] public string CARTN { get; set; } 		
-		[Column] public string INSID { get; set; } 		
-		[Column] public decimal INLSQ { get; set; } 		
-		[Column] public string INLST { get; set; } 		
-		[Column] public string INREL { get; set; } 		
-		[Column] public decimal INBSP { get; set; } 		
-		[Column] public decimal INSAM { get; set; } 		
+		[Column] public int ConversionId { get; set; } 		
 		[Column] public int LineId { get; set; } 		
-		[Column] public string Status { get; set; } 		
-		[Column] public string Reason { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public int SystemId { get; set; } 		
+		[Column] public int SolutionRecipeId { get; set; } 		
+		[Column] public int ExtruderId { get; set; } 		
+		[Column] public DateTime Scheduled { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
+		[Column] public DateTime? Started { get; set; } 		
+		[Column] public DateTime Completed { get; set; } 		
+		[Column] public int FinishFootage { get; set; } 		
+		[Column] public bool Exempt { get; set; } 		
+		[Column] public int? ExemptId { get; set; } 		
+		[Column] public string Note { get; set; } 	
+	}
+
+	[TableName("Reading")]
+	[PrimaryKey("ReadingId")]
+	[ExplicitColumns]
+    public partial class Reading : labDB.Record<Reading>  
+    {		
+		[Column] public int ReadingId { get; set; } 		
+		[Column] public int LineId { get; set; } 		
 		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int? ProductCodeId { get; set; } 	
+		[Column] public int? R1 { get; set; } 		
+		[Column] public int? R2 { get; set; } 		
+		[Column] public int? R3 { get; set; } 		
+		[Column] public int? R4 { get; set; } 		
+		[Column] public int? R5 { get; set; } 		
+		[Column] public int? Average { get; set; } 		
+		[Column] public int ParameterId { get; set; } 		
+		[Column] public string Operator { get; set; } 		
+		[Column] public int EditCount { get; set; } 		
+		[Column] public DateTime Scheduled { get; set; } 		
+		[Column] public int SampleId { get; set; } 	
 	}
 
 	[TableName("ProductCode")]
@@ -529,6 +327,7 @@ namespace Test.Models
 		[Column("ProductCode")] public string _ProductCode { get; set; }
 		
 		[Column] public string ProductSpec { get; set; } 		
+		[Column] public bool? IsActive { get; set; } 		
 		[Column] public string PlastSpec { get; set; } 		
 		[Column] public double? WetLayflat_Aim { get; set; } 		
 		[Column] public double? WetLayflat_Min { get; set; } 		
@@ -573,6 +372,245 @@ namespace Test.Models
 		[Column] public string BlowShirr_Min { get; set; } 		
 		[Column] public string BlowShirr_Max { get; set; } 		
 		[Column] public float? DT_LCL { get; set; } 	
+	}
+
+	[TableName("CasingGroup")]
+	[PrimaryKey("CasingGroupId")]
+	[ExplicitColumns]
+    public partial class CasingGroup : labDB.Record<CasingGroup>  
+    {		
+		[Column] public int CasingGroupId { get; set; } 		
+		[Column] public DateTime DateTime { get; set; } 	
+	}
+
+	[TableName("LineTx")]
+	[PrimaryKey("LineTxId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class LineTx : labDB.Record<LineTx>  
+    {		
+		[Column] public int LineTxId { get; set; } 		
+		[Column] public int LineId { get; set; } 		
+		[Column] public int UserId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public string Comment { get; set; } 		
+		[Column] public int? LineTankId { get; set; } 		
+		[Column] public int UnitId { get; set; } 		
+		[Column] public int LineNumber { get; set; } 		
+		[Column] public int? SystemId { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 	
+	}
+
+	[TableName("CasingTest")]
+	[PrimaryKey("CasingTestId")]
+	[ExplicitColumns]
+    public partial class CasingTest : labDB.Record<CasingTest>  
+    {		
+		[Column] public int CasingTestId { get; set; } 		
+		[Column] public int LineId { get; set; } 		
+		[Column] public int SystemId { get; set; } 		
+		[Column] public int? Reel { get; set; } 		
+		[Column] public decimal? Delm { get; set; } 		
+		[Column] public decimal? WetWt { get; set; } 		
+		[Column] public decimal? DryWt { get; set; } 		
+		[Column] public decimal? GlyWetWt { get; set; } 		
+		[Column] public decimal? GlyArea { get; set; } 		
+		[Column] public decimal? GlySTD { get; set; } 		
+		[Column] public decimal? OilArea { get; set; } 		
+		[Column] public decimal? Oil { get; set; } 		
+		[Column] public DateTime DateTime { get; set; } 		
+		[Column] public int? CasingGroupId { get; set; } 		
+		[Column] public int? Feet { get; set; } 	
+	}
+
+	[TableName("User")]
+	[PrimaryKey("UserId")]
+	[ExplicitColumns]
+    public partial class User : labDB.Record<User>  
+    {		
+		[Column] public int UserId { get; set; } 		
+		[Column] public string EmployeeNumber { get; set; } 		
+		[Column] public string FirstName { get; set; } 		
+		[Column] public string LastName { get; set; } 		
+		[Column] public bool IsManager { get; set; } 		
+		[Column] public bool IsActive { get; set; } 		
+		[Column] public bool IsPartTime { get; set; } 		
+		[Column] public string Email { get; set; } 		
+		[Column] public bool IsAdmin { get; set; } 		
+		[Column] public int? ManagerId { get; set; } 	
+	}
+
+	[TableName("OilSTD")]
+	[PrimaryKey("OilSTDId")]
+	[ExplicitColumns]
+    public partial class OilSTD : labDB.Record<OilSTD>  
+    {		
+		[Column] public int OilSTDId { get; set; } 		
+		[Column] public DateTime? DateTime { get; set; } 		
+		[Column] public int? Concentration { get; set; } 		
+		[Column] public double Area { get; set; } 		
+		[Column] public int? CasingGroupId { get; set; } 	
+	}
+
+	[TableName("RecipeReading")]
+	[PrimaryKey("RecipeReadingId")]
+	[ExplicitColumns]
+    public partial class RecipeReading : labDB.Record<RecipeReading>  
+    {		
+		[Column] public int RecipeReadingId { get; set; } 		
+		[Column] public int SolutionRecipeId { get; set; } 		
+		[Column] public int ReadingId { get; set; } 		
+		[Column] public string LineColor { get; set; } 		
+		[Column] public double? Low { get; set; } 		
+		[Column] public double? High { get; set; } 	
+	}
+
+	[TableName("Line")]
+	[PrimaryKey("LineId")]
+	[ExplicitColumns]
+    public partial class Line : labDB.Record<Line>  
+    {		
+		[Column] public int LineId { get; set; } 		
+		[Column] public int? LineTankId { get; set; } 		
+		[Column] public int UnitId { get; set; } 		
+		[Column] public int LineNumber { get; set; } 		
+		[Column] public int? SystemId { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int UserId { get; set; } 	
+	}
+
+	[TableName("LineStatus")]
+	[ExplicitColumns]
+    public partial class LineStatus : labDB.Record<LineStatus>  
+    {		
+		[Column] public string INUNT { get; set; } 		
+		[Column] public string INLIN { get; set; } 		
+		[Column] public decimal INDAY { get; set; } 		
+		[Column] public string INPRD { get; set; } 		
+		[Column] public string CARTN { get; set; } 		
+		[Column] public string INSID { get; set; } 		
+		[Column] public decimal INLSQ { get; set; } 		
+		[Column] public string INLST { get; set; } 		
+		[Column] public string INREL { get; set; } 		
+		[Column] public decimal INBSP { get; set; } 		
+		[Column] public decimal INSAM { get; set; } 		
+		[Column] public int LineId { get; set; } 		
+		[Column] public string Status { get; set; } 		
+		[Column] public string Reason { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int? ProductCodeId { get; set; } 	
+	}
+
+	[TableName("SolutionBatch")]
+	[PrimaryKey("SolutionBatchId")]
+	[ExplicitColumns]
+    public partial class SolutionBatch : labDB.Record<SolutionBatch>  
+    {		
+		[Column] public int SolutionBatchId { get; set; } 		
+		[Column] public DateTime DateTime { get; set; } 		
+		[Column] public int SolutionRecipeId { get; set; } 		
+		[Column] public int OperatorId { get; set; } 		
+		[Column] public string CoA { get; set; } 		
+		[Column] public int SystemId { get; set; } 		
+		[Column] public DateTime? Completed { get; set; } 	
+	}
+
+	[TableName("Booster")]
+	[PrimaryKey("BoosterId")]
+	[ExplicitColumns]
+    public partial class Booster : labDB.Record<Booster>  
+    {		
+		[Column] public int BoosterId { get; set; } 		
+		[Column] public int SolutionBatchId { get; set; } 		
+		[Column] public DateTime? DateTime { get; set; } 	
+	}
+
+	[TableName("SolutionRecipe")]
+	[PrimaryKey("SolutionRecipeId")]
+	[ExplicitColumns]
+    public partial class SolutionRecipe : labDB.Record<SolutionRecipe>  
+    {		
+		[Column] public int SolutionRecipeId { get; set; } 		
+		[Column] public string SolutionType { get; set; } 	
+	}
+
+	[TableName("SolutionTest")]
+	[PrimaryKey("SolutionTestId")]
+	[ExplicitColumns]
+    public partial class SolutionTest : labDB.Record<SolutionTest>  
+    {		
+		[Column] public int SolutionTestId { get; set; } 		
+		[Column] public int SolutionBatchId { get; set; } 		
+		[Column] public DateTime DateTime { get; set; } 		
+		[Column] public decimal? SolutionRecipeId { get; set; } 		
+		[Column] public decimal? CMC { get; set; } 		
+		[Column] public decimal? DensitySetPoint { get; set; } 		
+		[Column] public decimal? ConsoleDensity { get; set; } 		
+		[Column] public decimal? pHSetPoint { get; set; } 		
+		[Column] public decimal? Viscoscity { get; set; } 		
+		[Column] public decimal? Temperature { get; set; } 		
+		[Column] public decimal? TitrationMLs { get; set; } 		
+		[Column("NaOCl Pump Set")] public decimal? NaOCl_Pump_Set { get; set; }
+		
+		[Column("NaOCl Flow")] public int? NaOCl_Flow { get; set; }
+		
+		[Column] public decimal? MeasuredDensity { get; set; } 		
+		[Column] public decimal? ConsolepH { get; set; } 		
+		[Column] public decimal? MeasuredpH { get; set; } 		
+		[Column] public decimal? Conductivity { get; set; } 		
+		[Column("Acid Pump Output")] public decimal? Acid_Pump_Output { get; set; }
+		
+		[Column("Booster Pump Output")] public int? Booster_Pump_Output { get; set; }
+		
+		[Column] public decimal? Glycerin { get; set; } 		
+		[Column] public decimal? Hypochlorite { get; set; } 		
+		[Column] public decimal? CasingGlycerin { get; set; } 		
+		[Column] public decimal? Feed { get; set; } 		
+		[Column] public int? Steam { get; set; } 	
+	}
+
+	[TableName("System")]
+	[PrimaryKey("SystemId")]
+	[ExplicitColumns]
+    public partial class System : labDB.Record<System>  
+    {		
+		[Column] public int SystemId { get; set; } 		
+		[Column] public string Status { get; set; } 		
+		[Column("System")] public string _System { get; set; }
+	
+	}
+
+	[TableName("Extruder")]
+	[PrimaryKey("ExtruderId")]
+	[ExplicitColumns]
+    public partial class Extruder : labDB.Record<Extruder>  
+    {		
+		[Column] public int ExtruderId { get; set; } 		
+		[Column] public int ExtruderType { get; set; } 		
+		[Column] public int Nozzle { get; set; } 		
+		[Column] public string Color { get; set; } 	
+	}
+
+	[TableName("Unit")]
+	[PrimaryKey("UnitId")]
+	[ExplicitColumns]
+    public partial class Unit : labDB.Record<Unit>  
+    {		
+		[Column] public int UnitId { get; set; } 		
+		[Column("Unit")] public string _Unit { get; set; }
+	
+	}
+
+	[TableName("Exempt")]
+	[PrimaryKey("ExemptId")]
+	[ExplicitColumns]
+    public partial class Exempt : labDB.Record<Exempt>  
+    {		
+		[Column] public int ExemptId { get; set; } 		
+		[Column] public string ExemptCode { get; set; } 		
+		[Column] public int Diameter { get; set; } 	
 	}
 
 }

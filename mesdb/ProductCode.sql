@@ -2,6 +2,7 @@
     [ProductCodeId]    INT            IDENTITY (1, 1) NOT NULL,
     [ProductCode]      NVARCHAR (7)   NULL,
     [ProductSpec]      NVARCHAR (6)   NULL,
+    [IsActive] BIT NULL, 
     [PlastSpec]        NVARCHAR (5)   NULL,
     [WetLayflat_Aim]   FLOAT (53)     NULL,
     [WetLayflat_Min]   FLOAT (53)     NULL,

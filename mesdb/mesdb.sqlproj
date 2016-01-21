@@ -112,7 +112,6 @@
     <Build Include="LineLoad Query.sql" />
     <Build Include="LineOperation.sql" />
     <Build Include="LineStatus.sql" />
-    <None Include="UpdateLineStatus.sql" />
     <None Include="LabResult.sql" />
     <Build Include="ProductCodeTx.sql" />
     <Build Include="LineState.sql" />
@@ -122,6 +121,7 @@
     <Build Include="Line.sql" />
     <Build Include="Exempt.sql" />
     <Build Include="LineUpdateTrigger.sql" />
+    <Build Include="User.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />

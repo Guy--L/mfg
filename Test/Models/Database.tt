@@ -20,6 +20,7 @@
 		,"Extruder" 
 		,"Exempt"
 		,"Line"
+		,"LineTx"
 		,"LineHistory"
 		,"LineStatus" 
 		,"LineOperation"
@@ -46,6 +47,7 @@
 		,"Series"
 		,"SlideSeries"
 		,"Status"
+		,"User"
 	};
 
 	foreach (var table in tables)

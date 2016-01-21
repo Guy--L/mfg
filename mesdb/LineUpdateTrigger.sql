@@ -3,7 +3,7 @@
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-alter TRIGGER [dbo].[RecordLineUpdate]
+create TRIGGER [dbo].[RecordLineUpdate]
    ON  [dbo].[Line] 
    AFTER UPDATE
 AS 
@@ -68,6 +68,6 @@ BEGIN
 		where t.name = 'line_status'
 	end
 
-	--insert into linetx 
-	--select @updated.lineid, 'trigger', 
+	insert into linetx ([LineId], [UserId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId])
+	select lineid, userid, getdate(), '', linetankid, unitid, linenumber, systemid, statusid, productcodeid from inserted
 END

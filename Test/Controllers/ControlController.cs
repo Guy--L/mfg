@@ -29,6 +29,7 @@ namespace Test.Controllers
         {
             ln.line.Stamp = DateTime.Now;
             ln.line.Save();
+            Success("Saved line");
             return RedirectToAction("Lines");
         }
 
@@ -48,7 +49,7 @@ namespace Test.Controllers
         {
             var c = new ConversionView(id);
             c.c.Delete();
-            Success("Deleted");
+            Success("Deleted conversion");
             return RedirectToAction("Conversions");
         }
 
@@ -57,6 +58,7 @@ namespace Test.Controllers
         {
             if (c.Note != null && c.Note.Length > 50) c.Note = c.Note.Substring(0, 50);
             c.Save();
+            Success("Saved conversion");
             return RedirectToAction("Conversions");
         }
 
@@ -94,6 +96,7 @@ namespace Test.Controllers
                 return View("Product", q);
             }
             p.Save();
+            Success("Saved product");
             return RedirectToAction("Products", "Control");
         }
     }
