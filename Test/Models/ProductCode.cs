@@ -70,6 +70,7 @@ namespace Test.Models
                   ,p.[ProductCodeId]
                   ,p.[ProductCode]
                   ,p.[ProductSpec]
+                  ,p.[IsActive]
                   ,p.[PlastSpec]
                   ,p.[WetLayflat_Aim]
                   ,p.[WetLayflat_Min]

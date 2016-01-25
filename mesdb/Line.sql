@@ -8,6 +8,6 @@
     [StatusId] INT NOT NULL, 
     [ProductCodeId] INT NOT NULL, 
     [Stamp] DATETIME NOT NULL, 
-    [UserId] INT NOT NULL DEFAULT 0, 
+    [PersonId] INT NOT NULL DEFAULT 0, 
     CONSTRAINT [FK_Line_Unit] FOREIGN KEY ([UnitId]) REFERENCES [Unit]([UnitId])
 )

@@ -104,37 +104,6 @@ namespace Test.Models
 	}
 	
 
-	[TableName("LineHistory")]
-	[PrimaryKey("LineHistoryId")]
-	[ExplicitColumns]
-    public partial class LineHistory : labDB.Record<LineHistory>  
-    {		
-		[Column] public int LineHistoryId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int? LineTankId { get; set; } 		
-		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public string Comment { get; set; } 		
-		[Column] public DateTime Taken { get; set; } 	
-	}
-
-	[TableName("ProductCodeTx")]
-	[PrimaryKey("ProductCodeTxId", AutoIncrement=false)]
-	[ExplicitColumns]
-    public partial class ProductCodeTx : labDB.Record<ProductCodeTx>  
-    {		
-		[Column] public int ProductCodeTxId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public string UserId { get; set; } 		
-		[Column] public string Delta { get; set; } 	
-	}
-
 	[TableName("Status")]
 	[PrimaryKey("StatusId")]
 	[ExplicitColumns]
@@ -292,8 +261,6 @@ namespace Test.Models
 		[Column] public DateTime? Started { get; set; } 		
 		[Column] public DateTime Completed { get; set; } 		
 		[Column] public int FinishFootage { get; set; } 		
-		[Column] public bool Exempt { get; set; } 		
-		[Column] public int? ExemptId { get; set; } 		
 		[Column] public string Note { get; set; } 	
 	}
 
@@ -383,24 +350,6 @@ namespace Test.Models
 		[Column] public DateTime DateTime { get; set; } 	
 	}
 
-	[TableName("LineTx")]
-	[PrimaryKey("LineTxId", AutoIncrement=false)]
-	[ExplicitColumns]
-    public partial class LineTx : labDB.Record<LineTx>  
-    {		
-		[Column] public int LineTxId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public string Comment { get; set; } 		
-		[Column] public int? LineTankId { get; set; } 		
-		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 	
-	}
-
 	[TableName("CasingTest")]
 	[PrimaryKey("CasingTestId")]
 	[ExplicitColumns]
@@ -421,23 +370,6 @@ namespace Test.Models
 		[Column] public DateTime DateTime { get; set; } 		
 		[Column] public int? CasingGroupId { get; set; } 		
 		[Column] public int? Feet { get; set; } 	
-	}
-
-	[TableName("User")]
-	[PrimaryKey("UserId")]
-	[ExplicitColumns]
-    public partial class User : labDB.Record<User>  
-    {		
-		[Column] public int UserId { get; set; } 		
-		[Column] public string EmployeeNumber { get; set; } 		
-		[Column] public string FirstName { get; set; } 		
-		[Column] public string LastName { get; set; } 		
-		[Column] public bool IsManager { get; set; } 		
-		[Column] public bool IsActive { get; set; } 		
-		[Column] public bool IsPartTime { get; set; } 		
-		[Column] public string Email { get; set; } 		
-		[Column] public bool IsAdmin { get; set; } 		
-		[Column] public int? ManagerId { get; set; } 	
 	}
 
 	[TableName("OilSTD")]
@@ -465,6 +397,18 @@ namespace Test.Models
 		[Column] public double? High { get; set; } 	
 	}
 
+	[TableName("ProductCodeTx")]
+	[PrimaryKey("ProductCodeTxId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class ProductCodeTx : labDB.Record<ProductCodeTx>  
+    {		
+		[Column] public int ProductCodeTxId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int PersonId { get; set; } 		
+		[Column] public string Delta { get; set; } 	
+	}
+
 	[TableName("Line")]
 	[PrimaryKey("LineId")]
 	[ExplicitColumns]
@@ -478,7 +422,43 @@ namespace Test.Models
 		[Column] public int StatusId { get; set; } 		
 		[Column] public int ProductCodeId { get; set; } 		
 		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int UserId { get; set; } 	
+		[Column] public int PersonId { get; set; } 	
+	}
+
+	[TableName("LineHistory")]
+	[PrimaryKey("LineHistoryId")]
+	[ExplicitColumns]
+    public partial class LineHistory : labDB.Record<LineHistory>  
+    {		
+		[Column] public int LineHistoryId { get; set; } 		
+		[Column] public int LineId { get; set; } 		
+		[Column] public int? LineTankId { get; set; } 		
+		[Column] public int UnitId { get; set; } 		
+		[Column] public int LineNumber { get; set; } 		
+		[Column] public int? SystemId { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int PersonId { get; set; } 		
+		[Column] public string Comment { get; set; } 		
+		[Column] public DateTime Taken { get; set; } 	
+	}
+
+	[TableName("Person")]
+	[PrimaryKey("PersonId")]
+	[ExplicitColumns]
+    public partial class Person : labDB.Record<Person>  
+    {		
+		[Column] public int PersonId { get; set; } 		
+		[Column] public string EmployeeNumber { get; set; } 		
+		[Column] public string FirstName { get; set; } 		
+		[Column] public string LastName { get; set; } 		
+		[Column] public bool IsManager { get; set; } 		
+		[Column] public bool IsActive { get; set; } 		
+		[Column] public bool IsPartTime { get; set; } 		
+		[Column] public string Email { get; set; } 		
+		[Column] public bool IsAdmin { get; set; } 		
+		[Column] public int? ManagerId { get; set; } 	
 	}
 
 	[TableName("LineStatus")]
@@ -525,6 +505,24 @@ namespace Test.Models
 		[Column] public int BoosterId { get; set; } 		
 		[Column] public int SolutionBatchId { get; set; } 		
 		[Column] public DateTime? DateTime { get; set; } 	
+	}
+
+	[TableName("LineTx")]
+	[PrimaryKey("LineTxId")]
+	[ExplicitColumns]
+    public partial class LineTx : labDB.Record<LineTx>  
+    {		
+		[Column] public int LineTxId { get; set; } 		
+		[Column] public int LineId { get; set; } 		
+		[Column] public int PersonId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public string Comment { get; set; } 		
+		[Column] public int? LineTankId { get; set; } 		
+		[Column] public int UnitId { get; set; } 		
+		[Column] public int LineNumber { get; set; } 		
+		[Column] public int? SystemId { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 	
 	}
 
 	[TableName("SolutionRecipe")]

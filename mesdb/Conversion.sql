@@ -11,7 +11,5 @@
     [Started] DATETIME NULL, 
     [Completed] DATETIME NOT NULL, 
     [FinishFootage] INT NOT NULL, 
-    [Exempt] BIT NOT NULL, 
-    [ExemptId] INT NULL, 
     [Note] VARCHAR(50) NULL 
 )

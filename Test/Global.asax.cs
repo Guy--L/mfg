@@ -32,6 +32,7 @@ namespace Test
                 Reading.TypeOf = Reading.Types.ToDictionary(k => k.Value.Name, v => v.Key);
                 Reading.Times = Reading.Types.ToDictionary(k => k.Key, k => k.Value.Diary.Split(',').Select(h => int.Parse(h)).ToList());
                 Reading.SetLines(db.Fetch<Line>());
+                Status.SetIcons(db.Fetch<Status>());
             }
 
             CasingSample.mapReflection();

@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="ProductBatch.sql" />
-    <Build Include="LineHistory.sql" />
     <Build Include="LineTank.sql" />
     <Build Include="Cellulose.sql" />
     <Build Include="Water.sql" />

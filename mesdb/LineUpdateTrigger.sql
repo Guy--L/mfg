@@ -68,6 +68,6 @@ BEGIN
 		where t.name = 'line_status'
 	end
 
-	insert into linetx ([LineId], [UserId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId])
-	select lineid, userid, getdate(), '', linetankid, unitid, linenumber, systemid, statusid, productcodeid from inserted
+	insert into linetx ([LineId], [PersonId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId])
+	select lineid, personid, getdate(), '', linetankid, unitid, linenumber, systemid, statusid, productcodeid from inserted
 END

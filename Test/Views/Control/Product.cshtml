@@ -31,6 +31,7 @@
         <div class="col-xs-6">
             @form.FormGroup().TextBoxFor(m => m.p._ProductCode).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Code")
             @form.FormGroup().TextBoxFor(m => m.p.ProductSpec).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Spec")
+            @form.FormGroup().CheckBoxFor(m => m.p.IsActive)
         </div>
         <div class="col-xs-6">
             @Html.HiddenFor(m => m.p.ProductCodeId)

@@ -15,53 +15,56 @@
     <div class="row">
         <div class="col-xs-12 text-primary"><h3>@(Model.c.ConversionId == 0 ? "Add " : "Edit ")Conversion</h3></div>
     </div>
-@using (var form = Html.Bootstrap().Begin(new Form("SaveConversion", "Control").Id("conversionform").Type(FormType.Horizontal).LabelWidthXs(4)))
-{
-    <div class="row">
-        <div class="col-xs-6">
-            <div class="form-group">
-                <table class="table table-condensed table-no-border" id="conversiontable">
-                    <thead>
-                        <tr>
-                            <th>For *</th>
-                            <th>A</th>
-                            <th>B</th>
-                            <th>C</th>
-                            <th>D</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @Html.DisplayFor(m => m, "LinePick")
-                    </tbody>
-                </table>
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveConversion", "Control").Id("conversionform").Type(FormType.Horizontal).LabelWidthXs(4)))
+    {
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <table class="table table-condensed table-no-border" id="conversiontable">
+                        <thead>
+                            <tr>
+                                <th>For *</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @Html.DisplayFor(m => m, "LinePick")
+                        </tbody>
+                    </table>
+                </div>
+                @form.FormGroup().TextAreaFor(m => m.c.Note)
             </div>
-            @form.FormGroup().TextAreaFor(m => m.c.Note)
-        </div>
-        <div class="col-xs-6">
-            @Html.HiddenFor(m => m.c.ConversionId)
-            @Html.HiddenFor(m => m.c.LineId)
-            @Html.HiddenFor(m => m.c.Completed)
-            @Html.HiddenFor(m => m.c.Started)
-            @form.FormGroup().TextBoxFor(m => m.c.Scheduled)
-            @form.FormGroup().RadioButtonListFor(
+            <div class="col-xs-6">
+                @Html.HiddenFor(m => m.c.ConversionId)
+                @Html.HiddenFor(m => m.c.LineId)
+                @Html.HiddenFor(m => m.c.Completed)
+                @Html.HiddenFor(m => m.c.Started)
+                @form.FormGroup().TextBoxFor(m => m.c.Scheduled)
+                @form.FormGroup().RadioButtonListFor(
                      m => m.c.SystemId,
                      m => m.systems,
                      s => s.SystemId,
-                     s => s.Pretty).SelectedValues(
-                     n => n.SystemId == Model.c.SystemId).DisplayInlineBlock().Label().LabelText("System")
-            @form.FormGroup().Class("solutionrecipe").DropDownListFor(m => m.c.SolutionRecipeId, Model.recipes).Size(InputSize.Small).WidthXs(3).Label().LabelText("Solution Type")
-            @form.FormGroup().CheckBoxFor(m => m.c.Exempt).Id("isExempt")
-            @form.FormGroup().Id("productlist").DropDownListFor(m => m.c.ProductCodeId, Model.products).Size(InputSize.Small).WidthXs(3).Label().LabelText("Product Code")
-            @form.FormGroup().TextBoxFor(m => m.c.FinishFootage)
-            @form.FormGroup().Id("extruderlist").DropDownListFor(m => m.c.ExtruderId, Model.extruders).Size(InputSize.Small).WidthXs(3).Label().LabelText("Extruder Color")
+                     s => s.Pretty).SelectedValues(n => n.SystemId == Model.c.SystemId).DisplayInlineBlock().Label().LabelText("System")
+                @form.FormGroup().Class("solutionrecipe").DropDownListFor(m => m.c.SolutionRecipeId, Model.recipes).Size(InputSize.Small).WidthXs(3).Label().LabelText("Solution Type")
+                @form.FormGroup().RadioButtonListFor(
+                    m => m.c.StatusId,
+                    m => m.statuses,
+                    t => t.StatusId,
+                    t => t.Description).SelectedValues(n => n.StatusId == Model.c.StatusId).DisplayInlineBlock().Label().LabelText("After Conversion")
+                @form.FormGroup().Id("productlist").DropDownListFor(m => m.c.ProductCodeId, Model.products).Size(InputSize.Small).WidthXs(3).Label().LabelText("Product Code")
+                @form.FormGroup().TextBoxFor(m => m.c.FinishFootage)
+                @form.FormGroup().Id("extruderlist").DropDownListFor(m => m.c.ExtruderId, Model.extruders).Size(InputSize.Small).WidthXs(3).Label().LabelText("Extruder Color")
+            </div>
         </div>
-     </div>
-     <div class="row">
-         <div class="col-xs-12">
-            @(form.FormGroup().CustomControls(buttons.ToArray()))
-         </div>
-     </div>
-}
+        <div class="row">
+            <div class="col-xs-12">
+                @(form.FormGroup().CustomControls(buttons.ToArray()))
+            </div>
+        </div>
+    }
 </div>
 @section scripts{
     <script type="text/javascript">
@@ -80,7 +83,7 @@
             });
             $('#cancel').on('click', function (e) {
                 e.preventDefault();
-                location.href = '@Url.Action("Lines", "Control", null, Request.Url.Scheme)';
+                location.href = '@Url.Action("Conversions", "Control", null, Request.Url.Scheme)';
             });
             $('#delete').on('click', function (e) {
                 e.preventDefault();

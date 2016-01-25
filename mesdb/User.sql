@@ -1,6 +1,6 @@
-﻿CREATE TABLE [dbo].[User]
+﻿CREATE TABLE [dbo].[Person]
 (
-	[UserId] INT NOT NULL PRIMARY KEY identity,
+	[PersonId] INT NOT NULL PRIMARY KEY identity,
 	[EmployeeNumber] NVARCHAR (10) NULL,
     [FirstName]      NVARCHAR (30) NOT NULL,
     [LastName]       NVARCHAR (30) NOT NULL,
