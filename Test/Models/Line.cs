@@ -17,6 +17,16 @@ namespace Test.Models
         {
             get { return letters[UnitId] + LineNumber.ToString(); }
         }
+
+        public Line() { }
+
+        public Line(Conversion c)
+        {
+            LineId = c.LineId;
+            StatusId = c.StatusId;
+            ProductCodeId = c.ProductCodeId;
+            SystemId = c.SystemId;
+        }
     }
 
     public class Lines

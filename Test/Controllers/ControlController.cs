@@ -35,7 +35,8 @@ namespace Test.Controllers
 
         public ActionResult Conversions()
         {
-            var c = new Conversions();
+            ViewBag.Undo = false;
+            var c = new Conversions(Models.Conversions._pending);
             return View(c);
         }
 
@@ -60,6 +61,48 @@ namespace Test.Controllers
             c.Save();
             Success("Saved conversion");
             return RedirectToAction("Conversions");
+        }
+
+        public ActionResult UndoConversions()
+        {
+            ViewBag.Undo = true;
+            var c = new Conversions(Models.Conversions._recent);
+            return View(c);
+        }
+
+        public ActionResult ConfirmUndoConversion(int id)
+        {
+            var u = new UndoConversionView(id);
+            if (u.prior == null)
+            {
+                Error("No conversion available to rollback to");
+                return RedirectToAction("UndoConversions");
+            }
+            return View(u);
+        }
+
+        [HttpPost]
+        public ActionResult UndoConversion(UndoConversionView u)
+        {
+            var msg = u.current.Undo(0);
+            if (msg.Contains("Error"))
+            {
+                Error(msg);
+                return RedirectToAction("UndoConversions");
+            }
+            Success(msg);
+            return RedirectToAction("Conversions");
+        }
+
+        public ActionResult CompleteConversion(int id)
+        {
+            var c = new Conversion(id);
+            var msg = c.Complete(0);                                // pass personid
+            if (msg.Contains("Error"))
+                Error(msg);
+            else
+                Success(msg);
+            return View(c);
         }
 
         public ActionResult Products()

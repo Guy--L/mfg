@@ -1,0 +1,25 @@
+﻿@model Test.Models.Conversion
+
+@{ 
+    var isStarted = !(Model.Started.Value == DateTime.MaxValue);
+    var isCompleted = !(Model.Completed == DateTime.MaxValue);
+    var started = (!Model.Started.HasValue || !isStarted)?"":Model.Started.Value.ToString("MM-dd HH:mm");
+    var completed = (Model.Completed == null || !isCompleted) ? "" : Model.Completed.ToString("MM-dd HH:mm");
+    var note = "";
+    if (Model.Note != null && Model.Note.Length > 0)
+    {
+        note = "<i class='fa fa-file-text'></i>";
+    }
+}
+<tr data-id="@Model.ConversionId" title="@Model.Note">
+    <td>@Model.line.Name @Html.Raw(note)</td>
+    <td>@Model.Scheduled.ToString("yy-MM-dd")</td>
+    <td>@started</td>
+    <td>@completed</td>
+    <th>@Model.product._ProductCode @Model.product.ProductSpec</th>
+    <th>@Model.Color</th>
+    <th>@Model.FinishFootage</th>
+    <th>@Model.System</th>
+    <td>@Model.SolutionType</td>
+    <td>@Html.Raw(Model.Icon)</td>
+</tr>

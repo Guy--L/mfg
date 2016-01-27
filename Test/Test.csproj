@@ -233,6 +233,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Models\Conversion.cs" />
     <Compile Include="Models\Line.cs" />
+    <Compile Include="Models\LineTx.cs" />
     <Compile Include="Models\Status.cs" />
     <Compile Include="Models\System.cs" />
     <Compile Include="Models\Tags.cs">
@@ -612,6 +613,9 @@
     <Content Include="Views\Control\Products.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\ProductCode.cshtml" />
     <Content Include="Views\Control\Product.cshtml" />
+    <Content Include="Views\Control\UndoConversions.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Undo.cshtml" />
+    <Content Include="Views\Control\ConfirmUndoConversion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

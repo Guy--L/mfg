@@ -11,7 +11,11 @@
                         <i class="fa fa-plus"></i> Add New Conversion
                     </button>
                 </th>
-                <th colspan="6"></th>
+                <th colspan="6">
+                    <button class="btn btn-primary btn-xs" id="undoconversion">
+                        <i class="fa fa-undo"></i> Undo Recent Conversion
+                    </button>
+                </th>
             </tr>
             <tr>
                 <th>Line</th>
@@ -38,7 +42,7 @@
     function attachDT() {
         q = $('#conversions').dataTable({
             "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
-            "order": [[3, "asc"]],
+            "order": [[3, "desc"]],
             "bPaginate": false,
             "oLanguage": {
                 "sInfo": "_TOTAL_ conversion(s)",
@@ -54,6 +58,24 @@
         });
         $('#addconversion').on('click', function () {
             location.href = '@Url.Action("Conversion","Control",null,Request.Url.Scheme)/0';
+        });
+        $('#undoconversion').on('click', function () {
+            location.href = '@Url.Action("UndoConversions","Control",null,Request.Url.Scheme)';
+        });
+        $('#ignoreconversion').on('click', function (e) {
+            var id = $(this).closest('tr').data('id');
+            e.preventDefault();
+            location.href = '@Url.Action("IgnoreConversion", "Control", null, Request.Url.Scheme)/'+id;
+        });
+        $('#startconversion').on('click', function (e) {
+            var id = $(this).closest('tr').data('id');
+            e.preventDefault();
+            location.href = '@Url.Action("StartConversion", "Control", null, Request.Url.Scheme)/'+id;
+        });
+        $('#completeconversion').on('click', function (e) {
+            var id = $(this).closest('tr').data('id');
+            e.preventDefault();
+            location.href = '@Url.Action("CompleteConversion", "Control", null, Request.Url.Scheme)/'+id;
         });
         attachDT();
     });

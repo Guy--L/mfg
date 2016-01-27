@@ -91,11 +91,15 @@
             });
             $('#ignoreconversion').on('click', function (e) {
                 e.preventDefault();
-                location.href = '@Url.Action("IgnoreConversion", "Control", null, Request.Url.Scheme)';
+                location.href = '@Url.Action("IgnoreConversion", "Control", null, Request.Url.Scheme)/@Model.c.ConversionId';
             });
             $('#startconversion').on('click', function (e) {
                 e.preventDefault();
-                location.href = '@Url.Action("StartConversion", "Control", null, Request.Url.Scheme)';
+                location.href = '@Url.Action("StartConversion", "Control", null, Request.Url.Scheme)/@Model.c.ConversionId';
+            });
+            $('#completeconversion').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("CompleteConversion", "Control", null, Request.Url.Scheme)/@Model.c.ConversionId';
             });
         });
     </script>

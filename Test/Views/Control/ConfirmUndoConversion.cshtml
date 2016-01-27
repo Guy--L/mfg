@@ -1,0 +1,100 @@
+﻿@model Test.Models.UndoConversionView
+
+@{
+    ViewBag.Title = "Undo Conversion";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+        Html.Bootstrap().SubmitButton().Text("Proceed with Undo").Id("undoconversion").Style(ButtonStyle.Success),
+        Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
+    };
+
+    var ispStarted = !(Model.prior.Started.Value == DateTime.MaxValue);
+    var ispCompleted = !(Model.prior.Completed == DateTime.MaxValue);
+    var pstarted = (!Model.prior.Started.HasValue || !ispStarted) ? "" : Model.prior.Started.Value.ToString("MM-dd HH:mm");
+    var pcompleted = (Model.prior.Completed == null || !ispCompleted) ? "" : Model.prior.Completed.ToString("MM-dd HH:mm");
+
+    var iscStarted = !(Model.current.Started.Value == DateTime.MaxValue);
+    var iscCompleted = !(Model.current.Completed == DateTime.MaxValue);
+    var cstarted = (!Model.current.Started.HasValue || !iscStarted) ? "" : Model.current.Started.Value.ToString("MM-dd HH:mm");
+    var ccompleted = (Model.current.Completed == null || !iscCompleted) ? "" : Model.current.Completed.ToString("MM-dd HH:mm");
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 text-primary"><h3>Confirm Undo Conversion</h3></div>
+    </div>
+    @using (var form = Html.Bootstrap().Begin(new Form("UndoConversion", "Control").Id("undoconversionform").Type(FormType.Horizontal)))
+    {
+        @Html.HiddenFor(m => m.prior.ConversionId);
+        @Html.HiddenFor(m => m.current.ConversionId);
+
+        <div class="row">
+            <div class="col-xs-3">
+                <h2><i>On</i> @Model.prior.line.Name</h2>
+            </div>
+            <div class="col-xs-11">
+                <table id="conversions" class="table table-striped table-hover table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="10">Last Conversion Transition</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th>Scheduled</th>
+                            <th>Started</th>
+                            <th>Completed</th>
+                            <th>Product</th>
+                            <th>Extruder</th>
+                            <th>Reqd Ft</th>
+                            <th>Sys</th>
+                            <th>Soln</th>
+                            <th>State</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>Prior</b></td>
+                            <td>@Model.prior.Scheduled.ToString("yy-MM-dd")</td>
+                            <td>@pstarted</td>
+                            <td>@pcompleted</td>
+                            <th>@Model.prior.product._ProductCode @Model.prior.product.ProductSpec</th>
+                            <th>@Model.prior.Color</th>
+                            <th>@Model.prior.FinishFootage</th>
+                            <th>@Model.prior.System</th>
+                            <td>@Model.prior.SolutionType</td>
+                            <td>@Html.Raw(Model.prior.Icon)</td>
+
+                        </tr>
+                        <tr>
+                            <td><b>Current</b></td>
+                            <td>@Model.current.Scheduled.ToString("yy-MM-dd")</td>
+                            <td>@cstarted</td>
+                            <td>@ccompleted</td>
+                            <th>@Model.current.product._ProductCode @Model.current.product.ProductSpec</th>
+                            <th>@Model.current.Color</th>
+                            <th>@Model.current.FinishFootage</th>
+                            <th>@Model.current.System</th>
+                            <td>@Model.current.SolutionType</td>
+                            <td>@Html.Raw(Model.current.Icon)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @(form.FormGroup().CustomControls(buttons.ToArray()))
+            </div>
+        </div>
+    }
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Conversions", "Control", null, Request.Url.Scheme)';
+            });
+        });
+    </script>
+}
