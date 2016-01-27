@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using NPoco;
+using Omu.ValueInjecter;
 
 namespace Test.Models
 {
@@ -21,7 +22,19 @@ namespace Test.Models
 
         public Conversion(int id)
         {
-            SingleOrDefault(id);
+            if (id != 0)
+            {
+                var c = new Conversion();
+                using (labDB d = new labDB())
+                {
+                    c = d.SingleById<Conversion>(id);
+                }
+                this.InjectFrom(c);
+                return;
+            }
+            Note = "";
+            ProductCodeId = 0;
+            Scheduled = DateTime.Now.AddDays(1);
         }
 
         public string State
@@ -168,7 +181,7 @@ namespace Test.Models
         ";
 
         public static string _undoconversion = string.Format(_all, "from [dbo].[Conversion] c", "top 2") + @"
-            where l.LineId = @0 and c.ConversionId <= @1
+            where l.LineId = {0} and c.ConversionId <= {1}
             order by [dbo].SinceNow(c.[Started], c.[Completed]) asc
         ";
 
@@ -201,9 +214,12 @@ namespace Test.Models
 
         public UndoConversionView(int id)
         {
-            var c = new Conversions(Conversions._undoconversion);
-            current = c.conversions.First();
-            prior = c.conversions.Count() > 1 ? c.conversions.Last() : null;
+            var c = new Conversion(id);
+            var query = string.Format(Conversions._undoconversion, c.LineId, c.ConversionId);
+            var u = new Conversions(query);
+
+            current = u.conversions.First();
+            prior = u.conversions.Count() > 1 ? u.conversions.Last() : null;
         }
     }
 

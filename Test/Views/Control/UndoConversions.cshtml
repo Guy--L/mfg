@@ -37,7 +37,7 @@
     $(function () {
         $('#recentconversions tbody').on('click', 'tr', function () {
             var id = $(this).closest('tr').data('id');
-            location.href = '@Url.Action("ConfirmUndoConversion","Control",null,Request.Url.Scheme) / ' + id;
+            location.href = '@Url.Action("ConfirmUndoConversion","Control",null,Request.Url.Scheme)/' + id;
         });
         $('#cancelundoconversion').on('click', function () {
             location.href = '@Url.Action("Conversions","Control",null,Request.Url.Scheme)';

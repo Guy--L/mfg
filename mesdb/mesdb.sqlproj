@@ -137,6 +137,7 @@
     <None Include="Data\SolutionBatches.sql" />
     <None Include="AgentJobs.sql" />
     <None Include="Data\InsertTriggerOnLineOperation.sql" />
+    <None Include="Data\SinceNow.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="mesdb.refactorlog" />
