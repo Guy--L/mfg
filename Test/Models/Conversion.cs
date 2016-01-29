@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using NPoco;
 using Omu.ValueInjecter;
+using System.Diagnostics;
 
 namespace Test.Models
 {
     public partial class Conversion
     {
-        [ResultColumn] public string System { get; set; }
-        [ResultColumn] public string SolutionType { get; set; }
-        [ResultColumn] public string Code { get; set; }
-        [ResultColumn] public string Color { get; set; }
+        public string System { get { return Models.System.Systems[SystemId]; } }
+        public string SolutionType { get { return SolutionRecipe.Solutions[SolutionRecipeId]; } }
+        public string Color { get { return Extruder.Colors[ExtruderId]; } }
         public Line line { get; set; }
         public ProductCode product { get; set; }
 
@@ -111,33 +111,9 @@ namespace Test.Models
         public string Ignore(int person)
         {
             Completed = DateTime.Now;
-            Started = DateTime.MaxValue;
+            Started = DateTime.MaxValue.AddMilliseconds(-1);
             Update();
             return "Conversion ignored";
-        }
-
-        public string Undo(int person)
-        {
-            if (State == "ignored")
-            {
-                Completed = DateTime.MaxValue;
-                Update();
-                return "Conversion no longer ignored";
-            }
-            if (State == "created")
-                return "Error: Cannot undo a created conversion (try deleting it)";
-
-            var line = LineTx.Prior(LineId);
-            if (line == null)
-                return "Error: could not find prior line transaction";
-
-            line.Stamp = DateTime.Now;
-            line.PersonId = person;
-            line.Update();
-            Started = DateTime.MaxValue;
-            Completed = DateTime.MaxValue;
-            Update();
-            return "Conversion is undone back to created";
         }
     }
 
@@ -151,17 +127,17 @@ namespace Test.Models
         ";
 
         public static string _all = @"
-          SELECT {1} c.[ConversionId],c.[Scheduled],c.[Started],c.[Completed],c.[FinishFootage],c.[StatusId],c.[Note]
+          SELECT {1} c.[ConversionId],c.[SystemId],c.[SolutionRecipeId],c.[ExtruderId],c.[Scheduled],c.[Started],c.[Completed],c.[FinishFootage],c.[StatusId],c.[Note]
                   ,c.[Started]
+				  ,s.[System]
                   ,r.[SolutionType]
-                  ,s.[System]
-                  ,e.[Color] 
+                  ,e.[Color]
                   ,l.[Stamp] ,l.[LineId] ,l.[UnitId] ,l.[LineNumber]
-                  ,s.[SystemId]
-                  ,r.[SolutionRecipeId]
                   ,p.[ProductCodeId] ,p.[ProductCode] ,p.[ProductSpec] ,p.[PlastSpec] ,p.[WetLayflat_Aim] ,p.[WetLayflat_Min] ,p.[WetLayflat_Max] 
                   ,p.[Glut_Aim] ,p.[Glut_Max] ,p.[Glut_Min] ,p.[ReelMoist_Aim] ,p.[ReelMoist_Min] ,p.[ReelMoist_Max] ,p.[LF_Aim] ,p.[LF_Min] ,p.[LF_Max] ,p.[LF_LCL] ,p.[LF_UCL]
                   ,p.[OilType] ,p.[Oil_Aim] ,p.[Oil_Min] ,p.[Oil_Max] ,p.[Gly_Aim] ,p.[Gly_Min] ,p.[Gly_Max]
+                  ,s.[SystemId]
+                  ,r.[SolutionRecipeId]
               {0}
               join [dbo].[Line] l on c.LineId = l.LineId
               left join [dbo].[Extruder] e on e.ExtruderId = c.ExtruderId
@@ -197,7 +173,15 @@ namespace Test.Models
                 conversions = labdb.Fetch<Conversion, Line, ProductCode, Conversion>(
                     (c, l, p) =>
                     {
-                        c.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
+                        c.product = p ?? 
+                        new ProductCode()
+                        {
+                            _ProductCode = "00?00",
+                            ProductCodeId = 0
+                        };
+                        c.ProductCodeId = l.ProductCodeId;
+                        p.ProductCodeId = l.ProductCodeId;
+                        c.product.ProductCodeId = l.ProductCodeId;
                         c.line = l;
                         c.Future();
                         return c;
@@ -212,6 +196,8 @@ namespace Test.Models
         public Conversion prior { get; set; }
         public Conversion current { get; set; }
 
+        public UndoConversionView() { }
+
         public UndoConversionView(int id)
         {
             var c = new Conversion(id);
@@ -219,7 +205,38 @@ namespace Test.Models
             var u = new Conversions(query);
 
             current = u.conversions.First();
-            prior = u.conversions.Count() > 1 ? u.conversions.Last() : null;
+            current.ProductCodeId = current.product.ProductCodeId;
+            prior = null;
+            if (u.conversions.Count() > 1)
+            {
+                prior = u.conversions.Last();
+                prior.ProductCodeId = prior.product.ProductCodeId;
+                prior.LineId = prior.line.LineId;
+            }
+        }
+
+        public string Commit(int personid)
+        {
+            try {
+                current.ModifiedColumns = new Dictionary<string, bool>();
+                current.Started = DateTime.MaxValue.AddMilliseconds(-100);
+                current.Completed = DateTime.MaxValue.AddMilliseconds(-100);
+                current.Update();
+
+                var line = new Line(prior);
+                line.PersonId = personid;
+                line.Stamp = DateTime.Now;
+                line.Update();
+            }
+            catch(Exception e)
+            {
+                var msg = "Error: " + e.Message;
+#if DEBUG
+                msg += "\n" + e.StackTrace;
+#endif
+                return msg;
+            }
+            return "Conversion reverted";
         }
     }
 
@@ -244,8 +261,8 @@ namespace Test.Models
             {
                 c = id > 0 ? db.SingleOrDefaultById<Conversion>(id) : new Conversion() {
                     SolutionRecipeId = 0,
-                    Started = DateTime.MaxValue,
-                    Completed = DateTime.MaxValue
+                    Started = DateTime.MaxValue.AddMilliseconds(-1),
+                    Completed = DateTime.MaxValue.AddMilliseconds(-1)
                 };
                 if (c != null || id > 0)
                     c.Future();

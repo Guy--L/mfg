@@ -3,42 +3,47 @@
 @{
     ViewBag.Title = "Undo Conversion";
     List<IHtmlString> buttons = new List<IHtmlString>() {
-        Html.Bootstrap().SubmitButton().Text("Proceed with Undo").Id("undoconversion").Style(ButtonStyle.Success),
+        Html.Bootstrap().SubmitButton().Text("Revert to Prior").Id("undoconversion").Style(ButtonStyle.Success),
         Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
     };
 
-    var ispStarted = !(Model.prior.Started.Value == DateTime.MaxValue);
-    var ispCompleted = !(Model.prior.Completed == DateTime.MaxValue);
+    var ispStarted = (Model.prior.Started.Value < DateTime.Now.AddYears(200));
+    var ispCompleted = (Model.prior.Completed < DateTime.Now.AddYears(200));
     var pstarted = (!Model.prior.Started.HasValue || !ispStarted) ? "" : Model.prior.Started.Value.ToString("MM-dd HH:mm");
     var pcompleted = (Model.prior.Completed == null || !ispCompleted) ? "" : Model.prior.Completed.ToString("MM-dd HH:mm");
 
-    var iscStarted = !(Model.current.Started.Value == DateTime.MaxValue);
-    var iscCompleted = !(Model.current.Completed == DateTime.MaxValue);
+    var iscStarted = (Model.current.Started.Value < DateTime.Now.AddYears(200));
+    var iscCompleted = (Model.current.Completed < DateTime.Now.AddYears(200));
     var cstarted = (!Model.current.Started.HasValue || !iscStarted) ? "" : Model.current.Started.Value.ToString("MM-dd HH:mm");
     var ccompleted = (Model.current.Completed == null || !iscCompleted) ? "" : Model.current.Completed.ToString("MM-dd HH:mm");
 }
 
 <div class="container">
     <div class="row">
-        <div class="col-xs-12 text-primary"><h3>Confirm Undo Conversion</h3></div>
+        <div class="col-xs-12 text-primary"><h3>Confirm Undo Conversion<i> on</i> @Model.prior.line.Name</h3></div>
     </div>
     @using (var form = Html.Bootstrap().Begin(new Form("UndoConversion", "Control").Id("undoconversionform").Type(FormType.Horizontal)))
     {
         @Html.HiddenFor(m => m.prior.ConversionId);
         @Html.HiddenFor(m => m.current.ConversionId);
 
+        @Html.HiddenFor(m => m.prior.LineId)
+        @Html.HiddenFor(m => m.prior.Scheduled)
+        @Html.HiddenFor(m => m.prior.ProductCodeId)
+        @Html.HiddenFor(m => m.prior.SystemId)
+        @Html.HiddenFor(m => m.prior.StatusId)
+        @Html.HiddenFor(m => m.prior.SolutionRecipeId)
+        @Html.HiddenFor(m => m.prior.ExtruderId)
+
         <div class="row">
-            <div class="col-xs-3">
-                <h2><i>On</i> @Model.prior.line.Name</h2>
-            </div>
-            <div class="col-xs-11">
+            <div class="col-xs-12">
                 <table id="conversions" class="table table-striped table-hover table-condensed table-bordered">
                     <thead>
                         <tr>
                             <th colspan="10">Last Conversion Transition</th>
                         </tr>
                         <tr>
-                            <th></th>
+                            <th>@Model.prior.line.Name</th>
                             <th>Scheduled</th>
                             <th>Started</th>
                             <th>Completed</th>
@@ -63,7 +68,7 @@
                             <th>@Model.prior.System</th>
                             <td>@Model.prior.SolutionType</td>
                             <td>@Html.Raw(Model.prior.Icon)</td>
-
+                            <td>@Model.prior.Note</td>
                         </tr>
                         <tr>
                             <td><b>Current</b></td>
@@ -76,6 +81,7 @@
                             <th>@Model.current.System</th>
                             <td>@Model.current.SolutionType</td>
                             <td>@Html.Raw(Model.current.Icon)</td>
+                            <td>@Model.current.Note</td>                            
                         </tr>
                     </tbody>
                 </table>

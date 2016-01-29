@@ -84,7 +84,7 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult UndoConversion(UndoConversionView u)
         {
-            var msg = u.current.Undo(0);
+            var msg = u.Commit(0);
             if (msg.Contains("Error"))
             {
                 Error(msg);
@@ -102,7 +102,29 @@ namespace Test.Controllers
                 Error(msg);
             else
                 Success(msg);
-            return View(c);
+            return RedirectToAction("Conversions");
+        }
+
+        public ActionResult IgnoreConversion(int id)
+        {
+            var c = new Conversion(id);
+            var msg = c.Ignore(0);                                // pass personid
+            if (msg.Contains("Error"))
+                Error(msg);
+            else
+                Success(msg);
+            return RedirectToAction("Conversions");
+        }
+
+        public ActionResult StartConversion(int id)
+        {
+            var c = new Conversion(id);
+            var msg = c.Start(0);                                // pass personid
+            if (msg.Contains("Error"))
+                Error(msg);
+            else
+                Success(msg);
+            return RedirectToAction("Conversions");
         }
 
         public ActionResult Products()

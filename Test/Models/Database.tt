@@ -9,7 +9,7 @@
 	GenerateCommon = true;
 	ClassPrefix = "";
 	ClassSuffix = ""; 
-	TrackModifiedColumns = false;
+	TrackModifiedColumns = true;
 	IncludeViews = true;
      // Read schema
 	var tables = LoadTables();  
@@ -18,7 +18,7 @@
 		 "Unit"
 		,"Extruder" 
 		,"Exempt"
-		,"Line"
+		,"Line" 
 		,"LineTx"
 		,"LineHistory"
 		,"LineStatus" 

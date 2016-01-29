@@ -33,6 +33,9 @@ namespace Test
                 Reading.Times = Reading.Types.ToDictionary(k => k.Key, k => k.Value.Diary.Split(',').Select(h => int.Parse(h)).ToList());
                 Reading.SetLines(db.Fetch<Line>());
                 Status.SetIcons(db.Fetch<Status>());
+                SolutionRecipe.Solutions = db.Fetch<SolutionRecipe>().ToDictionary(k => k.SolutionRecipeId, v => v.SolutionType);
+                Extruder.Colors = db.Fetch<Extruder>().ToDictionary(k => k.ExtruderId, v => v.Color);
+                Models.System.Systems = db.Fetch<Models.System>().ToDictionary(k => k.SystemId, v => v._System.Replace("unassigned","0"));
             }
 
             CasingSample.mapReflection();

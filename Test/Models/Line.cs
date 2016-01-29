@@ -22,10 +22,12 @@ namespace Test.Models
 
         public Line(Conversion c)
         {
+            ModifiedColumns = new Dictionary<string, bool>();
             LineId = c.LineId;
             StatusId = c.StatusId;
             ProductCodeId = c.ProductCodeId;
             SystemId = c.SystemId;
+            ConversionId = c.ConversionId;
         }
     }
 

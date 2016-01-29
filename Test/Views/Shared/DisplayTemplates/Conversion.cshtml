@@ -1,19 +1,19 @@
 ﻿@model Test.Models.Conversion
 
 @{ 
-    var isStarted = !(Model.Started.Value == DateTime.MaxValue);
-    var isCompleted = !(Model.Completed == DateTime.MaxValue);
+    var isStarted = (Model.Started.Value < DateTime.Now.AddYears(200));
+    var isCompleted = (Model.Completed < DateTime.Now.AddYears(200));
     var started = (!Model.Started.HasValue || !isStarted)?"":Model.Started.Value.ToString("MM-dd HH:mm");
     var completed = (Model.Completed == null || !isCompleted) ? "" : Model.Completed.ToString("MM-dd HH:mm");
     var actions = "";
     if (!ViewBag.Undo && !isStarted)
     {
-        actions += "<button class='btn btn-xs btn-danger' id='ignoreconversion' title='Does not affect line setting'><i class='fa fa-ban'></i> Ignore</button> ";
-        actions += "<button class='btn btn-xs btn-info' id='startconversion' title='Mark line as being in conversion'><i class='fa fa-random'></i> Start</button> ";
+        actions += "<button class='btn btn-xs btn-danger btnignore' title='Does not affect line setting'><i class='fa fa-ban'></i> Ignore</button> ";
+        actions += "<button class='btn btn-xs btn-info btnstart' title='Mark line as being in conversion'><i class='fa fa-random'></i> Start</button> ";
     }
     if (!ViewBag.Undo && !isCompleted)
     {
-        actions += "<button class='btn btn-xs btn-success' id='completeconversion' title='Apply conversion settings to line'><i class='fa fa-arrow-up'></i> Complete</button> ";
+        actions += "<button class='btn btn-xs btn-success btncomplete' title='Apply conversion settings to line'><i class='fa fa-arrow-up'></i> Complete</button> ";
     }
     var note = "";
     if (Model.Note != null && Model.Note.Length > 0)

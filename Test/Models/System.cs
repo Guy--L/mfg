@@ -8,6 +8,8 @@ namespace Test.Models
 {
     public partial class System
     {
+        [Ignore] public static Dictionary<int, string> Systems;
+
         public static string _active = @"select distinct q.systemid, q.[system], q.solutiontype from (" +
                     SolutionBatch._all + 
                     " where b.completed is null and [system] not like 'gr%') q where q.row = 1 order by q.systemid";

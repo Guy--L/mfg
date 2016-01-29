@@ -232,8 +232,10 @@
     <Compile Include="Controllers\ControlController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Models\Conversion.cs" />
+    <Compile Include="Models\Extruder.cs" />
     <Compile Include="Models\Line.cs" />
     <Compile Include="Models\LineTx.cs" />
+    <Compile Include="Models\SolutionRecipe.cs" />
     <Compile Include="Models\Status.cs" />
     <Compile Include="Models\System.cs" />
     <Compile Include="Models\Tags.cs">

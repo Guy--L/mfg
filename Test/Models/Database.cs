@@ -70,8 +70,6 @@ namespace Test.Models
 			public static labDB repo { get { return labDB.GetInstance(); } }
 			public bool IsNew() { return repo.IsNew<T>(this); }
 			public object Insert() { return repo.Insert(this); }
-			public void Save() { repo.Save<T>(this); }
-			public int Update() { return repo.Update(this); }
 			public int Update(IEnumerable<string> columns) { return repo.Update(this, columns); }
 			public static int Update(string sql, params object[] args) { return repo.Update<T>(sql, args); }
 			public static int Update(Sql sql) { return repo.Update<T>(sql); }
@@ -100,6 +98,33 @@ namespace Test.Models
 			public static Page<T> Page(long page, long itemsPerPage, Sql sql) { return repo.Page<T>(page, itemsPerPage, sql); }
 			public static IEnumerable<T> Query(string sql, params object[] args) { return repo.Query<T>(sql, args); }
 			public static IEnumerable<T> Query(Sql sql) { return repo.Query<T>(sql); }
+			
+			[Ignore] public Dictionary<string,bool> ModifiedColumns;
+			private void OnLoaded()
+			{
+				ModifiedColumns = new Dictionary<string,bool>();
+			}
+			protected void MarkColumnModified(string column_name)
+			{
+				if (ModifiedColumns!=null)
+					ModifiedColumns[column_name]=true;
+			}
+			public int Update() 
+			{ 
+				if (ModifiedColumns==null)
+					return repo.Update(this); 
+
+				int retv = repo.Update(this, ModifiedColumns.Keys);
+				ModifiedColumns.Clear();
+				return retv;
+			}
+			public void Save() 
+			{ 
+				if (IsNew())
+					repo.Insert(this);
+				else
+					Update();
+			}
 		}
 	}
 	
@@ -108,475 +133,3650 @@ namespace Test.Models
 	[PrimaryKey("StatusId")]
 	[ExplicitColumns]
     public partial class Status : labDB.Record<Status>  
-    {		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public string Code { get; set; } 		
-		[Column] public string Description { get; set; } 		
-		[Column] public string Icon { get; set; } 		
-		[Column] public string Color { get; set; } 	
+    {        [Column] 		public int StatusId 
+		{ 
+			get
+			{
+				return _StatusId;
+			}
+			set
+			{
+				_StatusId = value;
+				MarkColumnModified("StatusId");
+			}
+		}
+		int _StatusId;
+        [Column] 		public string Code 
+		{ 
+			get
+			{
+				return _Code;
+			}
+			set
+			{
+				_Code = value;
+				MarkColumnModified("Code");
+			}
+		}
+		string _Code;
+        [Column] 		public string Description 
+		{ 
+			get
+			{
+				return _Description;
+			}
+			set
+			{
+				_Description = value;
+				MarkColumnModified("Description");
+			}
+		}
+		string _Description;
+        [Column] 		public string Icon 
+		{ 
+			get
+			{
+				return _Icon;
+			}
+			set
+			{
+				_Icon = value;
+				MarkColumnModified("Icon");
+			}
+		}
+		string _Icon;
+        [Column] 		public string Color 
+		{ 
+			get
+			{
+				return _Color;
+			}
+			set
+			{
+				_Color = value;
+				MarkColumnModified("Color");
+			}
+		}
+		string _Color;
+	
 	}
 
 	[TableName("Deck")]
 	[PrimaryKey("DeckId")]
 	[ExplicitColumns]
     public partial class Deck : labDB.Record<Deck>  
-    {		
-		[Column] public int DeckId { get; set; } 		
-		[Column] public string Name { get; set; } 	
+    {        [Column] 		public int DeckId 
+		{ 
+			get
+			{
+				return _DeckId;
+			}
+			set
+			{
+				_DeckId = value;
+				MarkColumnModified("DeckId");
+			}
+		}
+		int _DeckId;
+        [Column] 		public string Name 
+		{ 
+			get
+			{
+				return _Name;
+			}
+			set
+			{
+				_Name = value;
+				MarkColumnModified("Name");
+			}
+		}
+		string _Name;
+	
 	}
 
 	[TableName("Series")]
 	[PrimaryKey("SeriesId")]
 	[ExplicitColumns]
     public partial class Series : labDB.Record<Series>  
-    {		
-		[Column] public int SeriesId { get; set; } 		
-		[Column] public string Title { get; set; } 		
-		[Column] public string Field { get; set; } 		
-		[Column] public string YLabel { get; set; } 		
-		[Column] public string Legend { get; set; } 		
-		[Column] public int? Height { get; set; } 		
-		[Column] public string ForeGround { get; set; } 	
+    {        [Column] 		public int SeriesId 
+		{ 
+			get
+			{
+				return _SeriesId;
+			}
+			set
+			{
+				_SeriesId = value;
+				MarkColumnModified("SeriesId");
+			}
+		}
+		int _SeriesId;
+        [Column] 		public string Title 
+		{ 
+			get
+			{
+				return _Title;
+			}
+			set
+			{
+				_Title = value;
+				MarkColumnModified("Title");
+			}
+		}
+		string _Title;
+        [Column] 		public string Field 
+		{ 
+			get
+			{
+				return _Field;
+			}
+			set
+			{
+				_Field = value;
+				MarkColumnModified("Field");
+			}
+		}
+		string _Field;
+        [Column] 		public string YLabel 
+		{ 
+			get
+			{
+				return _YLabel;
+			}
+			set
+			{
+				_YLabel = value;
+				MarkColumnModified("YLabel");
+			}
+		}
+		string _YLabel;
+        [Column] 		public string Legend 
+		{ 
+			get
+			{
+				return _Legend;
+			}
+			set
+			{
+				_Legend = value;
+				MarkColumnModified("Legend");
+			}
+		}
+		string _Legend;
+        [Column] 		public int? Height 
+		{ 
+			get
+			{
+				return _Height;
+			}
+			set
+			{
+				_Height = value;
+				MarkColumnModified("Height");
+			}
+		}
+		int? _Height;
+        [Column] 		public string ForeGround 
+		{ 
+			get
+			{
+				return _ForeGround;
+			}
+			set
+			{
+				_ForeGround = value;
+				MarkColumnModified("ForeGround");
+			}
+		}
+		string _ForeGround;
+	
 	}
 
 	[TableName("Slide")]
 	[PrimaryKey("SlideId")]
 	[ExplicitColumns]
     public partial class Slide : labDB.Record<Slide>  
-    {		
-		[Column] public int SlideId { get; set; } 		
-		[Column] public int DeckId { get; set; } 		
-		[Column] public string Name { get; set; } 		
-		[Column] public string FileNameSuffix { get; set; } 		
-		[Column] public string FileFormat { get; set; } 	
+    {        [Column] 		public int SlideId 
+		{ 
+			get
+			{
+				return _SlideId;
+			}
+			set
+			{
+				_SlideId = value;
+				MarkColumnModified("SlideId");
+			}
+		}
+		int _SlideId;
+        [Column] 		public int DeckId 
+		{ 
+			get
+			{
+				return _DeckId;
+			}
+			set
+			{
+				_DeckId = value;
+				MarkColumnModified("DeckId");
+			}
+		}
+		int _DeckId;
+        [Column] 		public string Name 
+		{ 
+			get
+			{
+				return _Name;
+			}
+			set
+			{
+				_Name = value;
+				MarkColumnModified("Name");
+			}
+		}
+		string _Name;
+        [Column] 		public string FileNameSuffix 
+		{ 
+			get
+			{
+				return _FileNameSuffix;
+			}
+			set
+			{
+				_FileNameSuffix = value;
+				MarkColumnModified("FileNameSuffix");
+			}
+		}
+		string _FileNameSuffix;
+        [Column] 		public string FileFormat 
+		{ 
+			get
+			{
+				return _FileFormat;
+			}
+			set
+			{
+				_FileFormat = value;
+				MarkColumnModified("FileFormat");
+			}
+		}
+		string _FileFormat;
+	
 	}
 
 	[TableName("SlideSeries")]
 	[PrimaryKey("SlideSeriesId")]
 	[ExplicitColumns]
     public partial class SlideSeries : labDB.Record<SlideSeries>  
-    {		
-		[Column] public int SlideSeriesId { get; set; } 		
-		[Column] public int SlideId { get; set; } 		
-		[Column] public int SeriesId { get; set; } 	
+    {        [Column] 		public int SlideSeriesId 
+		{ 
+			get
+			{
+				return _SlideSeriesId;
+			}
+			set
+			{
+				_SlideSeriesId = value;
+				MarkColumnModified("SlideSeriesId");
+			}
+		}
+		int _SlideSeriesId;
+        [Column] 		public int SlideId 
+		{ 
+			get
+			{
+				return _SlideId;
+			}
+			set
+			{
+				_SlideId = value;
+				MarkColumnModified("SlideId");
+			}
+		}
+		int _SlideId;
+        [Column] 		public int SeriesId 
+		{ 
+			get
+			{
+				return _SeriesId;
+			}
+			set
+			{
+				_SeriesId = value;
+				MarkColumnModified("SeriesId");
+			}
+		}
+		int _SeriesId;
+	
 	}
 
 	[TableName("Parameter")]
 	[PrimaryKey("ParameterId")]
 	[ExplicitColumns]
     public partial class Parameter : labDB.Record<Parameter>  
-    {		
-		[Column] public int ParameterId { get; set; } 		
-		[Column] public string Name { get; set; } 		
-		[Column] public string Scale { get; set; } 		
-		[Column] public string Mask { get; set; } 		
-		[Column] public string Units { get; set; } 		
-		[Column] public string Diary { get; set; } 		
-		[Column] public int Count { get; set; } 		
-		[Column] public string Icon { get; set; } 		
-		[Column] public bool ReadNow { get; set; } 		
-		[Column] public string Cells { get; set; } 	
+    {        [Column] 		public int ParameterId 
+		{ 
+			get
+			{
+				return _ParameterId;
+			}
+			set
+			{
+				_ParameterId = value;
+				MarkColumnModified("ParameterId");
+			}
+		}
+		int _ParameterId;
+        [Column] 		public string Name 
+		{ 
+			get
+			{
+				return _Name;
+			}
+			set
+			{
+				_Name = value;
+				MarkColumnModified("Name");
+			}
+		}
+		string _Name;
+        [Column] 		public string Scale 
+		{ 
+			get
+			{
+				return _Scale;
+			}
+			set
+			{
+				_Scale = value;
+				MarkColumnModified("Scale");
+			}
+		}
+		string _Scale;
+        [Column] 		public string Mask 
+		{ 
+			get
+			{
+				return _Mask;
+			}
+			set
+			{
+				_Mask = value;
+				MarkColumnModified("Mask");
+			}
+		}
+		string _Mask;
+        [Column] 		public string Units 
+		{ 
+			get
+			{
+				return _Units;
+			}
+			set
+			{
+				_Units = value;
+				MarkColumnModified("Units");
+			}
+		}
+		string _Units;
+        [Column] 		public string Diary 
+		{ 
+			get
+			{
+				return _Diary;
+			}
+			set
+			{
+				_Diary = value;
+				MarkColumnModified("Diary");
+			}
+		}
+		string _Diary;
+        [Column] 		public int Count 
+		{ 
+			get
+			{
+				return _Count;
+			}
+			set
+			{
+				_Count = value;
+				MarkColumnModified("Count");
+			}
+		}
+		int _Count;
+        [Column] 		public string Icon 
+		{ 
+			get
+			{
+				return _Icon;
+			}
+			set
+			{
+				_Icon = value;
+				MarkColumnModified("Icon");
+			}
+		}
+		string _Icon;
+        [Column] 		public bool ReadNow 
+		{ 
+			get
+			{
+				return _ReadNow;
+			}
+			set
+			{
+				_ReadNow = value;
+				MarkColumnModified("ReadNow");
+			}
+		}
+		bool _ReadNow;
+        [Column] 		public string Cells 
+		{ 
+			get
+			{
+				return _Cells;
+			}
+			set
+			{
+				_Cells = value;
+				MarkColumnModified("Cells");
+			}
+		}
+		string _Cells;
+	
 	}
 
 	[TableName("ReadingField")]
 	[PrimaryKey("ReadingFieldId")]
 	[ExplicitColumns]
     public partial class ReadingField : labDB.Record<ReadingField>  
-    {		
-		[Column] public int ReadingFieldId { get; set; } 		
-		[Column] public string FieldName { get; set; } 		
-		[Column] public string Title { get; set; } 		
-		[Column] public string LineColor { get; set; } 		
-		[Column] public int? Axis { get; set; } 		
-		[Column] public double? Low { get; set; } 		
-		[Column] public double? High { get; set; } 	
+    {        [Column] 		public int ReadingFieldId 
+		{ 
+			get
+			{
+				return _ReadingFieldId;
+			}
+			set
+			{
+				_ReadingFieldId = value;
+				MarkColumnModified("ReadingFieldId");
+			}
+		}
+		int _ReadingFieldId;
+        [Column] 		public string FieldName 
+		{ 
+			get
+			{
+				return _FieldName;
+			}
+			set
+			{
+				_FieldName = value;
+				MarkColumnModified("FieldName");
+			}
+		}
+		string _FieldName;
+        [Column] 		public string Title 
+		{ 
+			get
+			{
+				return _Title;
+			}
+			set
+			{
+				_Title = value;
+				MarkColumnModified("Title");
+			}
+		}
+		string _Title;
+        [Column] 		public string LineColor 
+		{ 
+			get
+			{
+				return _LineColor;
+			}
+			set
+			{
+				_LineColor = value;
+				MarkColumnModified("LineColor");
+			}
+		}
+		string _LineColor;
+        [Column] 		public int? Axis 
+		{ 
+			get
+			{
+				return _Axis;
+			}
+			set
+			{
+				_Axis = value;
+				MarkColumnModified("Axis");
+			}
+		}
+		int? _Axis;
+        [Column] 		public double? Low 
+		{ 
+			get
+			{
+				return _Low;
+			}
+			set
+			{
+				_Low = value;
+				MarkColumnModified("Low");
+			}
+		}
+		double? _Low;
+        [Column] 		public double? High 
+		{ 
+			get
+			{
+				return _High;
+			}
+			set
+			{
+				_High = value;
+				MarkColumnModified("High");
+			}
+		}
+		double? _High;
+	
 	}
 
 	[TableName("ReadingTag")]
 	[PrimaryKey("ReadingTagId")]
 	[ExplicitColumns]
     public partial class ReadingTag : labDB.Record<ReadingTag>  
-    {		
-		[Column] public int ReadingTagId { get; set; } 		
-		[Column] public int ReadingFieldId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int TagId { get; set; } 	
+    {        [Column] 		public int ReadingTagId 
+		{ 
+			get
+			{
+				return _ReadingTagId;
+			}
+			set
+			{
+				_ReadingTagId = value;
+				MarkColumnModified("ReadingTagId");
+			}
+		}
+		int _ReadingTagId;
+        [Column] 		public int ReadingFieldId 
+		{ 
+			get
+			{
+				return _ReadingFieldId;
+			}
+			set
+			{
+				_ReadingFieldId = value;
+				MarkColumnModified("ReadingFieldId");
+			}
+		}
+		int _ReadingFieldId;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public int TagId 
+		{ 
+			get
+			{
+				return _TagId;
+			}
+			set
+			{
+				_TagId = value;
+				MarkColumnModified("TagId");
+			}
+		}
+		int _TagId;
+	
 	}
 
 	[TableName("Sample")]
 	[PrimaryKey("SampleId")]
 	[ExplicitColumns]
     public partial class Sample : labDB.Record<Sample>  
-    {		
-		[Column] public int SampleId { get; set; } 		
-		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public string Note { get; set; } 		
-		[Column] public string Tech { get; set; } 		
-		[Column] public DateTime? Completed { get; set; } 		
-		[Column] public int ReelNumber { get; set; } 		
-		[Column] public int? Footage { get; set; } 		
-		[Column] public int? BarCode { get; set; } 		
-		[Column] public int? ParameterId { get; set; } 		
-		[Column] public int? Reading1 { get; set; } 		
-		[Column] public int? Reading2 { get; set; } 		
-		[Column] public int? ProcessId { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public DateTime? NextScheduled { get; set; } 		
-		[Column] public int? Reading3 { get; set; } 	
+    {        [Column] 		public int SampleId 
+		{ 
+			get
+			{
+				return _SampleId;
+			}
+			set
+			{
+				_SampleId = value;
+				MarkColumnModified("SampleId");
+			}
+		}
+		int _SampleId;
+        [Column] 		public DateTime Scheduled 
+		{ 
+			get
+			{
+				return _Scheduled;
+			}
+			set
+			{
+				_Scheduled = value;
+				MarkColumnModified("Scheduled");
+			}
+		}
+		DateTime _Scheduled;
+        [Column] 		public DateTime Stamp 
+		{ 
+			get
+			{
+				return _Stamp;
+			}
+			set
+			{
+				_Stamp = value;
+				MarkColumnModified("Stamp");
+			}
+		}
+		DateTime _Stamp;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public int ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int _ProductCodeId;
+        [Column] 		public string Note 
+		{ 
+			get
+			{
+				return _Note;
+			}
+			set
+			{
+				_Note = value;
+				MarkColumnModified("Note");
+			}
+		}
+		string _Note;
+        [Column] 		public string Tech 
+		{ 
+			get
+			{
+				return _Tech;
+			}
+			set
+			{
+				_Tech = value;
+				MarkColumnModified("Tech");
+			}
+		}
+		string _Tech;
+        [Column] 		public DateTime? Completed 
+		{ 
+			get
+			{
+				return _Completed;
+			}
+			set
+			{
+				_Completed = value;
+				MarkColumnModified("Completed");
+			}
+		}
+		DateTime? _Completed;
+        [Column] 		public int ReelNumber 
+		{ 
+			get
+			{
+				return _ReelNumber;
+			}
+			set
+			{
+				_ReelNumber = value;
+				MarkColumnModified("ReelNumber");
+			}
+		}
+		int _ReelNumber;
+        [Column] 		public int? Footage 
+		{ 
+			get
+			{
+				return _Footage;
+			}
+			set
+			{
+				_Footage = value;
+				MarkColumnModified("Footage");
+			}
+		}
+		int? _Footage;
+        [Column] 		public int? BarCode 
+		{ 
+			get
+			{
+				return _BarCode;
+			}
+			set
+			{
+				_BarCode = value;
+				MarkColumnModified("BarCode");
+			}
+		}
+		int? _BarCode;
+        [Column] 		public int? ParameterId 
+		{ 
+			get
+			{
+				return _ParameterId;
+			}
+			set
+			{
+				_ParameterId = value;
+				MarkColumnModified("ParameterId");
+			}
+		}
+		int? _ParameterId;
+        [Column] 		public int? Reading1 
+		{ 
+			get
+			{
+				return _Reading1;
+			}
+			set
+			{
+				_Reading1 = value;
+				MarkColumnModified("Reading1");
+			}
+		}
+		int? _Reading1;
+        [Column] 		public int? Reading2 
+		{ 
+			get
+			{
+				return _Reading2;
+			}
+			set
+			{
+				_Reading2 = value;
+				MarkColumnModified("Reading2");
+			}
+		}
+		int? _Reading2;
+        [Column] 		public int? ProcessId 
+		{ 
+			get
+			{
+				return _ProcessId;
+			}
+			set
+			{
+				_ProcessId = value;
+				MarkColumnModified("ProcessId");
+			}
+		}
+		int? _ProcessId;
+        [Column] 		public int? SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int? _SystemId;
+        [Column] 		public DateTime? NextScheduled 
+		{ 
+			get
+			{
+				return _NextScheduled;
+			}
+			set
+			{
+				_NextScheduled = value;
+				MarkColumnModified("NextScheduled");
+			}
+		}
+		DateTime? _NextScheduled;
+        [Column] 		public int? Reading3 
+		{ 
+			get
+			{
+				return _Reading3;
+			}
+			set
+			{
+				_Reading3 = value;
+				MarkColumnModified("Reading3");
+			}
+		}
+		int? _Reading3;
+	
 	}
 
 	[TableName("LineOperation")]
 	[ExplicitColumns]
     public partial class LineOperation : labDB.Record<LineOperation>  
-    {		
-		[Column] public decimal INDAY { get; set; } 		
-		[Column] public string INUNIT { get; set; } 		
-		[Column] public decimal INLINE { get; set; } 		
-		[Column] public decimal INSHFT { get; set; } 		
-		[Column] public string STCODE { get; set; } 		
-		[Column] public decimal INTIME { get; set; } 		
-		[Column] public string RSCODE { get; set; } 		
-		[Column] public string INPRD { get; set; } 		
-		[Column] public DateTime? stamp { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int? ProductCodeId { get; set; } 	
+    {        [Column] 		public decimal INDAY 
+		{ 
+			get
+			{
+				return _INDAY;
+			}
+			set
+			{
+				_INDAY = value;
+				MarkColumnModified("INDAY");
+			}
+		}
+		decimal _INDAY;
+        [Column] 		public string INUNIT 
+		{ 
+			get
+			{
+				return _INUNIT;
+			}
+			set
+			{
+				_INUNIT = value;
+				MarkColumnModified("INUNIT");
+			}
+		}
+		string _INUNIT;
+        [Column] 		public decimal INLINE 
+		{ 
+			get
+			{
+				return _INLINE;
+			}
+			set
+			{
+				_INLINE = value;
+				MarkColumnModified("INLINE");
+			}
+		}
+		decimal _INLINE;
+        [Column] 		public decimal INSHFT 
+		{ 
+			get
+			{
+				return _INSHFT;
+			}
+			set
+			{
+				_INSHFT = value;
+				MarkColumnModified("INSHFT");
+			}
+		}
+		decimal _INSHFT;
+        [Column] 		public string STCODE 
+		{ 
+			get
+			{
+				return _STCODE;
+			}
+			set
+			{
+				_STCODE = value;
+				MarkColumnModified("STCODE");
+			}
+		}
+		string _STCODE;
+        [Column] 		public decimal INTIME 
+		{ 
+			get
+			{
+				return _INTIME;
+			}
+			set
+			{
+				_INTIME = value;
+				MarkColumnModified("INTIME");
+			}
+		}
+		decimal _INTIME;
+        [Column] 		public string RSCODE 
+		{ 
+			get
+			{
+				return _RSCODE;
+			}
+			set
+			{
+				_RSCODE = value;
+				MarkColumnModified("RSCODE");
+			}
+		}
+		string _RSCODE;
+        [Column] 		public string INPRD 
+		{ 
+			get
+			{
+				return _INPRD;
+			}
+			set
+			{
+				_INPRD = value;
+				MarkColumnModified("INPRD");
+			}
+		}
+		string _INPRD;
+        [Column] 		public DateTime? stamp 
+		{ 
+			get
+			{
+				return _stamp;
+			}
+			set
+			{
+				_stamp = value;
+				MarkColumnModified("stamp");
+			}
+		}
+		DateTime? _stamp;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public int? ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int? _ProductCodeId;
+	
 	}
 
 	[TableName("Conversion")]
 	[PrimaryKey("ConversionId")]
 	[ExplicitColumns]
     public partial class Conversion : labDB.Record<Conversion>  
-    {		
-		[Column] public int ConversionId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public int ExtruderId { get; set; } 		
-		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public DateTime? Started { get; set; } 		
-		[Column] public DateTime Completed { get; set; } 		
-		[Column] public int FinishFootage { get; set; } 		
-		[Column] public string Note { get; set; } 	
-	}
-
-	[TableName("Reading")]
-	[PrimaryKey("ReadingId")]
-	[ExplicitColumns]
-    public partial class Reading : labDB.Record<Reading>  
-    {		
-		[Column] public int ReadingId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int? R1 { get; set; } 		
-		[Column] public int? R2 { get; set; } 		
-		[Column] public int? R3 { get; set; } 		
-		[Column] public int? R4 { get; set; } 		
-		[Column] public int? R5 { get; set; } 		
-		[Column] public int? Average { get; set; } 		
-		[Column] public int ParameterId { get; set; } 		
-		[Column] public string Operator { get; set; } 		
-		[Column] public int EditCount { get; set; } 		
-		[Column] public DateTime Scheduled { get; set; } 		
-		[Column] public int SampleId { get; set; } 	
+    {        [Column] 		public int ConversionId 
+		{ 
+			get
+			{
+				return _ConversionId;
+			}
+			set
+			{
+				_ConversionId = value;
+				MarkColumnModified("ConversionId");
+			}
+		}
+		int _ConversionId;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public int ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int _ProductCodeId;
+        [Column] 		public int SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int _SystemId;
+        [Column] 		public int SolutionRecipeId 
+		{ 
+			get
+			{
+				return _SolutionRecipeId;
+			}
+			set
+			{
+				_SolutionRecipeId = value;
+				MarkColumnModified("SolutionRecipeId");
+			}
+		}
+		int _SolutionRecipeId;
+        [Column] 		public int ExtruderId 
+		{ 
+			get
+			{
+				return _ExtruderId;
+			}
+			set
+			{
+				_ExtruderId = value;
+				MarkColumnModified("ExtruderId");
+			}
+		}
+		int _ExtruderId;
+        [Column] 		public DateTime Scheduled 
+		{ 
+			get
+			{
+				return _Scheduled;
+			}
+			set
+			{
+				_Scheduled = value;
+				MarkColumnModified("Scheduled");
+			}
+		}
+		DateTime _Scheduled;
+        [Column] 		public int StatusId 
+		{ 
+			get
+			{
+				return _StatusId;
+			}
+			set
+			{
+				_StatusId = value;
+				MarkColumnModified("StatusId");
+			}
+		}
+		int _StatusId;
+        [Column] 		public DateTime? Started 
+		{ 
+			get
+			{
+				return _Started;
+			}
+			set
+			{
+				_Started = value;
+				MarkColumnModified("Started");
+			}
+		}
+		DateTime? _Started;
+        [Column] 		public DateTime Completed 
+		{ 
+			get
+			{
+				return _Completed;
+			}
+			set
+			{
+				_Completed = value;
+				MarkColumnModified("Completed");
+			}
+		}
+		DateTime _Completed;
+        [Column] 		public int FinishFootage 
+		{ 
+			get
+			{
+				return _FinishFootage;
+			}
+			set
+			{
+				_FinishFootage = value;
+				MarkColumnModified("FinishFootage");
+			}
+		}
+		int _FinishFootage;
+        [Column] 		public string Note 
+		{ 
+			get
+			{
+				return _Note;
+			}
+			set
+			{
+				_Note = value;
+				MarkColumnModified("Note");
+			}
+		}
+		string _Note;
+	
 	}
 
 	[TableName("ProductCode")]
 	[PrimaryKey("ProductCodeId")]
 	[ExplicitColumns]
     public partial class ProductCode : labDB.Record<ProductCode>  
-    {		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column("ProductCode")] public string _ProductCode { get; set; }
-		
-		[Column] public string ProductSpec { get; set; } 		
-		[Column] public bool? IsActive { get; set; } 		
-		[Column] public string PlastSpec { get; set; } 		
-		[Column] public double? WetLayflat_Aim { get; set; } 		
-		[Column] public double? WetLayflat_Min { get; set; } 		
-		[Column] public double? WetLayflat_Max { get; set; } 		
-		[Column] public double? Glut_Aim { get; set; } 		
-		[Column] public double? Glut_Max { get; set; } 		
-		[Column] public double? Glut_Min { get; set; } 		
-		[Column] public double? FFW_Aim { get; set; } 		
-		[Column] public double? FFW_Min { get; set; } 		
-		[Column] public double? FFW_Max { get; set; } 		
-		[Column] public double? CasingWt_Aim { get; set; } 		
-		[Column] public double? CasingWt_Min { get; set; } 		
-		[Column] public double? CasingWt_Max { get; set; } 		
-		[Column] public double? ShirrMoist_Aim { get; set; } 		
-		[Column] public double? ShirrMoist_Min { get; set; } 		
-		[Column] public double? ShirrMoist_Max { get; set; } 		
-		[Column] public double? ReelMoist_Aim { get; set; } 		
-		[Column] public double? ReelMoist_Min { get; set; } 		
-		[Column] public double? ReelMoist_Max { get; set; } 		
-		[Column] public double? LFShirr_Aim { get; set; } 		
-		[Column] public double? LFShirr_Min { get; set; } 		
-		[Column] public double? LFShirr_Max { get; set; } 		
-		[Column] public double? LFShirr_LCL { get; set; } 		
-		[Column] public double? LFShirr_UCL { get; set; } 		
-		[Column] public double? LF_Aim { get; set; } 		
-		[Column] public float? LF_Min { get; set; } 		
-		[Column] public float? LF_Max { get; set; } 		
-		[Column] public float? LF_LCL { get; set; } 		
-		[Column] public float? LF_UCL { get; set; } 		
-		[Column] public string OilType { get; set; } 		
-		[Column] public double? Oil_Aim { get; set; } 		
-		[Column] public double? Oil_Min { get; set; } 		
-		[Column] public double? Oil_Max { get; set; } 		
-		[Column] public double? Gly_Aim { get; set; } 		
-		[Column] public double? Gly_Min { get; set; } 		
-		[Column] public double? Gly_Max { get; set; } 		
-		[Column] public double? DryTensShirr_Min { get; set; } 		
-		[Column] public string Unshirr_Max { get; set; } 		
-		[Column] public string Unshirr_Avg { get; set; } 		
-		[Column] public string WetTens_Min { get; set; } 		
-		[Column] public string BlowShirr_Aim { get; set; } 		
-		[Column] public string BlowShirr_Min { get; set; } 		
-		[Column] public string BlowShirr_Max { get; set; } 		
-		[Column] public float? DT_LCL { get; set; } 	
-	}
-
-	[TableName("CasingGroup")]
-	[PrimaryKey("CasingGroupId")]
-	[ExplicitColumns]
-    public partial class CasingGroup : labDB.Record<CasingGroup>  
-    {		
-		[Column] public int CasingGroupId { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 	
-	}
-
-	[TableName("CasingTest")]
-	[PrimaryKey("CasingTestId")]
-	[ExplicitColumns]
-    public partial class CasingTest : labDB.Record<CasingTest>  
-    {		
-		[Column] public int CasingTestId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public int? Reel { get; set; } 		
-		[Column] public decimal? Delm { get; set; } 		
-		[Column] public decimal? WetWt { get; set; } 		
-		[Column] public decimal? DryWt { get; set; } 		
-		[Column] public decimal? GlyWetWt { get; set; } 		
-		[Column] public decimal? GlyArea { get; set; } 		
-		[Column] public decimal? GlySTD { get; set; } 		
-		[Column] public decimal? OilArea { get; set; } 		
-		[Column] public decimal? Oil { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 		
-		[Column] public int? CasingGroupId { get; set; } 		
-		[Column] public int? Feet { get; set; } 	
-	}
-
-	[TableName("OilSTD")]
-	[PrimaryKey("OilSTDId")]
-	[ExplicitColumns]
-    public partial class OilSTD : labDB.Record<OilSTD>  
-    {		
-		[Column] public int OilSTDId { get; set; } 		
-		[Column] public DateTime? DateTime { get; set; } 		
-		[Column] public int? Concentration { get; set; } 		
-		[Column] public double Area { get; set; } 		
-		[Column] public int? CasingGroupId { get; set; } 	
-	}
-
-	[TableName("RecipeReading")]
-	[PrimaryKey("RecipeReadingId")]
-	[ExplicitColumns]
-    public partial class RecipeReading : labDB.Record<RecipeReading>  
-    {		
-		[Column] public int RecipeReadingId { get; set; } 		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public int ReadingId { get; set; } 		
-		[Column] public string LineColor { get; set; } 		
-		[Column] public double? Low { get; set; } 		
-		[Column] public double? High { get; set; } 	
-	}
-
-	[TableName("ProductCodeTx")]
-	[PrimaryKey("ProductCodeTxId", AutoIncrement=false)]
-	[ExplicitColumns]
-    public partial class ProductCodeTx : labDB.Record<ProductCodeTx>  
-    {		
-		[Column] public int ProductCodeTxId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int PersonId { get; set; } 		
-		[Column] public string Delta { get; set; } 	
-	}
-
-	[TableName("Line")]
-	[PrimaryKey("LineId")]
-	[ExplicitColumns]
-    public partial class Line : labDB.Record<Line>  
-    {		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int? LineTankId { get; set; } 		
-		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int PersonId { get; set; } 	
-	}
-
-	[TableName("LineHistory")]
-	[PrimaryKey("LineHistoryId")]
-	[ExplicitColumns]
-    public partial class LineHistory : labDB.Record<LineHistory>  
-    {		
-		[Column] public int LineHistoryId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int? LineTankId { get; set; } 		
-		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int PersonId { get; set; } 		
-		[Column] public string Comment { get; set; } 		
-		[Column] public DateTime Taken { get; set; } 	
-	}
-
-	[TableName("Person")]
-	[PrimaryKey("PersonId")]
-	[ExplicitColumns]
-    public partial class Person : labDB.Record<Person>  
-    {		
-		[Column] public int PersonId { get; set; } 		
-		[Column] public string EmployeeNumber { get; set; } 		
-		[Column] public string FirstName { get; set; } 		
-		[Column] public string LastName { get; set; } 		
-		[Column] public bool IsManager { get; set; } 		
-		[Column] public bool IsActive { get; set; } 		
-		[Column] public bool IsPartTime { get; set; } 		
-		[Column] public string Email { get; set; } 		
-		[Column] public bool IsAdmin { get; set; } 		
-		[Column] public int? ManagerId { get; set; } 	
-	}
-
-	[TableName("LineStatus")]
-	[ExplicitColumns]
-    public partial class LineStatus : labDB.Record<LineStatus>  
-    {		
-		[Column] public string INUNT { get; set; } 		
-		[Column] public string INLIN { get; set; } 		
-		[Column] public decimal INDAY { get; set; } 		
-		[Column] public string INPRD { get; set; } 		
-		[Column] public string CARTN { get; set; } 		
-		[Column] public string INSID { get; set; } 		
-		[Column] public decimal INLSQ { get; set; } 		
-		[Column] public string INLST { get; set; } 		
-		[Column] public string INREL { get; set; } 		
-		[Column] public decimal INBSP { get; set; } 		
-		[Column] public decimal INSAM { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public string Status { get; set; } 		
-		[Column] public string Reason { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int? ProductCodeId { get; set; } 	
-	}
-
-	[TableName("SolutionBatch")]
-	[PrimaryKey("SolutionBatchId")]
-	[ExplicitColumns]
-    public partial class SolutionBatch : labDB.Record<SolutionBatch>  
-    {		
-		[Column] public int SolutionBatchId { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public int OperatorId { get; set; } 		
-		[Column] public string CoA { get; set; } 		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public DateTime? Completed { get; set; } 	
-	}
-
-	[TableName("Booster")]
-	[PrimaryKey("BoosterId")]
-	[ExplicitColumns]
-    public partial class Booster : labDB.Record<Booster>  
-    {		
-		[Column] public int BoosterId { get; set; } 		
-		[Column] public int SolutionBatchId { get; set; } 		
-		[Column] public DateTime? DateTime { get; set; } 	
+    {        [Column] 		public int ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int _ProductCodeId;
+        
+	[Column("ProductCode")] 		public string _ProductCode 
+		{ 
+			get
+			{
+				return __ProductCode;
+			}
+			set
+			{
+				__ProductCode = value;
+				MarkColumnModified("ProductCode");
+			}
+		}
+		string __ProductCode;
+        [Column] 		public string ProductSpec 
+		{ 
+			get
+			{
+				return _ProductSpec;
+			}
+			set
+			{
+				_ProductSpec = value;
+				MarkColumnModified("ProductSpec");
+			}
+		}
+		string _ProductSpec;
+        [Column] 		public bool? IsActive 
+		{ 
+			get
+			{
+				return _IsActive;
+			}
+			set
+			{
+				_IsActive = value;
+				MarkColumnModified("IsActive");
+			}
+		}
+		bool? _IsActive;
+        [Column] 		public string PlastSpec 
+		{ 
+			get
+			{
+				return _PlastSpec;
+			}
+			set
+			{
+				_PlastSpec = value;
+				MarkColumnModified("PlastSpec");
+			}
+		}
+		string _PlastSpec;
+        [Column] 		public double? WetLayflat_Aim 
+		{ 
+			get
+			{
+				return _WetLayflat_Aim;
+			}
+			set
+			{
+				_WetLayflat_Aim = value;
+				MarkColumnModified("WetLayflat_Aim");
+			}
+		}
+		double? _WetLayflat_Aim;
+        [Column] 		public double? WetLayflat_Min 
+		{ 
+			get
+			{
+				return _WetLayflat_Min;
+			}
+			set
+			{
+				_WetLayflat_Min = value;
+				MarkColumnModified("WetLayflat_Min");
+			}
+		}
+		double? _WetLayflat_Min;
+        [Column] 		public double? WetLayflat_Max 
+		{ 
+			get
+			{
+				return _WetLayflat_Max;
+			}
+			set
+			{
+				_WetLayflat_Max = value;
+				MarkColumnModified("WetLayflat_Max");
+			}
+		}
+		double? _WetLayflat_Max;
+        [Column] 		public double? Glut_Aim 
+		{ 
+			get
+			{
+				return _Glut_Aim;
+			}
+			set
+			{
+				_Glut_Aim = value;
+				MarkColumnModified("Glut_Aim");
+			}
+		}
+		double? _Glut_Aim;
+        [Column] 		public double? Glut_Max 
+		{ 
+			get
+			{
+				return _Glut_Max;
+			}
+			set
+			{
+				_Glut_Max = value;
+				MarkColumnModified("Glut_Max");
+			}
+		}
+		double? _Glut_Max;
+        [Column] 		public double? Glut_Min 
+		{ 
+			get
+			{
+				return _Glut_Min;
+			}
+			set
+			{
+				_Glut_Min = value;
+				MarkColumnModified("Glut_Min");
+			}
+		}
+		double? _Glut_Min;
+        [Column] 		public double? FFW_Aim 
+		{ 
+			get
+			{
+				return _FFW_Aim;
+			}
+			set
+			{
+				_FFW_Aim = value;
+				MarkColumnModified("FFW_Aim");
+			}
+		}
+		double? _FFW_Aim;
+        [Column] 		public double? FFW_Min 
+		{ 
+			get
+			{
+				return _FFW_Min;
+			}
+			set
+			{
+				_FFW_Min = value;
+				MarkColumnModified("FFW_Min");
+			}
+		}
+		double? _FFW_Min;
+        [Column] 		public double? FFW_Max 
+		{ 
+			get
+			{
+				return _FFW_Max;
+			}
+			set
+			{
+				_FFW_Max = value;
+				MarkColumnModified("FFW_Max");
+			}
+		}
+		double? _FFW_Max;
+        [Column] 		public double? CasingWt_Aim 
+		{ 
+			get
+			{
+				return _CasingWt_Aim;
+			}
+			set
+			{
+				_CasingWt_Aim = value;
+				MarkColumnModified("CasingWt_Aim");
+			}
+		}
+		double? _CasingWt_Aim;
+        [Column] 		public double? CasingWt_Min 
+		{ 
+			get
+			{
+				return _CasingWt_Min;
+			}
+			set
+			{
+				_CasingWt_Min = value;
+				MarkColumnModified("CasingWt_Min");
+			}
+		}
+		double? _CasingWt_Min;
+        [Column] 		public double? CasingWt_Max 
+		{ 
+			get
+			{
+				return _CasingWt_Max;
+			}
+			set
+			{
+				_CasingWt_Max = value;
+				MarkColumnModified("CasingWt_Max");
+			}
+		}
+		double? _CasingWt_Max;
+        [Column] 		public double? ShirrMoist_Aim 
+		{ 
+			get
+			{
+				return _ShirrMoist_Aim;
+			}
+			set
+			{
+				_ShirrMoist_Aim = value;
+				MarkColumnModified("ShirrMoist_Aim");
+			}
+		}
+		double? _ShirrMoist_Aim;
+        [Column] 		public double? ShirrMoist_Min 
+		{ 
+			get
+			{
+				return _ShirrMoist_Min;
+			}
+			set
+			{
+				_ShirrMoist_Min = value;
+				MarkColumnModified("ShirrMoist_Min");
+			}
+		}
+		double? _ShirrMoist_Min;
+        [Column] 		public double? ShirrMoist_Max 
+		{ 
+			get
+			{
+				return _ShirrMoist_Max;
+			}
+			set
+			{
+				_ShirrMoist_Max = value;
+				MarkColumnModified("ShirrMoist_Max");
+			}
+		}
+		double? _ShirrMoist_Max;
+        [Column] 		public double? ReelMoist_Aim 
+		{ 
+			get
+			{
+				return _ReelMoist_Aim;
+			}
+			set
+			{
+				_ReelMoist_Aim = value;
+				MarkColumnModified("ReelMoist_Aim");
+			}
+		}
+		double? _ReelMoist_Aim;
+        [Column] 		public double? ReelMoist_Min 
+		{ 
+			get
+			{
+				return _ReelMoist_Min;
+			}
+			set
+			{
+				_ReelMoist_Min = value;
+				MarkColumnModified("ReelMoist_Min");
+			}
+		}
+		double? _ReelMoist_Min;
+        [Column] 		public double? ReelMoist_Max 
+		{ 
+			get
+			{
+				return _ReelMoist_Max;
+			}
+			set
+			{
+				_ReelMoist_Max = value;
+				MarkColumnModified("ReelMoist_Max");
+			}
+		}
+		double? _ReelMoist_Max;
+        [Column] 		public double? LFShirr_Aim 
+		{ 
+			get
+			{
+				return _LFShirr_Aim;
+			}
+			set
+			{
+				_LFShirr_Aim = value;
+				MarkColumnModified("LFShirr_Aim");
+			}
+		}
+		double? _LFShirr_Aim;
+        [Column] 		public double? LFShirr_Min 
+		{ 
+			get
+			{
+				return _LFShirr_Min;
+			}
+			set
+			{
+				_LFShirr_Min = value;
+				MarkColumnModified("LFShirr_Min");
+			}
+		}
+		double? _LFShirr_Min;
+        [Column] 		public double? LFShirr_Max 
+		{ 
+			get
+			{
+				return _LFShirr_Max;
+			}
+			set
+			{
+				_LFShirr_Max = value;
+				MarkColumnModified("LFShirr_Max");
+			}
+		}
+		double? _LFShirr_Max;
+        [Column] 		public double? LFShirr_LCL 
+		{ 
+			get
+			{
+				return _LFShirr_LCL;
+			}
+			set
+			{
+				_LFShirr_LCL = value;
+				MarkColumnModified("LFShirr_LCL");
+			}
+		}
+		double? _LFShirr_LCL;
+        [Column] 		public double? LFShirr_UCL 
+		{ 
+			get
+			{
+				return _LFShirr_UCL;
+			}
+			set
+			{
+				_LFShirr_UCL = value;
+				MarkColumnModified("LFShirr_UCL");
+			}
+		}
+		double? _LFShirr_UCL;
+        [Column] 		public double? LF_Aim 
+		{ 
+			get
+			{
+				return _LF_Aim;
+			}
+			set
+			{
+				_LF_Aim = value;
+				MarkColumnModified("LF_Aim");
+			}
+		}
+		double? _LF_Aim;
+        [Column] 		public float? LF_Min 
+		{ 
+			get
+			{
+				return _LF_Min;
+			}
+			set
+			{
+				_LF_Min = value;
+				MarkColumnModified("LF_Min");
+			}
+		}
+		float? _LF_Min;
+        [Column] 		public float? LF_Max 
+		{ 
+			get
+			{
+				return _LF_Max;
+			}
+			set
+			{
+				_LF_Max = value;
+				MarkColumnModified("LF_Max");
+			}
+		}
+		float? _LF_Max;
+        [Column] 		public float? LF_LCL 
+		{ 
+			get
+			{
+				return _LF_LCL;
+			}
+			set
+			{
+				_LF_LCL = value;
+				MarkColumnModified("LF_LCL");
+			}
+		}
+		float? _LF_LCL;
+        [Column] 		public float? LF_UCL 
+		{ 
+			get
+			{
+				return _LF_UCL;
+			}
+			set
+			{
+				_LF_UCL = value;
+				MarkColumnModified("LF_UCL");
+			}
+		}
+		float? _LF_UCL;
+        [Column] 		public string OilType 
+		{ 
+			get
+			{
+				return _OilType;
+			}
+			set
+			{
+				_OilType = value;
+				MarkColumnModified("OilType");
+			}
+		}
+		string _OilType;
+        [Column] 		public double? Oil_Aim 
+		{ 
+			get
+			{
+				return _Oil_Aim;
+			}
+			set
+			{
+				_Oil_Aim = value;
+				MarkColumnModified("Oil_Aim");
+			}
+		}
+		double? _Oil_Aim;
+        [Column] 		public double? Oil_Min 
+		{ 
+			get
+			{
+				return _Oil_Min;
+			}
+			set
+			{
+				_Oil_Min = value;
+				MarkColumnModified("Oil_Min");
+			}
+		}
+		double? _Oil_Min;
+        [Column] 		public double? Oil_Max 
+		{ 
+			get
+			{
+				return _Oil_Max;
+			}
+			set
+			{
+				_Oil_Max = value;
+				MarkColumnModified("Oil_Max");
+			}
+		}
+		double? _Oil_Max;
+        [Column] 		public double? Gly_Aim 
+		{ 
+			get
+			{
+				return _Gly_Aim;
+			}
+			set
+			{
+				_Gly_Aim = value;
+				MarkColumnModified("Gly_Aim");
+			}
+		}
+		double? _Gly_Aim;
+        [Column] 		public double? Gly_Min 
+		{ 
+			get
+			{
+				return _Gly_Min;
+			}
+			set
+			{
+				_Gly_Min = value;
+				MarkColumnModified("Gly_Min");
+			}
+		}
+		double? _Gly_Min;
+        [Column] 		public double? Gly_Max 
+		{ 
+			get
+			{
+				return _Gly_Max;
+			}
+			set
+			{
+				_Gly_Max = value;
+				MarkColumnModified("Gly_Max");
+			}
+		}
+		double? _Gly_Max;
+        [Column] 		public double? DryTensShirr_Min 
+		{ 
+			get
+			{
+				return _DryTensShirr_Min;
+			}
+			set
+			{
+				_DryTensShirr_Min = value;
+				MarkColumnModified("DryTensShirr_Min");
+			}
+		}
+		double? _DryTensShirr_Min;
+        [Column] 		public string Unshirr_Max 
+		{ 
+			get
+			{
+				return _Unshirr_Max;
+			}
+			set
+			{
+				_Unshirr_Max = value;
+				MarkColumnModified("Unshirr_Max");
+			}
+		}
+		string _Unshirr_Max;
+        [Column] 		public string Unshirr_Avg 
+		{ 
+			get
+			{
+				return _Unshirr_Avg;
+			}
+			set
+			{
+				_Unshirr_Avg = value;
+				MarkColumnModified("Unshirr_Avg");
+			}
+		}
+		string _Unshirr_Avg;
+        [Column] 		public string WetTens_Min 
+		{ 
+			get
+			{
+				return _WetTens_Min;
+			}
+			set
+			{
+				_WetTens_Min = value;
+				MarkColumnModified("WetTens_Min");
+			}
+		}
+		string _WetTens_Min;
+        [Column] 		public string BlowShirr_Aim 
+		{ 
+			get
+			{
+				return _BlowShirr_Aim;
+			}
+			set
+			{
+				_BlowShirr_Aim = value;
+				MarkColumnModified("BlowShirr_Aim");
+			}
+		}
+		string _BlowShirr_Aim;
+        [Column] 		public string BlowShirr_Min 
+		{ 
+			get
+			{
+				return _BlowShirr_Min;
+			}
+			set
+			{
+				_BlowShirr_Min = value;
+				MarkColumnModified("BlowShirr_Min");
+			}
+		}
+		string _BlowShirr_Min;
+        [Column] 		public string BlowShirr_Max 
+		{ 
+			get
+			{
+				return _BlowShirr_Max;
+			}
+			set
+			{
+				_BlowShirr_Max = value;
+				MarkColumnModified("BlowShirr_Max");
+			}
+		}
+		string _BlowShirr_Max;
+        [Column] 		public float? DT_LCL 
+		{ 
+			get
+			{
+				return _DT_LCL;
+			}
+			set
+			{
+				_DT_LCL = value;
+				MarkColumnModified("DT_LCL");
+			}
+		}
+		float? _DT_LCL;
+	
 	}
 
 	[TableName("LineTx")]
 	[PrimaryKey("LineTxId")]
 	[ExplicitColumns]
     public partial class LineTx : labDB.Record<LineTx>  
-    {		
-		[Column] public int LineTxId { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int PersonId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public string Comment { get; set; } 		
-		[Column] public int? LineTankId { get; set; } 		
-		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 		
-		[Column] public int? SystemId { get; set; } 		
-		[Column] public int StatusId { get; set; } 		
-		[Column] public int ProductCodeId { get; set; } 	
+    {        [Column] 		public int LineTxId 
+		{ 
+			get
+			{
+				return _LineTxId;
+			}
+			set
+			{
+				_LineTxId = value;
+				MarkColumnModified("LineTxId");
+			}
+		}
+		int _LineTxId;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public int PersonId 
+		{ 
+			get
+			{
+				return _PersonId;
+			}
+			set
+			{
+				_PersonId = value;
+				MarkColumnModified("PersonId");
+			}
+		}
+		int _PersonId;
+        [Column] 		public DateTime Stamp 
+		{ 
+			get
+			{
+				return _Stamp;
+			}
+			set
+			{
+				_Stamp = value;
+				MarkColumnModified("Stamp");
+			}
+		}
+		DateTime _Stamp;
+        [Column] 		public string Comment 
+		{ 
+			get
+			{
+				return _Comment;
+			}
+			set
+			{
+				_Comment = value;
+				MarkColumnModified("Comment");
+			}
+		}
+		string _Comment;
+        [Column] 		public int? LineTankId 
+		{ 
+			get
+			{
+				return _LineTankId;
+			}
+			set
+			{
+				_LineTankId = value;
+				MarkColumnModified("LineTankId");
+			}
+		}
+		int? _LineTankId;
+        [Column] 		public int UnitId 
+		{ 
+			get
+			{
+				return _UnitId;
+			}
+			set
+			{
+				_UnitId = value;
+				MarkColumnModified("UnitId");
+			}
+		}
+		int _UnitId;
+        [Column] 		public int LineNumber 
+		{ 
+			get
+			{
+				return _LineNumber;
+			}
+			set
+			{
+				_LineNumber = value;
+				MarkColumnModified("LineNumber");
+			}
+		}
+		int _LineNumber;
+        [Column] 		public int? SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int? _SystemId;
+        [Column] 		public int StatusId 
+		{ 
+			get
+			{
+				return _StatusId;
+			}
+			set
+			{
+				_StatusId = value;
+				MarkColumnModified("StatusId");
+			}
+		}
+		int _StatusId;
+        [Column] 		public int ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int _ProductCodeId;
+        [Column] 		public int ConversionId 
+		{ 
+			get
+			{
+				return _ConversionId;
+			}
+			set
+			{
+				_ConversionId = value;
+				MarkColumnModified("ConversionId");
+			}
+		}
+		int _ConversionId;
+	
+	}
+
+	[TableName("Person")]
+	[PrimaryKey("PersonId")]
+	[ExplicitColumns]
+    public partial class Person : labDB.Record<Person>  
+    {        [Column] 		public int PersonId 
+		{ 
+			get
+			{
+				return _PersonId;
+			}
+			set
+			{
+				_PersonId = value;
+				MarkColumnModified("PersonId");
+			}
+		}
+		int _PersonId;
+        [Column] 		public string EmployeeNumber 
+		{ 
+			get
+			{
+				return _EmployeeNumber;
+			}
+			set
+			{
+				_EmployeeNumber = value;
+				MarkColumnModified("EmployeeNumber");
+			}
+		}
+		string _EmployeeNumber;
+        [Column] 		public string FirstName 
+		{ 
+			get
+			{
+				return _FirstName;
+			}
+			set
+			{
+				_FirstName = value;
+				MarkColumnModified("FirstName");
+			}
+		}
+		string _FirstName;
+        [Column] 		public string LastName 
+		{ 
+			get
+			{
+				return _LastName;
+			}
+			set
+			{
+				_LastName = value;
+				MarkColumnModified("LastName");
+			}
+		}
+		string _LastName;
+        [Column] 		public bool IsManager 
+		{ 
+			get
+			{
+				return _IsManager;
+			}
+			set
+			{
+				_IsManager = value;
+				MarkColumnModified("IsManager");
+			}
+		}
+		bool _IsManager;
+        [Column] 		public bool IsActive 
+		{ 
+			get
+			{
+				return _IsActive;
+			}
+			set
+			{
+				_IsActive = value;
+				MarkColumnModified("IsActive");
+			}
+		}
+		bool _IsActive;
+        [Column] 		public bool IsPartTime 
+		{ 
+			get
+			{
+				return _IsPartTime;
+			}
+			set
+			{
+				_IsPartTime = value;
+				MarkColumnModified("IsPartTime");
+			}
+		}
+		bool _IsPartTime;
+        [Column] 		public string Email 
+		{ 
+			get
+			{
+				return _Email;
+			}
+			set
+			{
+				_Email = value;
+				MarkColumnModified("Email");
+			}
+		}
+		string _Email;
+        [Column] 		public bool IsAdmin 
+		{ 
+			get
+			{
+				return _IsAdmin;
+			}
+			set
+			{
+				_IsAdmin = value;
+				MarkColumnModified("IsAdmin");
+			}
+		}
+		bool _IsAdmin;
+        [Column] 		public int? ManagerId 
+		{ 
+			get
+			{
+				return _ManagerId;
+			}
+			set
+			{
+				_ManagerId = value;
+				MarkColumnModified("ManagerId");
+			}
+		}
+		int? _ManagerId;
+	
+	}
+
+	[TableName("ProductCodeTx")]
+	[PrimaryKey("ProductCodeTxId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class ProductCodeTx : labDB.Record<ProductCodeTx>  
+    {        [Column] 		public int ProductCodeTxId 
+		{ 
+			get
+			{
+				return _ProductCodeTxId;
+			}
+			set
+			{
+				_ProductCodeTxId = value;
+				MarkColumnModified("ProductCodeTxId");
+			}
+		}
+		int _ProductCodeTxId;
+        [Column] 		public int ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int _ProductCodeId;
+        [Column] 		public DateTime Stamp 
+		{ 
+			get
+			{
+				return _Stamp;
+			}
+			set
+			{
+				_Stamp = value;
+				MarkColumnModified("Stamp");
+			}
+		}
+		DateTime _Stamp;
+        [Column] 		public int PersonId 
+		{ 
+			get
+			{
+				return _PersonId;
+			}
+			set
+			{
+				_PersonId = value;
+				MarkColumnModified("PersonId");
+			}
+		}
+		int _PersonId;
+        [Column] 		public string Delta 
+		{ 
+			get
+			{
+				return _Delta;
+			}
+			set
+			{
+				_Delta = value;
+				MarkColumnModified("Delta");
+			}
+		}
+		string _Delta;
+	
+	}
+
+	[TableName("Reading")]
+	[PrimaryKey("ReadingId")]
+	[ExplicitColumns]
+    public partial class Reading : labDB.Record<Reading>  
+    {        [Column] 		public int ReadingId 
+		{ 
+			get
+			{
+				return _ReadingId;
+			}
+			set
+			{
+				_ReadingId = value;
+				MarkColumnModified("ReadingId");
+			}
+		}
+		int _ReadingId;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public DateTime Stamp 
+		{ 
+			get
+			{
+				return _Stamp;
+			}
+			set
+			{
+				_Stamp = value;
+				MarkColumnModified("Stamp");
+			}
+		}
+		DateTime _Stamp;
+        [Column] 		public int? R1 
+		{ 
+			get
+			{
+				return _R1;
+			}
+			set
+			{
+				_R1 = value;
+				MarkColumnModified("R1");
+			}
+		}
+		int? _R1;
+        [Column] 		public int? R2 
+		{ 
+			get
+			{
+				return _R2;
+			}
+			set
+			{
+				_R2 = value;
+				MarkColumnModified("R2");
+			}
+		}
+		int? _R2;
+        [Column] 		public int? R3 
+		{ 
+			get
+			{
+				return _R3;
+			}
+			set
+			{
+				_R3 = value;
+				MarkColumnModified("R3");
+			}
+		}
+		int? _R3;
+        [Column] 		public int? R4 
+		{ 
+			get
+			{
+				return _R4;
+			}
+			set
+			{
+				_R4 = value;
+				MarkColumnModified("R4");
+			}
+		}
+		int? _R4;
+        [Column] 		public int? R5 
+		{ 
+			get
+			{
+				return _R5;
+			}
+			set
+			{
+				_R5 = value;
+				MarkColumnModified("R5");
+			}
+		}
+		int? _R5;
+        [Column] 		public int? Average 
+		{ 
+			get
+			{
+				return _Average;
+			}
+			set
+			{
+				_Average = value;
+				MarkColumnModified("Average");
+			}
+		}
+		int? _Average;
+        [Column] 		public int ParameterId 
+		{ 
+			get
+			{
+				return _ParameterId;
+			}
+			set
+			{
+				_ParameterId = value;
+				MarkColumnModified("ParameterId");
+			}
+		}
+		int _ParameterId;
+        [Column] 		public string Operator 
+		{ 
+			get
+			{
+				return _Operator;
+			}
+			set
+			{
+				_Operator = value;
+				MarkColumnModified("Operator");
+			}
+		}
+		string _Operator;
+        [Column] 		public int EditCount 
+		{ 
+			get
+			{
+				return _EditCount;
+			}
+			set
+			{
+				_EditCount = value;
+				MarkColumnModified("EditCount");
+			}
+		}
+		int _EditCount;
+        [Column] 		public DateTime Scheduled 
+		{ 
+			get
+			{
+				return _Scheduled;
+			}
+			set
+			{
+				_Scheduled = value;
+				MarkColumnModified("Scheduled");
+			}
+		}
+		DateTime _Scheduled;
+        [Column] 		public int SampleId 
+		{ 
+			get
+			{
+				return _SampleId;
+			}
+			set
+			{
+				_SampleId = value;
+				MarkColumnModified("SampleId");
+			}
+		}
+		int _SampleId;
+	
+	}
+
+	[TableName("CasingGroup")]
+	[PrimaryKey("CasingGroupId")]
+	[ExplicitColumns]
+    public partial class CasingGroup : labDB.Record<CasingGroup>  
+    {        [Column] 		public int CasingGroupId 
+		{ 
+			get
+			{
+				return _CasingGroupId;
+			}
+			set
+			{
+				_CasingGroupId = value;
+				MarkColumnModified("CasingGroupId");
+			}
+		}
+		int _CasingGroupId;
+        [Column] 		public DateTime DateTime 
+		{ 
+			get
+			{
+				return _DateTime;
+			}
+			set
+			{
+				_DateTime = value;
+				MarkColumnModified("DateTime");
+			}
+		}
+		DateTime _DateTime;
+	
+	}
+
+	[TableName("CasingTest")]
+	[PrimaryKey("CasingTestId")]
+	[ExplicitColumns]
+    public partial class CasingTest : labDB.Record<CasingTest>  
+    {        [Column] 		public int CasingTestId 
+		{ 
+			get
+			{
+				return _CasingTestId;
+			}
+			set
+			{
+				_CasingTestId = value;
+				MarkColumnModified("CasingTestId");
+			}
+		}
+		int _CasingTestId;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public int SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int _SystemId;
+        [Column] 		public int? Reel 
+		{ 
+			get
+			{
+				return _Reel;
+			}
+			set
+			{
+				_Reel = value;
+				MarkColumnModified("Reel");
+			}
+		}
+		int? _Reel;
+        [Column] 		public decimal? Delm 
+		{ 
+			get
+			{
+				return _Delm;
+			}
+			set
+			{
+				_Delm = value;
+				MarkColumnModified("Delm");
+			}
+		}
+		decimal? _Delm;
+        [Column] 		public decimal? WetWt 
+		{ 
+			get
+			{
+				return _WetWt;
+			}
+			set
+			{
+				_WetWt = value;
+				MarkColumnModified("WetWt");
+			}
+		}
+		decimal? _WetWt;
+        [Column] 		public decimal? DryWt 
+		{ 
+			get
+			{
+				return _DryWt;
+			}
+			set
+			{
+				_DryWt = value;
+				MarkColumnModified("DryWt");
+			}
+		}
+		decimal? _DryWt;
+        [Column] 		public decimal? GlyWetWt 
+		{ 
+			get
+			{
+				return _GlyWetWt;
+			}
+			set
+			{
+				_GlyWetWt = value;
+				MarkColumnModified("GlyWetWt");
+			}
+		}
+		decimal? _GlyWetWt;
+        [Column] 		public decimal? GlyArea 
+		{ 
+			get
+			{
+				return _GlyArea;
+			}
+			set
+			{
+				_GlyArea = value;
+				MarkColumnModified("GlyArea");
+			}
+		}
+		decimal? _GlyArea;
+        [Column] 		public decimal? GlySTD 
+		{ 
+			get
+			{
+				return _GlySTD;
+			}
+			set
+			{
+				_GlySTD = value;
+				MarkColumnModified("GlySTD");
+			}
+		}
+		decimal? _GlySTD;
+        [Column] 		public decimal? OilArea 
+		{ 
+			get
+			{
+				return _OilArea;
+			}
+			set
+			{
+				_OilArea = value;
+				MarkColumnModified("OilArea");
+			}
+		}
+		decimal? _OilArea;
+        [Column] 		public decimal? Oil 
+		{ 
+			get
+			{
+				return _Oil;
+			}
+			set
+			{
+				_Oil = value;
+				MarkColumnModified("Oil");
+			}
+		}
+		decimal? _Oil;
+        [Column] 		public DateTime DateTime 
+		{ 
+			get
+			{
+				return _DateTime;
+			}
+			set
+			{
+				_DateTime = value;
+				MarkColumnModified("DateTime");
+			}
+		}
+		DateTime _DateTime;
+        [Column] 		public int? CasingGroupId 
+		{ 
+			get
+			{
+				return _CasingGroupId;
+			}
+			set
+			{
+				_CasingGroupId = value;
+				MarkColumnModified("CasingGroupId");
+			}
+		}
+		int? _CasingGroupId;
+        [Column] 		public int? Feet 
+		{ 
+			get
+			{
+				return _Feet;
+			}
+			set
+			{
+				_Feet = value;
+				MarkColumnModified("Feet");
+			}
+		}
+		int? _Feet;
+	
+	}
+
+	[TableName("OilSTD")]
+	[PrimaryKey("OilSTDId")]
+	[ExplicitColumns]
+    public partial class OilSTD : labDB.Record<OilSTD>  
+    {        [Column] 		public int OilSTDId 
+		{ 
+			get
+			{
+				return _OilSTDId;
+			}
+			set
+			{
+				_OilSTDId = value;
+				MarkColumnModified("OilSTDId");
+			}
+		}
+		int _OilSTDId;
+        [Column] 		public DateTime? DateTime 
+		{ 
+			get
+			{
+				return _DateTime;
+			}
+			set
+			{
+				_DateTime = value;
+				MarkColumnModified("DateTime");
+			}
+		}
+		DateTime? _DateTime;
+        [Column] 		public int? Concentration 
+		{ 
+			get
+			{
+				return _Concentration;
+			}
+			set
+			{
+				_Concentration = value;
+				MarkColumnModified("Concentration");
+			}
+		}
+		int? _Concentration;
+        [Column] 		public double Area 
+		{ 
+			get
+			{
+				return _Area;
+			}
+			set
+			{
+				_Area = value;
+				MarkColumnModified("Area");
+			}
+		}
+		double _Area;
+        [Column] 		public int? CasingGroupId 
+		{ 
+			get
+			{
+				return _CasingGroupId;
+			}
+			set
+			{
+				_CasingGroupId = value;
+				MarkColumnModified("CasingGroupId");
+			}
+		}
+		int? _CasingGroupId;
+	
+	}
+
+	[TableName("RecipeReading")]
+	[PrimaryKey("RecipeReadingId")]
+	[ExplicitColumns]
+    public partial class RecipeReading : labDB.Record<RecipeReading>  
+    {        [Column] 		public int RecipeReadingId 
+		{ 
+			get
+			{
+				return _RecipeReadingId;
+			}
+			set
+			{
+				_RecipeReadingId = value;
+				MarkColumnModified("RecipeReadingId");
+			}
+		}
+		int _RecipeReadingId;
+        [Column] 		public int SolutionRecipeId 
+		{ 
+			get
+			{
+				return _SolutionRecipeId;
+			}
+			set
+			{
+				_SolutionRecipeId = value;
+				MarkColumnModified("SolutionRecipeId");
+			}
+		}
+		int _SolutionRecipeId;
+        [Column] 		public int ReadingId 
+		{ 
+			get
+			{
+				return _ReadingId;
+			}
+			set
+			{
+				_ReadingId = value;
+				MarkColumnModified("ReadingId");
+			}
+		}
+		int _ReadingId;
+        [Column] 		public string LineColor 
+		{ 
+			get
+			{
+				return _LineColor;
+			}
+			set
+			{
+				_LineColor = value;
+				MarkColumnModified("LineColor");
+			}
+		}
+		string _LineColor;
+        [Column] 		public double? Low 
+		{ 
+			get
+			{
+				return _Low;
+			}
+			set
+			{
+				_Low = value;
+				MarkColumnModified("Low");
+			}
+		}
+		double? _Low;
+        [Column] 		public double? High 
+		{ 
+			get
+			{
+				return _High;
+			}
+			set
+			{
+				_High = value;
+				MarkColumnModified("High");
+			}
+		}
+		double? _High;
+	
+	}
+
+	[TableName("Line")]
+	[PrimaryKey("LineId")]
+	[ExplicitColumns]
+    public partial class Line : labDB.Record<Line>  
+    {        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public int? LineTankId 
+		{ 
+			get
+			{
+				return _LineTankId;
+			}
+			set
+			{
+				_LineTankId = value;
+				MarkColumnModified("LineTankId");
+			}
+		}
+		int? _LineTankId;
+        [Column] 		public int UnitId 
+		{ 
+			get
+			{
+				return _UnitId;
+			}
+			set
+			{
+				_UnitId = value;
+				MarkColumnModified("UnitId");
+			}
+		}
+		int _UnitId;
+        [Column] 		public int LineNumber 
+		{ 
+			get
+			{
+				return _LineNumber;
+			}
+			set
+			{
+				_LineNumber = value;
+				MarkColumnModified("LineNumber");
+			}
+		}
+		int _LineNumber;
+        [Column] 		public int? SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int? _SystemId;
+        [Column] 		public int StatusId 
+		{ 
+			get
+			{
+				return _StatusId;
+			}
+			set
+			{
+				_StatusId = value;
+				MarkColumnModified("StatusId");
+			}
+		}
+		int _StatusId;
+        [Column] 		public int ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int _ProductCodeId;
+        [Column] 		public DateTime Stamp 
+		{ 
+			get
+			{
+				return _Stamp;
+			}
+			set
+			{
+				_Stamp = value;
+				MarkColumnModified("Stamp");
+			}
+		}
+		DateTime _Stamp;
+        [Column] 		public int PersonId 
+		{ 
+			get
+			{
+				return _PersonId;
+			}
+			set
+			{
+				_PersonId = value;
+				MarkColumnModified("PersonId");
+			}
+		}
+		int _PersonId;
+        [Column] 		public int ConversionId 
+		{ 
+			get
+			{
+				return _ConversionId;
+			}
+			set
+			{
+				_ConversionId = value;
+				MarkColumnModified("ConversionId");
+			}
+		}
+		int _ConversionId;
+	
+	}
+
+	[TableName("LineStatus")]
+	[ExplicitColumns]
+    public partial class LineStatus : labDB.Record<LineStatus>  
+    {        [Column] 		public string INUNT 
+		{ 
+			get
+			{
+				return _INUNT;
+			}
+			set
+			{
+				_INUNT = value;
+				MarkColumnModified("INUNT");
+			}
+		}
+		string _INUNT;
+        [Column] 		public string INLIN 
+		{ 
+			get
+			{
+				return _INLIN;
+			}
+			set
+			{
+				_INLIN = value;
+				MarkColumnModified("INLIN");
+			}
+		}
+		string _INLIN;
+        [Column] 		public decimal INDAY 
+		{ 
+			get
+			{
+				return _INDAY;
+			}
+			set
+			{
+				_INDAY = value;
+				MarkColumnModified("INDAY");
+			}
+		}
+		decimal _INDAY;
+        [Column] 		public string INPRD 
+		{ 
+			get
+			{
+				return _INPRD;
+			}
+			set
+			{
+				_INPRD = value;
+				MarkColumnModified("INPRD");
+			}
+		}
+		string _INPRD;
+        [Column] 		public string CARTN 
+		{ 
+			get
+			{
+				return _CARTN;
+			}
+			set
+			{
+				_CARTN = value;
+				MarkColumnModified("CARTN");
+			}
+		}
+		string _CARTN;
+        [Column] 		public string INSID 
+		{ 
+			get
+			{
+				return _INSID;
+			}
+			set
+			{
+				_INSID = value;
+				MarkColumnModified("INSID");
+			}
+		}
+		string _INSID;
+        [Column] 		public decimal INLSQ 
+		{ 
+			get
+			{
+				return _INLSQ;
+			}
+			set
+			{
+				_INLSQ = value;
+				MarkColumnModified("INLSQ");
+			}
+		}
+		decimal _INLSQ;
+        [Column] 		public string INLST 
+		{ 
+			get
+			{
+				return _INLST;
+			}
+			set
+			{
+				_INLST = value;
+				MarkColumnModified("INLST");
+			}
+		}
+		string _INLST;
+        [Column] 		public string INREL 
+		{ 
+			get
+			{
+				return _INREL;
+			}
+			set
+			{
+				_INREL = value;
+				MarkColumnModified("INREL");
+			}
+		}
+		string _INREL;
+        [Column] 		public decimal INBSP 
+		{ 
+			get
+			{
+				return _INBSP;
+			}
+			set
+			{
+				_INBSP = value;
+				MarkColumnModified("INBSP");
+			}
+		}
+		decimal _INBSP;
+        [Column] 		public decimal INSAM 
+		{ 
+			get
+			{
+				return _INSAM;
+			}
+			set
+			{
+				_INSAM = value;
+				MarkColumnModified("INSAM");
+			}
+		}
+		decimal _INSAM;
+        [Column] 		public int LineId 
+		{ 
+			get
+			{
+				return _LineId;
+			}
+			set
+			{
+				_LineId = value;
+				MarkColumnModified("LineId");
+			}
+		}
+		int _LineId;
+        [Column] 		public string Status 
+		{ 
+			get
+			{
+				return _Status;
+			}
+			set
+			{
+				_Status = value;
+				MarkColumnModified("Status");
+			}
+		}
+		string _Status;
+        [Column] 		public string Reason 
+		{ 
+			get
+			{
+				return _Reason;
+			}
+			set
+			{
+				_Reason = value;
+				MarkColumnModified("Reason");
+			}
+		}
+		string _Reason;
+        [Column] 		public DateTime Stamp 
+		{ 
+			get
+			{
+				return _Stamp;
+			}
+			set
+			{
+				_Stamp = value;
+				MarkColumnModified("Stamp");
+			}
+		}
+		DateTime _Stamp;
+        [Column] 		public int? ProductCodeId 
+		{ 
+			get
+			{
+				return _ProductCodeId;
+			}
+			set
+			{
+				_ProductCodeId = value;
+				MarkColumnModified("ProductCodeId");
+			}
+		}
+		int? _ProductCodeId;
+	
+	}
+
+	[TableName("SolutionBatch")]
+	[PrimaryKey("SolutionBatchId")]
+	[ExplicitColumns]
+    public partial class SolutionBatch : labDB.Record<SolutionBatch>  
+    {        [Column] 		public int SolutionBatchId 
+		{ 
+			get
+			{
+				return _SolutionBatchId;
+			}
+			set
+			{
+				_SolutionBatchId = value;
+				MarkColumnModified("SolutionBatchId");
+			}
+		}
+		int _SolutionBatchId;
+        [Column] 		public DateTime DateTime 
+		{ 
+			get
+			{
+				return _DateTime;
+			}
+			set
+			{
+				_DateTime = value;
+				MarkColumnModified("DateTime");
+			}
+		}
+		DateTime _DateTime;
+        [Column] 		public int SolutionRecipeId 
+		{ 
+			get
+			{
+				return _SolutionRecipeId;
+			}
+			set
+			{
+				_SolutionRecipeId = value;
+				MarkColumnModified("SolutionRecipeId");
+			}
+		}
+		int _SolutionRecipeId;
+        [Column] 		public int OperatorId 
+		{ 
+			get
+			{
+				return _OperatorId;
+			}
+			set
+			{
+				_OperatorId = value;
+				MarkColumnModified("OperatorId");
+			}
+		}
+		int _OperatorId;
+        [Column] 		public string CoA 
+		{ 
+			get
+			{
+				return _CoA;
+			}
+			set
+			{
+				_CoA = value;
+				MarkColumnModified("CoA");
+			}
+		}
+		string _CoA;
+        [Column] 		public int SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int _SystemId;
+        [Column] 		public DateTime? Completed 
+		{ 
+			get
+			{
+				return _Completed;
+			}
+			set
+			{
+				_Completed = value;
+				MarkColumnModified("Completed");
+			}
+		}
+		DateTime? _Completed;
+	
+	}
+
+	[TableName("Booster")]
+	[PrimaryKey("BoosterId")]
+	[ExplicitColumns]
+    public partial class Booster : labDB.Record<Booster>  
+    {        [Column] 		public int BoosterId 
+		{ 
+			get
+			{
+				return _BoosterId;
+			}
+			set
+			{
+				_BoosterId = value;
+				MarkColumnModified("BoosterId");
+			}
+		}
+		int _BoosterId;
+        [Column] 		public int SolutionBatchId 
+		{ 
+			get
+			{
+				return _SolutionBatchId;
+			}
+			set
+			{
+				_SolutionBatchId = value;
+				MarkColumnModified("SolutionBatchId");
+			}
+		}
+		int _SolutionBatchId;
+        [Column] 		public DateTime? DateTime 
+		{ 
+			get
+			{
+				return _DateTime;
+			}
+			set
+			{
+				_DateTime = value;
+				MarkColumnModified("DateTime");
+			}
+		}
+		DateTime? _DateTime;
+	
 	}
 
 	[TableName("SolutionRecipe")]
 	[PrimaryKey("SolutionRecipeId")]
 	[ExplicitColumns]
     public partial class SolutionRecipe : labDB.Record<SolutionRecipe>  
-    {		
-		[Column] public int SolutionRecipeId { get; set; } 		
-		[Column] public string SolutionType { get; set; } 	
+    {        [Column] 		public int SolutionRecipeId 
+		{ 
+			get
+			{
+				return _SolutionRecipeId;
+			}
+			set
+			{
+				_SolutionRecipeId = value;
+				MarkColumnModified("SolutionRecipeId");
+			}
+		}
+		int _SolutionRecipeId;
+        [Column] 		public string SolutionType 
+		{ 
+			get
+			{
+				return _SolutionType;
+			}
+			set
+			{
+				_SolutionType = value;
+				MarkColumnModified("SolutionType");
+			}
+		}
+		string _SolutionType;
+	
 	}
 
 	[TableName("SolutionTest")]
 	[PrimaryKey("SolutionTestId")]
 	[ExplicitColumns]
     public partial class SolutionTest : labDB.Record<SolutionTest>  
-    {		
-		[Column] public int SolutionTestId { get; set; } 		
-		[Column] public int SolutionBatchId { get; set; } 		
-		[Column] public DateTime DateTime { get; set; } 		
-		[Column] public decimal? SolutionRecipeId { get; set; } 		
-		[Column] public decimal? CMC { get; set; } 		
-		[Column] public decimal? DensitySetPoint { get; set; } 		
-		[Column] public decimal? ConsoleDensity { get; set; } 		
-		[Column] public decimal? pHSetPoint { get; set; } 		
-		[Column] public decimal? Viscoscity { get; set; } 		
-		[Column] public decimal? Temperature { get; set; } 		
-		[Column] public decimal? TitrationMLs { get; set; } 		
-		[Column("NaOCl Pump Set")] public decimal? NaOCl_Pump_Set { get; set; }
-		
-		[Column("NaOCl Flow")] public int? NaOCl_Flow { get; set; }
-		
-		[Column] public decimal? MeasuredDensity { get; set; } 		
-		[Column] public decimal? ConsolepH { get; set; } 		
-		[Column] public decimal? MeasuredpH { get; set; } 		
-		[Column] public decimal? Conductivity { get; set; } 		
-		[Column("Acid Pump Output")] public decimal? Acid_Pump_Output { get; set; }
-		
-		[Column("Booster Pump Output")] public int? Booster_Pump_Output { get; set; }
-		
-		[Column] public decimal? Glycerin { get; set; } 		
-		[Column] public decimal? Hypochlorite { get; set; } 		
-		[Column] public decimal? CasingGlycerin { get; set; } 		
-		[Column] public decimal? Feed { get; set; } 		
-		[Column] public int? Steam { get; set; } 	
+    {        [Column] 		public int SolutionTestId 
+		{ 
+			get
+			{
+				return _SolutionTestId;
+			}
+			set
+			{
+				_SolutionTestId = value;
+				MarkColumnModified("SolutionTestId");
+			}
+		}
+		int _SolutionTestId;
+        [Column] 		public int SolutionBatchId 
+		{ 
+			get
+			{
+				return _SolutionBatchId;
+			}
+			set
+			{
+				_SolutionBatchId = value;
+				MarkColumnModified("SolutionBatchId");
+			}
+		}
+		int _SolutionBatchId;
+        [Column] 		public DateTime DateTime 
+		{ 
+			get
+			{
+				return _DateTime;
+			}
+			set
+			{
+				_DateTime = value;
+				MarkColumnModified("DateTime");
+			}
+		}
+		DateTime _DateTime;
+        [Column] 		public decimal? SolutionRecipeId 
+		{ 
+			get
+			{
+				return _SolutionRecipeId;
+			}
+			set
+			{
+				_SolutionRecipeId = value;
+				MarkColumnModified("SolutionRecipeId");
+			}
+		}
+		decimal? _SolutionRecipeId;
+        [Column] 		public decimal? CMC 
+		{ 
+			get
+			{
+				return _CMC;
+			}
+			set
+			{
+				_CMC = value;
+				MarkColumnModified("CMC");
+			}
+		}
+		decimal? _CMC;
+        [Column] 		public decimal? DensitySetPoint 
+		{ 
+			get
+			{
+				return _DensitySetPoint;
+			}
+			set
+			{
+				_DensitySetPoint = value;
+				MarkColumnModified("DensitySetPoint");
+			}
+		}
+		decimal? _DensitySetPoint;
+        [Column] 		public decimal? ConsoleDensity 
+		{ 
+			get
+			{
+				return _ConsoleDensity;
+			}
+			set
+			{
+				_ConsoleDensity = value;
+				MarkColumnModified("ConsoleDensity");
+			}
+		}
+		decimal? _ConsoleDensity;
+        [Column] 		public decimal? pHSetPoint 
+		{ 
+			get
+			{
+				return _pHSetPoint;
+			}
+			set
+			{
+				_pHSetPoint = value;
+				MarkColumnModified("pHSetPoint");
+			}
+		}
+		decimal? _pHSetPoint;
+        [Column] 		public decimal? Viscoscity 
+		{ 
+			get
+			{
+				return _Viscoscity;
+			}
+			set
+			{
+				_Viscoscity = value;
+				MarkColumnModified("Viscoscity");
+			}
+		}
+		decimal? _Viscoscity;
+        [Column] 		public decimal? Temperature 
+		{ 
+			get
+			{
+				return _Temperature;
+			}
+			set
+			{
+				_Temperature = value;
+				MarkColumnModified("Temperature");
+			}
+		}
+		decimal? _Temperature;
+        [Column] 		public decimal? TitrationMLs 
+		{ 
+			get
+			{
+				return _TitrationMLs;
+			}
+			set
+			{
+				_TitrationMLs = value;
+				MarkColumnModified("TitrationMLs");
+			}
+		}
+		decimal? _TitrationMLs;
+        
+	[Column("NaOCl Pump Set")] 		public decimal? NaOCl_Pump_Set 
+		{ 
+			get
+			{
+				return _NaOCl_Pump_Set;
+			}
+			set
+			{
+				_NaOCl_Pump_Set = value;
+				MarkColumnModified("NaOCl Pump Set");
+			}
+		}
+		decimal? _NaOCl_Pump_Set;
+        
+	[Column("NaOCl Flow")] 		public int? NaOCl_Flow 
+		{ 
+			get
+			{
+				return _NaOCl_Flow;
+			}
+			set
+			{
+				_NaOCl_Flow = value;
+				MarkColumnModified("NaOCl Flow");
+			}
+		}
+		int? _NaOCl_Flow;
+        [Column] 		public decimal? MeasuredDensity 
+		{ 
+			get
+			{
+				return _MeasuredDensity;
+			}
+			set
+			{
+				_MeasuredDensity = value;
+				MarkColumnModified("MeasuredDensity");
+			}
+		}
+		decimal? _MeasuredDensity;
+        [Column] 		public decimal? ConsolepH 
+		{ 
+			get
+			{
+				return _ConsolepH;
+			}
+			set
+			{
+				_ConsolepH = value;
+				MarkColumnModified("ConsolepH");
+			}
+		}
+		decimal? _ConsolepH;
+        [Column] 		public decimal? MeasuredpH 
+		{ 
+			get
+			{
+				return _MeasuredpH;
+			}
+			set
+			{
+				_MeasuredpH = value;
+				MarkColumnModified("MeasuredpH");
+			}
+		}
+		decimal? _MeasuredpH;
+        [Column] 		public decimal? Conductivity 
+		{ 
+			get
+			{
+				return _Conductivity;
+			}
+			set
+			{
+				_Conductivity = value;
+				MarkColumnModified("Conductivity");
+			}
+		}
+		decimal? _Conductivity;
+        
+	[Column("Acid Pump Output")] 		public decimal? Acid_Pump_Output 
+		{ 
+			get
+			{
+				return _Acid_Pump_Output;
+			}
+			set
+			{
+				_Acid_Pump_Output = value;
+				MarkColumnModified("Acid Pump Output");
+			}
+		}
+		decimal? _Acid_Pump_Output;
+        
+	[Column("Booster Pump Output")] 		public int? Booster_Pump_Output 
+		{ 
+			get
+			{
+				return _Booster_Pump_Output;
+			}
+			set
+			{
+				_Booster_Pump_Output = value;
+				MarkColumnModified("Booster Pump Output");
+			}
+		}
+		int? _Booster_Pump_Output;
+        [Column] 		public decimal? Glycerin 
+		{ 
+			get
+			{
+				return _Glycerin;
+			}
+			set
+			{
+				_Glycerin = value;
+				MarkColumnModified("Glycerin");
+			}
+		}
+		decimal? _Glycerin;
+        [Column] 		public decimal? Hypochlorite 
+		{ 
+			get
+			{
+				return _Hypochlorite;
+			}
+			set
+			{
+				_Hypochlorite = value;
+				MarkColumnModified("Hypochlorite");
+			}
+		}
+		decimal? _Hypochlorite;
+        [Column] 		public decimal? CasingGlycerin 
+		{ 
+			get
+			{
+				return _CasingGlycerin;
+			}
+			set
+			{
+				_CasingGlycerin = value;
+				MarkColumnModified("CasingGlycerin");
+			}
+		}
+		decimal? _CasingGlycerin;
+        [Column] 		public decimal? Feed 
+		{ 
+			get
+			{
+				return _Feed;
+			}
+			set
+			{
+				_Feed = value;
+				MarkColumnModified("Feed");
+			}
+		}
+		decimal? _Feed;
+        [Column] 		public int? Steam 
+		{ 
+			get
+			{
+				return _Steam;
+			}
+			set
+			{
+				_Steam = value;
+				MarkColumnModified("Steam");
+			}
+		}
+		int? _Steam;
+	
 	}
 
 	[TableName("System")]
 	[PrimaryKey("SystemId")]
 	[ExplicitColumns]
     public partial class System : labDB.Record<System>  
-    {		
-		[Column] public int SystemId { get; set; } 		
-		[Column] public string Status { get; set; } 		
-		[Column("System")] public string _System { get; set; }
+    {        [Column] 		public int SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int _SystemId;
+        [Column] 		public string Status 
+		{ 
+			get
+			{
+				return _Status;
+			}
+			set
+			{
+				_Status = value;
+				MarkColumnModified("Status");
+			}
+		}
+		string _Status;
+        
+	[Column("System")] 		public string _System 
+		{ 
+			get
+			{
+				return __System;
+			}
+			set
+			{
+				__System = value;
+				MarkColumnModified("System");
+			}
+		}
+		string __System;
 	
 	}
 
@@ -584,20 +3784,92 @@ namespace Test.Models
 	[PrimaryKey("ExtruderId")]
 	[ExplicitColumns]
     public partial class Extruder : labDB.Record<Extruder>  
-    {		
-		[Column] public int ExtruderId { get; set; } 		
-		[Column] public int ExtruderType { get; set; } 		
-		[Column] public int Nozzle { get; set; } 		
-		[Column] public string Color { get; set; } 	
+    {        [Column] 		public int ExtruderId 
+		{ 
+			get
+			{
+				return _ExtruderId;
+			}
+			set
+			{
+				_ExtruderId = value;
+				MarkColumnModified("ExtruderId");
+			}
+		}
+		int _ExtruderId;
+        [Column] 		public int ExtruderType 
+		{ 
+			get
+			{
+				return _ExtruderType;
+			}
+			set
+			{
+				_ExtruderType = value;
+				MarkColumnModified("ExtruderType");
+			}
+		}
+		int _ExtruderType;
+        [Column] 		public int Nozzle 
+		{ 
+			get
+			{
+				return _Nozzle;
+			}
+			set
+			{
+				_Nozzle = value;
+				MarkColumnModified("Nozzle");
+			}
+		}
+		int _Nozzle;
+        [Column] 		public string Color 
+		{ 
+			get
+			{
+				return _Color;
+			}
+			set
+			{
+				_Color = value;
+				MarkColumnModified("Color");
+			}
+		}
+		string _Color;
+	
 	}
 
 	[TableName("Unit")]
 	[PrimaryKey("UnitId")]
 	[ExplicitColumns]
     public partial class Unit : labDB.Record<Unit>  
-    {		
-		[Column] public int UnitId { get; set; } 		
-		[Column("Unit")] public string _Unit { get; set; }
+    {        [Column] 		public int UnitId 
+		{ 
+			get
+			{
+				return _UnitId;
+			}
+			set
+			{
+				_UnitId = value;
+				MarkColumnModified("UnitId");
+			}
+		}
+		int _UnitId;
+        
+	[Column("Unit")] 		public string _Unit 
+		{ 
+			get
+			{
+				return __Unit;
+			}
+			set
+			{
+				__Unit = value;
+				MarkColumnModified("Unit");
+			}
+		}
+		string __Unit;
 	
 	}
 
@@ -605,10 +3877,46 @@ namespace Test.Models
 	[PrimaryKey("ExemptId")]
 	[ExplicitColumns]
     public partial class Exempt : labDB.Record<Exempt>  
-    {		
-		[Column] public int ExemptId { get; set; } 		
-		[Column] public string ExemptCode { get; set; } 		
-		[Column] public int Diameter { get; set; } 	
+    {        [Column] 		public int ExemptId 
+		{ 
+			get
+			{
+				return _ExemptId;
+			}
+			set
+			{
+				_ExemptId = value;
+				MarkColumnModified("ExemptId");
+			}
+		}
+		int _ExemptId;
+        [Column] 		public string ExemptCode 
+		{ 
+			get
+			{
+				return _ExemptCode;
+			}
+			set
+			{
+				_ExemptCode = value;
+				MarkColumnModified("ExemptCode");
+			}
+		}
+		string _ExemptCode;
+        [Column] 		public int Diameter 
+		{ 
+			get
+			{
+				return _Diameter;
+			}
+			set
+			{
+				_Diameter = value;
+				MarkColumnModified("Diameter");
+			}
+		}
+		int _Diameter;
+	
 	}
 
 }

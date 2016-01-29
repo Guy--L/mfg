@@ -1,5 +1,5 @@
 ﻿
-create trigger [dbo].[SyncValue2Current] 
+CREATE trigger [dbo].[SyncValue2Current] 
 ON [dbo].[All]
 instead of INSERT AS
 BEGIN
@@ -27,7 +27,7 @@ begin transaction
 	on c.TagId = p.TagId
 	when matched then 
 		update set 
-			c.Value = p.Value, 
+			c.Value = coalesce(p.Value, '0'), 
 			c.Stamp = p.Stamp, 
 			c.SubMinute = iif(p.Stamp >= dateadd(minute, 1, c.Stamp),1,c.SubMinute + 1)
 	output 
@@ -45,7 +45,7 @@ begin transaction
 	where r.SubMinute = 1 and (r.SetPoint = 'ps' or r.SetPoint = 'ti')
 
 	insert dbo.[All] (TagId, Value, Stamp, Quality)
-	select p.TagId, p.Value, p.Stamp, p.Quality
+	select p.TagId, coalesce(p.Value, '0'), p.Stamp, p.Quality
 	from @pending p
 	join @results r on r.TagId = p.TagId
 	where r.SubMinute = 1

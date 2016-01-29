@@ -3,7 +3,7 @@
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-create TRIGGER [dbo].[RecordLineUpdate]
+CREATE TRIGGER [dbo].[RecordLineUpdate]
    ON  [dbo].[Line] 
    AFTER UPDATE
 AS 
@@ -39,7 +39,12 @@ BEGIN
 	    output inserted.tagid, source.lineid, source.productcodeid into @insertedtags;
 
 		insert into taglogs.dbo.[Limit]
-		select r.tagid, getdate(), p.reelmoist_min, p.reelmoist_min + 0.5, p.reelmoist_aim, p.reelmoist_max - 0.5, p.reelmoist_max
+		select r.tagid, getdate()
+			, coalesce(p.reelmoist_min,0)
+			, coalesce(p.reelmoist_min + 0.5,0)
+			, coalesce(p.reelmoist_aim,0)
+			, coalesce(p.reelmoist_max - 0.5,0)
+			, coalesce(p.reelmoist_max,0)
 		from [ReadingTag] r
 		join [ReadingField] f on f.ReadingFieldId = r.ReadingFieldId
 		join @insertedtags i on i.lineid = r.LineId
@@ -47,7 +52,12 @@ BEGIN
 		where f.FieldName = 'csg_moist_pct'
 
 		insert into taglogs.dbo.[Limit]
-		select r.tagid, getdate(), p.gly_min, p.gly_aim - 1.0, p.gly_aim, p.gly_aim + 1.0, p.gly_max
+		select r.tagid, getdate()
+			, coalesce(p.gly_min,0)
+			, coalesce(p.gly_aim - 1.0,0)
+			, coalesce(p.gly_aim,0)
+			, coalesce(p.gly_aim + 1.0,0)
+			, coalesce(p.gly_max,0)
 		from [ReadingTag] r
 		join [ReadingField] f on f.ReadingFieldId = r.ReadingFieldId
 		join @insertedtags i on i.lineid = r.LineId
@@ -68,6 +78,6 @@ BEGIN
 		where t.name = 'line_status'
 	end
 
-	insert into linetx ([LineId], [PersonId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId])
-	select lineid, personid, getdate(), '', linetankid, unitid, linenumber, systemid, statusid, productcodeid from inserted
+	insert into linetx ([LineId], [PersonId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId], [ConversionId])
+	select lineid, personid, getdate(), '', linetankid, unitid, linenumber, systemid, statusid, productcodeid, conversionid from inserted
 END
