@@ -126,6 +126,11 @@ namespace Test.Models
 	                RANK() OVER (PARTITION BY lineid ORDER BY scheduled DESC) as rn from conversion) c
         ";
 
+        public static string _completed = @"
+              from (select [lineid],[ProductCodeId],[ConversionId],[Scheduled],[Started],[Completed],[FinishFootage],[StatusId],[ExtruderId],[SystemId],[SolutionRecipeId],[Note],
+	                RANK() OVER (PARTITION BY lineid ORDER BY [dbo].SinceNow([Started], [Completed]) ASC) as rn from conversion) c
+        ";
+
         public static string _all = @"
           SELECT {1} c.[ConversionId],c.[SystemId],c.[SolutionRecipeId],c.[ExtruderId],c.[Scheduled],c.[Started],c.[Completed],c.[FinishFootage],c.[StatusId],c.[Note]
                   ,c.[Started]
@@ -146,8 +151,8 @@ namespace Test.Models
               left join [dbo].[SolutionRecipe] r on r.SolutionRecipeId = c.SolutionRecipeId
         ";
 
-        public static string _recent = string.Format(_all, "from [dbo].[Conversion] c", "") + @"
-            where c.[Started] <= getdate() or c.[Completed] <= getdate() 
+        public static string _recent = string.Format(_all, _completed, "") + @"
+            where c.rn = 1
             order by [dbo].SinceNow(c.[Started], c.[Completed]) asc
         ";
 
