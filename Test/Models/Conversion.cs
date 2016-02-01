@@ -167,7 +167,7 @@ namespace Test.Models
         ";
 
         public static string _pending = string.Format(_all, _rank, "") + @"
-            where c.Completed > dateadd(year, 200, getdate()) or (c.Completed <= getdate() and c.rn < 4) 
+            where c.Completed > dateadd(year, 200, getdate()) or (c.Completed <= getdate() and c.Started <= c.Completed and c.rn < 4) 
             order by c.Scheduled
         ";
 
