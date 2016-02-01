@@ -111,7 +111,7 @@ namespace Test.Models
         public string Ignore(int person)
         {
             Completed = DateTime.Now;
-            Started = DateTime.MaxValue.AddMilliseconds(-1);
+            Started = DateTime.MaxValue.AddSeconds(-1);
             Update();
             return "Conversion ignored";
         }
