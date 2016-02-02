@@ -20,6 +20,7 @@ namespace Test.Controllers
 
         public ActionResult Line(int id)
         {
+            ViewBag.Undo = false;
             var ln = new LineView(id);
             return View(ln);
         }

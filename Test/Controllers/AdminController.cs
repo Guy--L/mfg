@@ -52,14 +52,20 @@ namespace Test.Controllers
         }
 
         [HttpPost]
-        public ActionResult Digest(string s)
+        public ActionResult Digest(string s, string y)
         {
             if (!Directory.Exists(s))
             {
                 s += " does not exist";
                 return RedirectToAction("Completed", new { id = s });
             }
-            s = CasingSamples.ReadExcels(s, 2015);
+            int year = 2016;
+            if (!int.TryParse(y, out year))
+            {
+                y += " year is wrong";
+                return RedirectToAction("Completed", new { id = y });
+            }
+            s = CasingSamples.ReadExcels(s, year);
             TempData["stats"] = s;
             //return RedirectToAction("Completed", new { id = s });
             return RedirectToAction("Completed");
