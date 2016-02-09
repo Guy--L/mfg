@@ -618,6 +618,9 @@
     <Content Include="Views\Control\UndoConversions.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Undo.cshtml" />
     <Content Include="Views\Control\ConfirmUndoConversion.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\LineEvent.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\LineTime.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\LineTimeLine.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

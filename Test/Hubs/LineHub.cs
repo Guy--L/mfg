@@ -13,7 +13,18 @@ namespace Test.Hubs
         private static Dictionary<int, LineOperation> lastStatus = new Dictionary<int, LineOperation>();
         private static Dictionary<int, ProductCode> specification = new Dictionary<int, ProductCode>();
 
-        public void SetSampleTime(DateTime oldTime, DateTime newTime)
+        public void SetLineTime(DateTime moment)
+        {
+            using (labDB db = new labDB())
+            {
+                var systems = db.Fetch<Models.System>(string.Format(Models.System._attime, moment.ToString("yyyy-MM-dd HH:mm:ss")));
+                Clients.Client(Context.ConnectionId).setSystems(systems.Select(s => new { id = s.SystemId, value = s._System + " " + s.SolutionType }));
+            }
+        }
+
+        // following methods support casingsample.cshtml
+
+        void SetSampleTime(DateTime oldTime, DateTime newTime)
         {
             var ol = oldTime.ToString("ddhhmmtt");
             var nw = newTime.ToString("ddhhmmtt");
@@ -24,6 +35,7 @@ namespace Test.Hubs
                 sampleids[nw] = new Dictionary<int, int>();
         }
 
+        
         /// <summary>
         /// Update fields in database one entry at a time
         /// </summary>

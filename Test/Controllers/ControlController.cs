@@ -20,8 +20,11 @@ namespace Test.Controllers
 
         public ActionResult Line(int id)
         {
+            var sample = TempData["CasingSample"] as Sample;
+            var when = sample == null ? DateTime.Now : sample.Scheduled;
+            var ln = new LineView(id, when);
+            
             ViewBag.Undo = false;
-            var ln = new LineView(id);
             return View(ln);
         }
 
@@ -30,7 +33,7 @@ namespace Test.Controllers
         {
             ln.line.Stamp = DateTime.Now;
             ln.line.Save();
-            Success("Saved line");
+            Success("Saved line "+ln.line.Name);
             return RedirectToAction("Lines");
         }
 

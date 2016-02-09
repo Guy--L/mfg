@@ -6,8 +6,8 @@
             Html.Bootstrap().SubmitButton().Text("Save").Id("saveline").Style(ButtonStyle.Success),
             Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
     };
-    var pending = (Model.conversions != null && Model.conversions.Count() > 0);
-
+    var current = Math.Abs(Model.when.Hour - DateTime.Now.Hour) < 8;
+    var pending = (Model.conversions != null && Model.conversions.Count() > 0 && current);
 }
 
 @helper ButtonGroup()
@@ -30,41 +30,41 @@
         @Html.HiddenFor(m => m.line.UnitId)
         @Html.HiddenFor(m => m.line.LineNumber)
         @Html.HiddenFor(m => m.line.StatusId)
-        @if (pending)
+        if (pending)
         {
-        <div class="row">
             <div class="row">
-                <div class="col-md-12 text-primary"><h3>Initiate pending conversion for @Model.line.Name</h3></div>
+                <div class="row">
+                    <div class="col-md-12 text-primary"><h3>Initiate pending conversion for @Model.line.Name</h3></div>
+                </div>
+                <div class="col-md-12">
+                    <table id="conversions" class="table table-striped table-hover table-condensed table-bordered">
+                        <thead>
+                            <tr>
+                                <th colspan="12">Conversions pending for Line @Model.line.Name</th>
+                            </tr>
+                            <tr>
+                                <th>Line</th>
+                                <th>Scheduled</th>
+                                <th>Started</th>
+                                <th>Completed</th>
+                                <th>Product</th>
+                                <th>Extruder</th>
+                                <th>Reqd Ft</th>
+                                <th>Sys</th>
+                                <th>Soln</th>
+                                <th>State</th>
+                                <th><i>Action</i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @Html.DisplayFor(m => m.conversions)
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-md-12">
-                <table id="conversions" class="table table-striped table-hover table-condensed table-bordered">
-                    <thead>
-                        <tr>
-                            <th colspan="12">Conversions pending for Line @Model.line.Name</th>
-                        </tr>
-                        <tr>
-                            <th>Line</th>
-                            <th>Scheduled</th>
-                            <th>Started</th>
-                            <th>Completed</th>
-                            <th>Product</th>
-                            <th>Extruder</th>
-                            <th>Reqd Ft</th>
-                            <th>Sys</th>
-                            <th>Soln</th>
-                            <th>State</th>
-                            <th><i>Action</i></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @Html.DisplayFor(m => m.conversions)
-                    </tbody>
-                </table>
+            <div class="row">
+                <div class="col-md-12 text-primary"><h3>or directly Modify Line @Model.line.Name</h3></div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-primary"><h3>or directly Modify Line @Model.line.Name</h3></div>
-        </div>
         }
         else
         {
@@ -74,16 +74,17 @@
         }
 
         <div class="row">
-            <div class="col-md-12">
-                @form.FormGroup().CustomControls(ButtonGroup()).CustomLabel("Status")
-                @form.FormGroup().DropDownListFor(m => m.line.ProductCodeId, Model.productList).Size(InputSize.Large).Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-gift'></i> Product"))
-                @form.FormGroup().RadioButtonListFor(
+            <fieldset class="time-context"><legend></legend>
+            @form.FormGroup().TextBoxFor(m => m.when).Label().LabelText("Effective")
+            @form.FormGroup().RadioButtonListFor(
                     m => m.line.SystemId,
                     m => m.systems,
                     s => s.SystemId,
                     s => s.Pretty).SelectedValues(
                     n => n.SystemId == Model.line.SystemId.Value).DisplayInlineBlock().Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-flask'></i> System"))
-            </div>
+            </fieldset>
+            @form.FormGroup().CustomControls(ButtonGroup()).CustomLabel("Status")
+            @form.FormGroup().DropDownListFor(m => m.line.ProductCodeId, Model.productList).Size(InputSize.Large).Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-gift'></i> Product"))
         </div>
         <div class="row">
             @(form.FormGroup().CustomControls(buttons.ToArray()))
@@ -91,8 +92,35 @@
     }
 </div>
 @section scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
     <script type="text/javascript">
+        var $when = $('#@Html.IdFor(m=>m.when)');
         $(function () {
+            var hub = $.connection.lineHub;
+            hub.client.setSystems = function (list) {
+                var radios = $('.input-list-container');
+                var item = radios.children().first();
+                var label = item.attr('for');
+                radios.empty();
+                $.each(list, function (k, v) {
+                    var nlabel = label.replace('0', k);
+                    var litem = item.clone();
+                    litem.attr('for', nlabel);
+                    litem.children().first().attr('id', nlabel).attr('value', v.id);
+                    litem.contents()[1].textContent = v.value;
+                    radios.append(litem);
+                });
+            };
+            $.connection.hub.disconnected(function () {
+                setTimeout(function () {
+                    $.connection.hub.start();
+                }, 1000); // Re-start connection after 1 second
+            });
+            $.connection.hub.start();
+            $when.datetimepicker({
+                timepicker: true
+            });
             $('button.linebtn').on('click', function (e) {
                 e.preventDefault();
                 var id = $(this).data('id');
@@ -105,6 +133,9 @@
             $('#cancel').on('click', function (e) {
                 e.preventDefault();
                 location.href = '@Url.Action("Lines", "Control", null, Request.Url.Scheme)';
+            });
+            $when.on('change', function (e) {
+                hub.server.setLineTime($when.val());
             });
         });
     </script>

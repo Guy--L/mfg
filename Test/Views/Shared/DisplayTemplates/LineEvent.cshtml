@@ -1,0 +1,9 @@
+﻿@model Test.Models.LineEvent
+
+<li data-date='@Model.Stamp.ToString("dd/MM/YYYYThh:mm")'>
+    <h2>@Model.product._ProductCode @Model.product.ProductSpec @Model.status</h2>
+    <em>@Model.Stamp.ToString()</em>
+    <p>
+        @Model.Note
+    </p>
+</li>
