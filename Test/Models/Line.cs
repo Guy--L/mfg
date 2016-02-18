@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
-using NPoco;
 
 namespace Test.Models
 {
     public partial class Line
     {
-        // Columns in Conversion table not in Line(Tx) table
-        [ResultColumn] public DateTime Scheduled { get; set; }
-        [ResultColumn] public DateTime Completed { get; set; }
-        [ResultColumn] public string Note { get; set; }
-
         private static string letters = " ABCDEFGHIJ";  // units start at 1
 
         public Status status { get; set; }
@@ -40,7 +33,7 @@ namespace Test.Models
 
     public class Lines
     {
-        public List<Line> lines { get; set; }
+        public List<LineTx> lines { get; set; }
         public List<System> systems { get; set; }
 
         public static string _linehistory = @"
@@ -103,15 +96,7 @@ namespace Test.Models
         {
             using (var labdb = new labDB())
             {
-                lines = labdb.Fetch<Line, Status, System, ProductCode, Line >(
-                    (l, s, y, p) =>
-                    {
-                        l.status = s;
-                        l.system = y;
-                        l.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
-                        l.ProductCodeId = l.product.ProductCodeId;
-                        return l;
-                    },
+                lines = labdb.Fetch<LineTx, Status, System, ProductCode, LineTx>(LineTx.Map,
                     _lineload + " order by l.LineNumber, l.UnitId");
                 systems = labdb.Fetch<System>(System._active);
             }
@@ -120,6 +105,8 @@ namespace Test.Models
 
     public class LineView
     {
+        public List<LineTx> timeline { get; set; }
+
         public Line line { get; set; }
         public DateTime when { get; set; }
         public List<System> systems { get; set; }
@@ -142,11 +129,9 @@ namespace Test.Models
                 line = db.Fetch<Line>(Lines._lineload + " where l.lineid = @0", lineid).SingleOrDefault();
                 systems = db.Fetch<System>(string.Format(System._attime, stamp.ToString("yyyy-MM-dd HH:mm:ss")));
                 products = db.Fetch<ProductCode>(" order by productcode, productspec");
-                conversions = db.Fetch<Conversion>(" where lineid = @0 and started > dateadd(year, 200, getdate()) and completed > dateadd(year, 200, getdate()) order by scheduled", lineid);
-                conversions.ForEach(c => {
-                    c.line = line;
-                    c.product = products.Where(p => p.ProductCodeId == c.ProductCodeId).Single();
-                });
+
+                timeline = LineTx.TimeLine(lineid);
+
                 statuses = db.Fetch<Status>();
             }
             productList = new SelectList(products, "ProductCodeId", "CodeSpec");

@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Export Conversions";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    List<IHtmlString> buttons = null;
+        buttons = new List<IHtmlString>() {
+            Html.Bootstrap().SubmitButton().Text("Download").Id("download").Style(ButtonStyle.Success),
+            new HtmlString("&nbsp;"),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
+            //Html.Bootstrap().SubmitButton().Text("Ignore").Id("ignoreconversion").Style(ButtonStyle.Info),
+            //Html.Bootstrap().SubmitButton().Text("Start").Id("startconversion").Style(ButtonStyle.Primary)
+        };
+}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 text-primary"><h3>Pick week for Production Schedule Export to XLS</h3></div>
+    </div>
+@using (var form = Html.Bootstrap().Begin(new Form("GetWeeklyProduction", "Control").Id("exportconversionform").Type(FormType.Horizontal).LabelWidthXs(4)))
+{
+    <div class="row">
+        <div class="col-xs-12">
+            @form.FormGroup().TextBox("monday").Id("week").Label().LabelText("Pick any Date in the Week to Export")
+        </div>
+     </div>
+     <div class="row">
+         <div class="col-xs-12">
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
+         </div>
+     </div>
+}
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            var now = new Date()
+            document.getElementById('week').value = now.getFullYear() + '/' + now.getMonth() + '/' + now.getDate();
+            $('#week').datetimepicker({
+                timepicker: false
+            });
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Conversions", "Control", null, Request.Url.Scheme)';
+            });
+        });
+    </script>
+}

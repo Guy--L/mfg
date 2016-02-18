@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
 using Test.Models;
+using System.Diagnostics;
+using System.IO;
 
 namespace Test.Controllers
 {
@@ -128,6 +130,30 @@ namespace Test.Controllers
                 Error(msg);
             else
                 Success(msg);
+            return RedirectToAction("Conversions");
+        }
+
+        public ActionResult ExportConversions()
+        {
+            return View();
+        }
+
+        [DeleteFile]
+        public ActionResult GetWeeklyProduction(DateTime monday)
+        {
+            //var chart = TempData["chart"] as Chart;
+            //if (chart == null)
+            //    return new EmptyResult();
+            //Stream stream = new MemoryStream();
+            //var count = chart.Export(stream);
+            //stream.Position = 0;
+            //Debug.WriteLine(count);
+            //TempData["chart"] = chart;
+            //return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            //{
+            //    FileDownloadName = chart.exportName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx"
+            //};
+            Information("Excel export is not implemented yet (" + monday + " requested)");
             return RedirectToAction("Conversions");
         }
 

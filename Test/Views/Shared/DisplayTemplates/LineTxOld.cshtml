@@ -1,0 +1,9 @@
+﻿@model Test.Models.LineTx
+
+<li class="tl-point"><a href="#0" data-date='@Model.Stamp.ToString("dd/MM/yyyyTHH:mm")'>@Model.product.FullCode</a></li>
+<li class="tl-event" data-date='@Model.Stamp.ToString("dd/MM/yyyyTHH:mm")'>
+    <h2>@Model.product.FullCode - @Model.status.Iconic()</h2>
+    <em>@Model.Stamp.ToString()</em>
+    <p>@Model.Note</p>
+</li>
+

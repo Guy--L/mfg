@@ -6,14 +6,19 @@
         <thead>
             <tr>
                 <th colspan="2">List of Conversions</th>
-                <th colspan="4">
+                <th colspan="2">
                     <button class="btn btn-success btn-xs" id="addconversion">
                         <i class="fa fa-plus"></i> Add New Conversion
                     </button>
                 </th>
-                <th colspan="6">
+                <th colspan="2">
                     <button class="btn btn-primary btn-xs" id="undoconversion">
                         <i class="fa fa-undo"></i> Undo Recent Conversion
+                    </button>
+                </th>
+                <th colspan="2">
+                    <button class="btn btn-xs" id="conversion2xls">
+                        <i class="fa fa-cloud-download"></i> Weekly Production Schedule
                     </button>
                 </th>
             </tr>
@@ -61,6 +66,9 @@
         });
         $('#undoconversion').on('click', function () {
             location.href = '@Url.Action("UndoConversions","Control",null,Request.Url.Scheme)';
+        });
+        $('#conversion2xls').on('click', function () {
+            location.href = '@Url.Action("ExportConversions", "Control", null, Request.Url.Scheme)';
         });
         $('.btnignore').on('click', function (e) {
             e.stopPropagation();

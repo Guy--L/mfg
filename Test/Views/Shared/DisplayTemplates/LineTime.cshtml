@@ -1,3 +1,2 @@
 ﻿@model Test.Models.LineTime
-
-<li title='@Model.Stamp.ToString("MM/dd")'><a href='#0' data-date='@Model.Stamp.ToString("dd/MM/YYYYThh:mm")'>@Model.product.CodeSpec</a></li>
+<li class="tl-point"><a href="#0" data-date='@Model.ln.Stamp.ToString("dd/MM/yyyyTHH:mm")' class='@Model.selected'>@Model.ln.product.FullCode</a></li>

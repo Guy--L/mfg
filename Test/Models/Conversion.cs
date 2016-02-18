@@ -10,6 +10,36 @@ namespace Test.Models
 {
     public partial class Conversion
     {
+        private List<string> buttons = new List<string>()
+        {
+            "<button class='btn btn-xs btn-danger btnignore' title='Does not affect line setting'><i class='fa fa-ban'></i> Ignore</button> ",
+            "<button class='btn btn-xs btn-info btnstart' title='Mark line as being in conversion'><i class='fa fa-random'></i> Start</button> ",
+            "<button class='btn btn-xs btn-success btncomplete' title='Apply conversion settings to line'><i class='fa fa-arrow-up'></i> Complete</button> ",
+            "<button class='btn btn-xs btn-primary btnundo' id='undoconversion'><i class='fa fa-undo'></i> Undo Recent Conversion</button> "
+        };
+
+        private string[] transit = new string[] { "012", "023", "3", "3" };
+
+        public enum ConversionState
+        {
+            Scheduled,          // 0 1 2
+            Started,            // 0 2 3
+            Completed,          // 3
+            Ignored             // 3
+        };
+
+        public ConversionState state { get; set; }
+        public string Action { get
+            {
+                var edges = transit[(int)state];
+                var action = "";
+                foreach (char e in edges)
+                    action += buttons[e - '0'];
+
+                return action;
+            }
+        }
+
         public string System { get { return Models.System.Systems[SystemId]; } }
         public string SolutionType { get { return SolutionRecipe.Solutions[SolutionRecipeId]; } }
         public string Color { get { return Extruder.Colors[ExtruderId]; } }
@@ -30,11 +60,13 @@ namespace Test.Models
                     c = d.SingleById<Conversion>(id);
                 }
                 this.InjectFrom(c);
+                var s = State;
                 return;
             }
             Note = "";
             ProductCodeId = 0;
             Scheduled = DateTime.Now.AddDays(1);
+            state = ConversionState.Scheduled;
         }
 
         public string State
@@ -42,13 +74,12 @@ namespace Test.Models
             get
             {
                 var now = DateTime.Now;
-                var completed = Completed < now;
-                var started = Started < now && !completed;
-                var ignored = Started > now.AddYears(200) && completed;
-                if (ignored) return "ignored";
-                if (started) return "started";
-                if (completed) return "completed";
-                return "created";
+                state = ConversionState.Scheduled;
+                if (Completed < now)
+                    state = Started > now.AddYears(200) ? ConversionState.Ignored : ConversionState.Completed;
+                else if (Started < now)
+                    state = ConversionState.Started;
+                return state.ToString().ToLower();
             }
         }
 
@@ -80,6 +111,7 @@ namespace Test.Models
                 line.PersonId = person;
                 line.Update();
                 Update();
+                state = ConversionState.Completed;
             }
             catch (Exception e)
             {
@@ -100,6 +132,7 @@ namespace Test.Models
                 line.PersonId = person;
                 line.Update();
                 Update();
+                state = ConversionState.Started;
             }
             catch (Exception e)
             {
@@ -113,6 +146,7 @@ namespace Test.Models
             Completed = DateTime.Now;
             Started = DateTime.MaxValue.AddSeconds(-1);
             Update();
+            state = ConversionState.Ignored;
             return "Conversion ignored";
         }
     }
@@ -253,7 +287,7 @@ namespace Test.Models
         public SelectList products { get; set; }
         public SelectList recipes { get; set; }
         public SelectList extruders { get; set; }
-        public List<Line> lines { get; set; }
+        public List<LineTx> lines { get; set; }
 
         public ConversionView() { }
 
@@ -267,10 +301,14 @@ namespace Test.Models
                 c = id > 0 ? db.SingleOrDefaultById<Conversion>(id) : new Conversion() {
                     SolutionRecipeId = 0,
                     Started = DateTime.MaxValue.AddMilliseconds(-1),
-                    Completed = DateTime.MaxValue.AddMilliseconds(-1)
+                    Completed = DateTime.MaxValue.AddMilliseconds(-1),
+                    state = Conversion.ConversionState.Scheduled
                 };
                 if (c != null || id > 0)
+                {
                     c.Future();
+                    var s = c.State;
+                }
                 systems = db.Fetch<System>(System._active);
                 statuses = db.Fetch<Status>();
                 products = new SelectList(db.Fetch<ProductCode>(" order by productcode, productspec"), "ProductCodeId", "CodeSpec", c.ProductCodeId);

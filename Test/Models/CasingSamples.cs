@@ -230,7 +230,7 @@ namespace Test.Models
 
         public CasingSample() { }
 
-        public CasingSample(Line ln)
+        public CasingSample(LineTx ln)
         {
             product = ln.product;
             Gly = new Reading(0, _type);

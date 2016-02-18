@@ -1,0 +1,17 @@
+﻿@model Test.Models.LineTx
+
+<tr data-id="@Model.LineTxId" class='@(Model.IsConversion?"":("text-"+Model.status.Color))'>
+    <td>@Html.Raw(@Model.status.Iconic())</td>
+    <td>@Model.product.FullCode</td>
+    <td>@Model.Stamp.ToString("MM/dd HH:mm")</td>
+    <td>@Model.Note</td>
+    <td>
+    @if (Model.IsConversion)
+    {
+        <button>
+
+        </button>
+    }
+    </td>
+</tr>
+
