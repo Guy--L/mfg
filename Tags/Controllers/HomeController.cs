@@ -27,6 +27,7 @@ namespace Tags.Controllers
         {
             var nobricks = id.Substring(1, id.Length - 2);
             var pt = new PickTagView(nobricks, _user);
+            TempData["LineId"] = id;
             return View(pt);
         }
 
@@ -38,7 +39,13 @@ namespace Tags.Controllers
 
             if (p.Cancel)
                 return RedirectToAction("Review", "Home");
-
+            
+            if (p.picked == null)
+            {
+                Error("Please pick at least one tag before charting");
+                var tid = TempData["LineId"] as string;
+                return RedirectToAction("TagsByLine", "Home", new { id = tid });
+            }
             ViewData["Channel"] = p.Channel;
             Chart.SaveView(_user, p.NewView, p.picked);
             var chart = new Chart(p.picked);

@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Tags from "+ViewData["Channel"];
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var list = ViewData["Channel"].ToString().Replace(",", "<br/>");
 }
 
 @section actions {
@@ -11,6 +12,7 @@
         <div class="btn btn-xs btn-success datadownload"><i class="fa fa-cloud-download"></i>&nbsp;Download Data</div>
     </li>
 }
+<h3>@Html.Raw(list)</h3>
 <div id="ChartContainer"></div>
 
 @section scripts {
