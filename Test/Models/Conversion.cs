@@ -12,10 +12,10 @@ namespace Test.Models
     {
         private List<string> buttons = new List<string>()
         {
-            "<button class='btn btn-xs btn-danger btnignore' title='Does not affect line setting'><i class='fa fa-ban'></i> Ignore</button> ",
-            "<button class='btn btn-xs btn-info btnstart' title='Mark line as being in conversion'><i class='fa fa-random'></i> Start</button> ",
-            "<button class='btn btn-xs btn-success btncomplete' title='Apply conversion settings to line'><i class='fa fa-arrow-up'></i> Complete</button> ",
-            "<button class='btn btn-xs btn-primary btnundo' id='undoconversion'><i class='fa fa-undo'></i> Undo Recent Conversion</button> "
+            "<button class='btn btn-xs btnconv btn-danger btnignore IgnoreConversion' title='Does not affect line setting' data-id='{0}'><i class='fa fa-ban'></i> Ignore</button> ",
+            "<button class='btn btn-xs btnconv btn-info btnstart StartConversion' title='Mark line as being in conversion' data-id='{0}'><i class='fa fa-random'></i> Start</button> ",
+            "<button class='btn btn-xs btnconv btn-success btncomplete CompleteConversion' title='Apply conversion settings to line' data-id='{0}'><i class='fa fa-arrow-up'></i> Complete</button> ",
+            "<button class='btn btn-xs btnconv btn-primary btnundo UndoConversion' id='undoconversion'><i class='fa fa-undo' data-id='{0}'></i> Undo Recent Conversion</button> "
         };
 
         private string[] transit = new string[] { "012", "023", "3", "3" };
@@ -36,7 +36,7 @@ namespace Test.Models
                 foreach (char e in edges)
                     action += buttons[e - '0'];
 
-                return action;
+                return string.Format(action, ConversionId);
             }
         }
 
@@ -53,7 +53,7 @@ namespace Test.Models
         public Conversion(LineTx ln)
         {
             this.InjectFrom(ln);
-            var s = State;
+            SyncState();
         }
 
         public Conversion(int id)
@@ -66,7 +66,7 @@ namespace Test.Models
                     c = d.SingleById<Conversion>(id);
                 }
                 this.InjectFrom(c);
-                var s = State;
+                SyncState();
                 return;
             }
             Note = "";
@@ -75,18 +75,19 @@ namespace Test.Models
             state = ConversionState.Scheduled;
         }
 
-        public string State
+        public void SyncState()
         {
-            get
-            {
-                var now = DateTime.Now;
-                state = ConversionState.Scheduled;
-                if (Completed < now)
-                    state = Started > now.AddYears(200) ? ConversionState.Ignored : ConversionState.Completed;
-                else if (Started < now)
-                    state = ConversionState.Started;
-                return state.ToString().ToLower();
-            }
+            var now = DateTime.Now;
+            state = ConversionState.Scheduled;
+            if (Completed < now)
+                state = Started > now.AddYears(200) ? ConversionState.Ignored : ConversionState.Completed;
+            else if (Started < now)
+                state = ConversionState.Started;
+        }
+
+        public string StateLabel
+        {
+            get {  return state.ToString().ToLower(); }
         }
 
         /// <summary>
@@ -313,7 +314,7 @@ namespace Test.Models
                 if (c != null || id > 0)
                 {
                     c.Future();
-                    var s = c.State;
+                    c.SyncState();
                 }
                 systems = db.Fetch<System>(System._active);
                 statuses = db.Fetch<Status>();

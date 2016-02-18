@@ -109,6 +109,7 @@ namespace Test.Models
 
         public Line line { get; set; }
         public DateTime when { get; set; }
+        public string action { get; set; }
         public List<System> systems { get; set; }
         public List<Status> statuses { get; set; }
         public List<ProductCode> products { get; set; }

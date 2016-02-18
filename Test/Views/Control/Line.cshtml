@@ -1,6 +1,6 @@
 ﻿@model Test.Models.LineView
 @{
-    ViewBag.Title = "Modify Line "+Model.line.Name;
+    ViewBag.Title = "Modify Line " + Model.line.Name;
     Layout = "~/Views/Shared/_Layout2.cshtml";
     List<IHtmlString> buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Save").Id("saveline").Style(ButtonStyle.Success),
@@ -12,23 +12,25 @@
 
 @helper ButtonGroup()
 {
-    using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
-    {
+using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
+{
         <div class=btn-group>
-        @foreach(var b in Model.statuses)
-        {
-            @g.Button().Data(new { id = b.StatusId }).Class("linebtn btn-" + b.Color).Text(b.Pretty(Model.line.StatusId == b.StatusId))
-        }
+            @foreach (var b in Model.statuses)
+            {
+                @g.Button().Data(new { id = b.StatusId }).Class("linebtn btn-" + b.Color).Text(b.Pretty(Model.line.StatusId == b.StatusId))
+            }
         </div>
-    }
+}
 }
 <div class="container">
     @using (var form = Html.Bootstrap().Begin(new Form("SaveLine", "Control").Id("lineform").Type(FormType.Horizontal).LabelWidthMd(2)))
     {
         @Html.HiddenFor(m => m.line.LineId)
+        @Html.HiddenFor(m => m.line.ConversionId)
         @Html.HiddenFor(m => m.line.UnitId)
         @Html.HiddenFor(m => m.line.LineNumber)
         @Html.HiddenFor(m => m.line.StatusId)
+        @Html.HiddenFor(m => m.action)
 
         <div class="row">
             <div class="col-md-12 text-primary"><h3>Modify Assignment of @Model.line.Name</h3></div>
@@ -57,17 +59,21 @@
         </div>
 
         <div class="row">
-            <fieldset class="time-context"><legend></legend>
-            @form.FormGroup().TextBoxFor(m => m.when).Label().LabelText("Effective")
-            @form.FormGroup().RadioButtonListFor(
+            <div class="col-md-12">
+                <fieldset class="time-context">
+                    <legend>
+                    </legend>
+                    @form.FormGroup().TextBoxFor(m => m.when).Class("time-hilite").Label().LabelText("Effective")
+                    @form.FormGroup().RadioButtonListFor(
                     m => m.line.SystemId,
                     m => m.systems,
                     s => s.SystemId,
                     s => s.Pretty).SelectedValues(
                     n => n.SystemId == Model.line.SystemId.Value).DisplayInlineBlock().Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-flask'></i> System"))
-            </fieldset>
-            @form.FormGroup().CustomControls(ButtonGroup()).CustomLabel("Status")
-            @form.FormGroup().DropDownListFor(m => m.line.ProductCodeId, Model.productList).Size(InputSize.Large).Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-gift'></i> Product"))
+                </fieldset>
+                @form.FormGroup().CustomControls(ButtonGroup()).CustomLabel("Status")
+                @form.FormGroup().DropDownListFor(m => m.line.ProductCodeId, Model.productList).Size(InputSize.Large).Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-gift'></i> Product"))
+            </div>
         </div>
         <div class="row">
             @(form.FormGroup().CustomControls(buttons.ToArray()))
@@ -79,6 +85,7 @@
     <script src="~/signalr/hubs" type="text/javascript"></script>
     <script type="text/javascript">
         var $when = $('#@Html.IdFor(m=>m.when)');
+        var $effect = $('#effective');
         $(function () {
             var hub = $.connection.lineHub;
             hub.client.setSystems = function (list) {
@@ -95,6 +102,7 @@
                     radios.append(litem);
                 });
             };
+
             $.connection.hub.disconnected(function () {
                 setTimeout(function () {
                     $.connection.hub.start();
@@ -104,6 +112,8 @@
             $when.datetimepicker({
                 timepicker: true
             });
+            $effect.html('&nbsp;&nbsp; effective ' + $when.val());
+            $when.val($when.val());
             $('button.linebtn').on('click', function (e) {
                 e.preventDefault();
                 var id = $(this).data('id');
@@ -113,12 +123,19 @@
                 $('i.fa-check-square','#lineform').removeClass('fa-check-square').addClass('fa-square');
                 $('i.fa-2x', $(this)).removeClass('fa-square').addClass('fa-check-square');
             });
+            $('button.btnconv').on('click', function (e) {
+                var id = $(this).data('id');
+                $('#@Html.IdFor(m=>m.line.ConversionId)').val(id);
+                var action = $(this).attr('class').split(' ').pop();
+                $('#@Html.IdFor(m=>m.action)').val(action);
+            });
             $('#cancel').on('click', function (e) {
                 e.preventDefault();
                 location.href = '@Url.Action("Lines", "Control", null, Request.Url.Scheme)';
             });
             $when.on('change', function (e) {
                 hub.server.setLineTime($when.val());
+                $effect.html('&nbsp;&nbsp; effective ' + $when.val());
             });
         });
     </script>

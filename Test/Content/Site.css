@@ -35,6 +35,10 @@
     background-color: lightblue;
 }
 
+.time-hilite {
+    font-weight: bold;
+    color: orangered;
+}
 span.happened {
     color: darkblue;
 }
@@ -78,6 +82,10 @@ input#note.form-control.popup {
 
 #bc {
     height: 100px;
+}
+
+.table > tbody > tr.txcurrent td {
+    border-bottom: 2px solid red;
 }
 
 tr.headers th {

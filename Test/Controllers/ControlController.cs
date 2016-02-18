@@ -27,15 +27,19 @@ namespace Test.Controllers
             var ln = new LineView(id, when);
             
             ViewBag.Undo = false;
+            ln.action = null;
             return View(ln);
         }
 
         [HttpPost]
         public ActionResult SaveLine(LineView ln)
         {
-            ln.line.Stamp = DateTime.Now;
+            if (!string.IsNullOrWhiteSpace(ln.action))  
+                return RedirectToAction(ln.action, new { id = ln.line.ConversionId });
+            
+            ln.line.Stamp = ln.when;
             ln.line.Save();
-            Success("Saved line "+ln.line.Name);
+            Success("Saved line " + ln.line.Name);
             return RedirectToAction("Lines");
         }
 
