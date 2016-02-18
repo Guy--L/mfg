@@ -91,7 +91,7 @@ namespace Test.Models
         [ResultColumn] public int? SolutionRecipeId { get; set; }
 
         public bool IsConversion { get; set; }
-        public bool HasAction { get; set; }
+        public string Action { get; set; }
 
         public string Name
         {
@@ -127,7 +127,7 @@ namespace Test.Models
             var latest = past.Max(p => p.Stamp);
             var pending = future.Where(f => f.Completed > latest);
             if (pending.Any())
-                pending.Last().HasAction = true;
+                pending.Last().Action = (new Conversion(pending.Last())).Action;
             var timeline = pending.Concat(past);
             return timeline.ToList();
         }

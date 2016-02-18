@@ -50,6 +50,12 @@ namespace Test.Models
 
         public Conversion() { }
 
+        public Conversion(LineTx ln)
+        {
+            this.InjectFrom(ln);
+            var s = State;
+        }
+
         public Conversion(int id)
         {
             if (id != 0)

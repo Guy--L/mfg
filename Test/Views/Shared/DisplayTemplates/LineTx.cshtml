@@ -5,13 +5,6 @@
     <td>@Model.product.FullCode</td>
     <td>@Model.Stamp.ToString("MM/dd HH:mm")</td>
     <td>@Model.Note</td>
-    <td>
-    @if (Model.IsConversion)
-    {
-        <button>
-
-        </button>
-    }
-    </td>
+    <td>@Html.Raw(Model.Action)</td>
 </tr>
 
