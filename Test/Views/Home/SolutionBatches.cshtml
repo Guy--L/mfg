@@ -11,7 +11,11 @@
                         <i class="fa fa-plus"></i> Add New Batch
                     </button>
                 </th>
-                <th></th>
+                <th>
+                    <button class="btn btn-info btn-xs" id="pngcharts" title="Publish quality charts refreshed by the server per data entry">
+                        <i class="fa fa-line-chart"></i> Alternate PNG Charts
+                    </button>
+                </th>
             </tr>
             <tr>
                 <th>ID</th>
@@ -65,6 +69,9 @@
         });
         $('#addbatch').on('click', function () {
             location.href = '@Url.Action("SBatch","Home",null,Request.Url.Scheme)/0';
+        });
+        $('#pngcharts').on('click', function () {
+            location.href = '@Url.Action("PNGCharts","Home",null,Request.Url.Scheme)';
         });
         $('.stest').on('click', function (e) {
             e.preventDefault();

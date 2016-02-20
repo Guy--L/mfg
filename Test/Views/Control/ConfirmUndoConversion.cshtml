@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Undo Conversion";
     List<IHtmlString> buttons = new List<IHtmlString>() {
-        Html.Bootstrap().SubmitButton().Text("Revert to Prior").Id("undoconversion").Style(ButtonStyle.Success),
+        Html.Bootstrap().SubmitButton().Text("Revert to Prior").Id("undoconversion").Style(ButtonStyle.Success),,new HtmlString(" "),
         Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Warning)
     };
 
@@ -63,7 +63,7 @@
                             <td>@pstarted</td>
                             <td>@pcompleted</td>
                             <th>@Model.prior.product._ProductCode @Model.prior.product.ProductSpec</th>
-                            <th>@Model.prior.Color</th>
+                            <th>@Html.Raw(Model.prior.Color)</th>
                             <th>@Model.prior.FinishFootage</th>
                             <th>@Model.prior.System</th>
                             <td>@Model.prior.SolutionType</td>
@@ -76,7 +76,7 @@
                             <td>@cstarted</td>
                             <td>@ccompleted</td>
                             <th>@Model.current.product._ProductCode @Model.current.product.ProductSpec</th>
-                            <th>@Model.current.Color</th>
+                            <th>@Html.Raw(Model.current.Color)</th>
                             <th>@Model.current.FinishFootage</th>
                             <th>@Model.current.System</th>
                             <td>@Model.current.SolutionType</td>

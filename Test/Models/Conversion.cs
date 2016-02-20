@@ -42,9 +42,16 @@ namespace Test.Models
 
         public string System { get { return Models.System.Systems[SystemId]; } }
         public string SolutionType { get { return SolutionRecipe.Solutions[SolutionRecipeId]; } }
-        public string Color { get { return Extruder.Colors[ExtruderId]; } }
         public Line line { get; set; }
         public ProductCode product { get; set; }
+
+        public string Color {
+            get {
+                var colors = Extruder.Colors[ExtruderId].Split(' ');
+                var tint = colors.Select(c => "<span style='color: " + c + (c=="White"?"; background-color: black;": ";")+"'>" + c + "</span>");
+                return string.Join(" ", tint);
+            }
+        }
 
         public string Icon { get { return StatusId==0?"":Status.legend[StatusId]; } }
 
@@ -208,7 +215,7 @@ namespace Test.Models
         ";
 
         public static string _pending = string.Format(_all, _rank, "") + @"
-            where c.Completed > dateadd(year, 200, getdate()) or (c.Completed <= getdate() and c.Started <= c.Completed and c.rn < 4) 
+            where c.Completed > dateadd(year, 200, getdate()) or (c.Completed <= getdate() and c.Started <= c.Completed) 
             order by c.Scheduled
         ";
 

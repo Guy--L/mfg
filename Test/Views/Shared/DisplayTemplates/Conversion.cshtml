@@ -1,27 +1,29 @@
 ﻿@model Test.Models.Conversion
 
 @{ 
+    var horizon = DateTime.Now.AddYears(200);
     var actions = ViewBag.Undo?"":Model.Action;
     var note = "";
     if (Model.Note != null && Model.Note.Length > 0)
     {
         note = "<i class='fa fa-file-text'></i>";
     }
-    var started = Model.Started.HasValue ? Model.Started.Value.ToString("yy-MM-dd") : "";
+    var started = (Model.Started.HasValue && Model.Started < horizon) ? Model.Started.Value.ToString("yy-MM-dd") : "";
+    var completed = Model.Completed < horizon ? Model.Completed.ToString("yy-MM-dd") : "";
 }
 <tr data-id="@Model.ConversionId" title="@Model.Note">
     @*@Html.Raw((Model.Active ? "<td title='is active. Click to complete.'><div class='hidden'>active</div><button class='btn btn-success btn-xs stopbatch'><i class='stopbatch fa fa-power-off'> Stop</i></button></td>" : "<td title='is completed'><i class='fa fa-ban text-danger'></i><div class='hidden'>completed</div></td>"))*@
     <td>@Model.line.Name @Html.Raw(note)</td>
     <td>@Model.Scheduled.ToString("yy-MM-dd")</td>
     <td>@started</td>
-    <td>@Model.Completed.ToString("yy-MM-dd")</td>
-    <th>@Model.product._ProductCode @Model.product.ProductSpec</th>
-    <th>@Model.Color</th>
-    <th>@Model.FinishFootage</th>
-    <th>@Model.System</th>
+    <td>@completed</td>
+    <td>@Model.product._ProductCode @Model.product.ProductSpec</td>
+    <td>@Html.Raw(Model.Color)</td>
+    <td>@Model.FinishFootage</td>
+    <td>@Model.System</td>
     <td>@Model.SolutionType</td>
     <td>@Html.Raw(Model.Icon)</td>
     @if (!ViewBag.Undo) {
-        <td>@Html.Raw(actions)</td>
+        <td style="overflow-wrap: none;">@Html.Raw(actions)</td>
     }
 </tr>

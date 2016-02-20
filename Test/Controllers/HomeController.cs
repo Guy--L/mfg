@@ -148,6 +148,11 @@ namespace Test.Controllers
             return View(new SolutionChart(t, group));
         }
 
+        public ActionResult PNGCharts()
+        {
+            return View();
+        }
+
         public ActionResult STestNew(int bid)
         {
             SolutionTestView t = new SolutionTestView(bid);

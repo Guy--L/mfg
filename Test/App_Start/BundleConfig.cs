@@ -21,8 +21,8 @@ namespace Test
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/dataTables").Include(
-                        "~/Scripts/DataTables-1.10.2/jquery.dataTables.js"
-                      , "~/Scripts/DataTables-1.10.2/dataTables.bootstrap.js"));
+                        "~/Scripts/DataTables/jquery.dataTables.js"
+                      , "~/Scripts/DataTables/dataTables.bootstrap.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

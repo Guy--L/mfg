@@ -3,7 +3,7 @@
     ViewBag.Title = "Modify Line " + Model.line.Name;
     Layout = "~/Views/Shared/_Layout2.cshtml";
     List<IHtmlString> buttons = new List<IHtmlString>() {
-            Html.Bootstrap().SubmitButton().Text("Save").Id("saveline").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Save").Id("saveline").Style(ButtonStyle.Success),new HtmlString(" "),
             Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
     };
     var current = Math.Abs(Model.when.Hour - DateTime.Now.Hour) < 8;

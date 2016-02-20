@@ -602,7 +602,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\PNGCharts.cshtml" />
     <Content Include="Views\Home\SolutionBatches.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SolutionBatch.cshtml" />
     <Content Include="Views\Home\SBatch.cshtml" />
@@ -672,6 +672,7 @@
     <Content Include="Views\Shared\DisplayTemplates\LineTime.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\LineTxOld.cshtml" />
     <Content Include="Views\Control\ExportConversions.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
