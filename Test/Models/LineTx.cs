@@ -124,7 +124,7 @@ namespace Test.Models
                 past = db.Fetch<LineTx, Status, System, ProductCode, LineTx>(Map, priorByLine(10), id);
                 future = db.Fetch<LineTx, Status, System, ProductCode, LineTx>(Map, _pendingByLine, id);
             }
-            var latest = past.Max(p => p.Stamp);
+            var latest = past.Any()?past.Max(p => p.Stamp):(DateTime.Now.AddYears(-200));
             var pending = future.Where(f => f.Completed > latest);
             if (pending.Any())
                 pending.Last().Action = (new Conversion(pending.Last())).Action;

@@ -85,7 +85,7 @@ input#note.form-control.popup {
 }
 
 .table > tbody > tr.txcurrent td {
-    border-bottom: 2px solid red;
+    border-bottom: 1px solid red;
 }
 
 tr.headers th {
@@ -131,7 +131,7 @@ tr.headers th {
     padding-left: 2px;
 }
 .casingsample.table-no-border>tbody>tr>td.product>button.sampled {
-    padding: 0px;
+    padding: 0;
 }
 .casingsample.table-no-border > tbody > tr > td.product.lineup {
     color: green;
