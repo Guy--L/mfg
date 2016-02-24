@@ -121,6 +121,7 @@
     <Build Include="Exempt.sql" />
     <Build Include="LineUpdateTrigger.sql" />
     <Build Include="User.sql" />
+    <Build Include="Data\LineOperation2Tx.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />

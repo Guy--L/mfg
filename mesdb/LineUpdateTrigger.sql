@@ -18,12 +18,13 @@ BEGIN
         (
 	        tagid int, 
 			lineid int,
-	        productcodeid int
+	        productcodeid int,
+			stamp datetime
         )
 		
 		merge taglogs.dbo.[all] as target
 		using (
-			select t.tagid, p.productcode+' '+p.productspec as product, getdate() as stamp, 192 as quality, p.productcodeid, i.lineid
+			select t.tagid, p.productcode+' '+p.productspec as product, i.stamp, 192 as quality, p.productcodeid, i.lineid
 			from inserted i 
 			join [ProductCode] p on p.ProductCodeId = i.ProductCodeId 
 			join [Unit] u on u.unitid = i.UnitId
@@ -36,10 +37,10 @@ BEGIN
 		when not matched then
 			insert (tagid, value, stamp, quality)
 			values (tagid, product, stamp, quality)
-	    output inserted.tagid, source.lineid, source.productcodeid into @insertedtags;
+	    output inserted.tagid, source.lineid, source.productcodeid, inserted.stamp into @insertedtags;
 
 		insert into taglogs.dbo.[Limit]
-		select r.tagid, getdate()
+		select r.tagid, i.stamp
 			, coalesce(p.reelmoist_min,0)
 			, coalesce(p.reelmoist_min + 0.5,0)
 			, coalesce(p.reelmoist_aim,0)
@@ -52,7 +53,7 @@ BEGIN
 		where f.FieldName = 'csg_moist_pct'
 
 		insert into taglogs.dbo.[Limit]
-		select r.tagid, getdate()
+		select r.tagid, i.stamp
 			, coalesce(p.gly_min,0)
 			, coalesce(p.gly_aim - 1.0,0)
 			, coalesce(p.gly_aim,0)
@@ -68,7 +69,7 @@ BEGIN
 	if update(statusid)
 	begin
 		insert into taglogs.dbo.[all]
-		select t.tagid, s.code, getdate(), 192
+		select t.tagid, s.code, i.stamp, 192
 		from inserted i 
 		join [Status] s on s.StatusId = i.StatusId 
 		join [Unit] u on u.unitid = i.UnitId
@@ -79,5 +80,5 @@ BEGIN
 	end
 
 	insert into linetx ([LineId], [PersonId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId], [ConversionId])
-	select lineid, personid, getdate(), '', linetankid, unitid, linenumber, systemid, statusid, productcodeid, conversionid from inserted
+	select lineid, personid, stamp, '', linetankid, unitid, linenumber, systemid, statusid, productcodeid, conversionid from inserted
 END

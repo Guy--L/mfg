@@ -37,7 +37,7 @@ namespace Test.Models
             join productcode p on p.productcodeid = c.productcodeid
             join system s on s.systemid = c.systemid
             join status y on y.statusid = c.statusid
-            where c.lineid = @0 order by c.stamp desc
+            where c.lineid = @0 {1} order by c.stamp desc
         ";
 
         private static string _pendingByLine = @"
@@ -98,10 +98,16 @@ namespace Test.Models
             get { return letters[UnitId] + LineNumber.ToString(); }
         }
 
+        public static string contextByLine(string when)
+        {
+            var clause = " and stamp <= '" + when + "' ";
+            return string.Format(_byLine, " top 1 ", clause);
+        }
+
         private static string priorByLine(int horizon)
         {
             var top = horizon > 0 ? ("top " + horizon) : "";
-            return string.Format(_byLine, top);
+            return string.Format(_byLine, top, "");
         }
 
         public static Line Prior(int id)
@@ -113,7 +119,12 @@ namespace Test.Models
             }
             return pair.Any()? pair.Last(): null; 
         }
-
+        
+        /// <summary>
+        /// Provide a combined timeline of conversions pending and line transactions
+        /// </summary>
+        /// <param name="id">Line Id</param>
+        /// <returns>List of line transactions since conversions look like transactions</returns>
         public static List<LineTx> TimeLine(int id)
         {
             List<LineTx> past = null;

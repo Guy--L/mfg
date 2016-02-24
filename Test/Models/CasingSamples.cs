@@ -260,7 +260,7 @@ namespace Test.Models
             ParameterId = _type;
         }
 
-        public void Select()
+        public void Synchronize()
         {
             var time = Scheduled.ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -268,10 +268,20 @@ namespace Test.Models
             using (labDB d = new labDB())
             {
                 s = d.SingleOrDefault<Sample>(" where scheduled = @0 and lineid = @1", time, LineId);
+                if (s != null)
+                {
+                    this.InjectFrom(s);
+                    return;
+                }
+
+                var context = d.SingleOrDefault<LineTx>(LineTx.contextByLine(time), LineId);
+                if (context == null)
+                {
+                    throw new Exception("no product and system context found for line " + LineId + " at time " + time);
+                }
+                ProductCodeId = context.ProductCodeId;
+                SystemId = context.SystemId;
             }
-            if (s != null) 
-                this.InjectFrom(s);
-            return;
         }
 
         public CasingSample(IRow r, DateTime sampled, string tech) : base(0)
@@ -294,7 +304,7 @@ namespace Test.Models
             }
             LineId = Unit.lineids[(int)line];
 
-            Select(); 
+            Synchronize(); 
 
             var meter = r.GetCell(1).StringCellValue.Replace("--","-").Split('-');
 

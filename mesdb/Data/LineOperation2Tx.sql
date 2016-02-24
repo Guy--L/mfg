@@ -1,6 +1,13 @@
-﻿insert into linetx (lineid, personid, stamp, unitid, linenumber, systemid, statusid, productcodeid, conversionid)
-select p.lineid, 0, p.stamp, u.unitid, p.inline, b.systemid, x.statusid, p.productcodeid, 0
-from lineoperation p
+﻿update x set 
+ personid = 0
+,stamp = p.stamp
+,unitid = u.unitid
+,systemid = b.systemid
+,statusid = x.statusid
+,productcodeid = p.productcodeid
+,conversion = 0
+from line x
+join lineoperation p on p.lineid = x.lineid
 join productcode s on p.productcodeid = s.ProductCodeId
 join SolutionRecipe r on r.SolutionType = s.PlastSpec
 join SolutionBatch b on b.SolutionRecipeId = r.SolutionRecipeId 
@@ -9,5 +16,4 @@ join SolutionBatch b on b.SolutionRecipeId = r.SolutionRecipeId
 join [Status] x on x.Code = p.RSCODE
 join unit u on u.Unit = p.inunit
 where year(p.stamp) = 2016
-order by b.[DateTime] desc
 

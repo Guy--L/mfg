@@ -4,6 +4,7 @@
     <td>@Html.Raw(@Model.status.Iconic())</td>
     <td>@Model.product.FullCode</td>
     <td>@Model.Stamp.ToString("MM/dd HH:mm")</td>
+    <td>@Model.system._System</td>
     <td>@Model.Note</td>
     <td>@Html.Raw(Model.Action+" "+(Model.Action == null ? "" : "<span id='effective' class='time-hilite'></span>"))</td>
 </tr>

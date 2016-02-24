@@ -23,7 +23,7 @@ using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
 }
 }
 <div class="container">
-    @using (var form = Html.Bootstrap().Begin(new Form("SaveLine", "Control").Id("lineform").Type(FormType.Horizontal).LabelWidthMd(2)))
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveLine", "Control").Id("lineform").Type(FormType.Horizontal)))
     {
         @Html.HiddenFor(m => m.line.LineId)
         @Html.HiddenFor(m => m.line.ConversionId)
@@ -44,9 +44,10 @@ using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
                             <th colspan="6">Pending <span class="text-success">and Recent</span> Line Activity</th>
                         </tr>
                         <tr>
-                            <th>Status</th>
+                            <th title="Ending Status"><i class='fa fa-gear'></i></th>
                             <th>Product</th>
                             <th>Time</th>
+                            <th title="Solution System Assigned"><i class='fa fa-flask'></i></th>
                             <th>Note</th>
                             <th><i>Action</i></th>
                         </tr>
@@ -63,7 +64,7 @@ using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
                 <fieldset class="time-context">
                     <legend>
                     </legend>
-                    @form.FormGroup().TextBoxFor(m => m.when).Class("time-hilite").Label().LabelText("Effective")
+                    @form.FormGroup().TextBoxFor(m => m.when).Class("time-hilite").Label().LabelText("Effective").
                     @form.FormGroup().RadioButtonListFor(
                     m => m.line.SystemId,
                     m => m.systems,
@@ -71,7 +72,7 @@ using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
                     s => s.Pretty).SelectedValues(
                     n => n.SystemId == Model.line.SystemId.Value).DisplayInlineBlock().Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-flask'></i> System"))
                 </fieldset>
-                @form.FormGroup().CustomControls(ButtonGroup()).CustomLabel("Status")
+                @form.FormGroup().CustomControls(ButtonGroup()).CustomLabel(new HtmlString("<i class='fa fa-2x fa-gear'></i> Status"))
                 @form.FormGroup().DropDownListFor(m => m.line.ProductCodeId, Model.productList).Size(InputSize.Large).Label().LabelHtml(new HtmlString("<i class='fa fa-2x fa-gift'></i> Product"))
             </div>
         </div>
