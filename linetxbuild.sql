@@ -1,5 +1,24 @@
-﻿delete from linetx
-dbcc checkident(linetx, reset, 0)
+﻿
+use taglogs
+go
+
+delete from [All] where allid in (
+select allid from [All] a
+join Tag t on t.Tagid = a.Tagid
+where t.Name in ('product_code', 'csg_moist_pct', 'csg_glyc_pct', 'line_status')
+)
+
+delete from Limit
+
+dbcc checkident(limit, reseed, 0)
+
+use mesdb
+go
+
+update x set rscode = 'DN'  from lineoperation x where year(stamp) = 2016 and (ltrim(rscode) = 'D' or ltrim(rscode) = 'P')
+
+delete from linetx
+dbcc checkident(linetx, reseed, 0)
 
 declare @stamp datetime
 declare @unitid int
@@ -20,7 +39,7 @@ join SolutionRecipe r on r.SolutionType = s.PlastSpec
 join SolutionBatch b on b.SolutionRecipeId = r.SolutionRecipeId 
 	and coalesce(b.[DateTime], dateadd(year, -200, getdate())) <= p.stamp 
 	and p.stamp <= coalesce(b.Completed, dateadd(year, 200, getdate()))
-join [Status] q on q.Code = p.RSCODE
+join [Status] q on q.Code = p.rscode
 join unit u on u.Unit = p.inunit
 where year(p.stamp) = 2016
 order by p.stamp asc
@@ -44,10 +63,10 @@ end
 close tx
 deallocate tx
 
-SELECT t1.*
-FROM lineoperation t1
-LEFT OUTER JOIN lineoperation t2
-  ON (t1.lineid = t2.lineid AND t1.stamp < t2.stamp)
-WHERE t2.lineid IS NULL;
+--SELECT t1.*
+--FROM lineoperation t1
+--LEFT OUTER JOIN lineoperation t2
+--  ON (t1.lineid = t2.lineid AND t1.stamp < t2.stamp)
+--WHERE t2.lineid IS NULL order by stamp desc
 
-select * from linetx order by stamp desc
+--select * from linetx order by stamp desc
