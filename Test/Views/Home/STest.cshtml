@@ -4,7 +4,8 @@
     ViewBag.Title = "Solution Test";
     List<IHtmlString> buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Save").Id("savestest").Style(ButtonStyle.Success),
-            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Default)
+            new HtmlString(" "),
+            Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
     };
 }
 
@@ -20,7 +21,7 @@
             <div class="col-xs-12 text-primary"><h3>@(Model.t.SolutionTestId == 0 ? "Add " : "Edit ")Solution Test to System @Model.System running @Model.Recipe</h3></div>
         </div>
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-8">
                 @form.FormGroup().TextBoxFor(m => m.t.DateTime).Class("input-sm").WidthLg(6).Label().LabelText("Taken")
                 @form.FormGroup().TextBoxFor(m => m.t.ReadingNumber).Readonly().WidthLg(3)
                 @form.FormGroup().TextBoxFor(m => m.t.Glycerin).Class("input-sm n32").WidthLg(3)
@@ -38,7 +39,8 @@
                 @form.FormGroup().TextBoxFor(m => m.t.Viscoscity).Class("input-sm n41").WidthLg(3)
                 @form.FormGroup().TextBoxFor(m => m.t.Conductivity).Class("input-sm n4").WidthLg(3)
                 @form.FormGroup().TextBoxFor(m => m.t.Hypochlorite).Class("input-sm n21").WidthLg(3)
-                @if (!Model.t.isGr) { 
+                @if (!Model.t.isGr)
+                {
                     @form.FormGroup().TextBoxFor(m => m.t.CasingGlycerin).Class("input-sm n31").WidthLg(3).Label().LabelText("Average Casing Glycerin")
                 }
                 else
@@ -46,7 +48,17 @@
                     @form.FormGroup().TextBoxFor(m => m.t.Feed).Class("input-sm n31").WidthLg(3).Label().LabelText("Feed")
                     @form.FormGroup().TextBoxFor(m => m.t.Steam).Class("input-sm n2").WidthLg(3).Label().LabelText("Steam")
                 }
-                    
+
+            </div>
+            <div class="col-xs-4">
+                <p class="text-muted">
+                    <i>
+                        Click on date field to get popup.<br />
+                        Click outside popup to close it.<br />
+                        Up and down arrows will move between fields.<br />
+                        Enter will move to the next field
+                    </i>
+                </p>
             </div>
         </div>
         <div class="row">
@@ -57,6 +69,9 @@
 @section scripts{
     <script type="text/javascript">
         $(function () {
+            $('#@Html.IdFor(m=>m.t.DateTime)').datetimepicker({
+                timepicker: true
+            });
             $('input.n32').inputmask('decimal', { digits: 2, integerDigits: 1 });
             $('input.n31').inputmask('decimal', { digits: 1, integerDigits: 2 });
             $('input.n41').inputmask('decimal', { digits: 1, integerDigits: 3 });

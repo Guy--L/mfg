@@ -15,10 +15,11 @@ namespace Test.App_Start
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.js",
                 "~/Scripts/jquery-datetimepicker.js",
+                "~/Scripts/jquery.inputmask/inputmask.js",
+                "~/Scripts/jquery.inputmask/inputmask.extensions.js",
+                "~/Scripts/jquery.inputmask/inputmask.date.extensions.js",
+                "~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js",
                 "~/Scripts/jquery.inputmask/jquery.inputmask.js",
-                "~/Scripts/jquery.inputmask/jquery.inputmask.extensions.js",
-                "~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions.js",
-                "~/Scripts/jquery.inputmask/jquery.inputmask.numeric.extensions.js",
                 "~/Scripts/jquery-barcode.js",
                 "~/Scripts/jquery.fittext.js",
                 "~/Scripts/respond.js"));
