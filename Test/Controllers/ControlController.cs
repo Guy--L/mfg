@@ -46,7 +46,7 @@ namespace Test.Controllers
         public ActionResult Conversions()
         {
             ViewBag.Undo = false;
-            var c = new Conversions(Models.Conversions._pending);
+            var c = new Conversions();
             return View(c);
         }
 
@@ -67,7 +67,7 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult SaveConversion(Conversion c)
         {
-            if (c.Note != null && c.Note.Length > 50) c.Note = c.Note.Substring(0, 50);
+            if (c.Comment != null && c.Comment.Length > 200) c.Comment = c.Comment.Substring(0, 200);
             c.Save();
             Success("Saved conversion");
             return RedirectToAction("Conversions");
@@ -76,7 +76,7 @@ namespace Test.Controllers
         public ActionResult UndoConversions()
         {
             ViewBag.Undo = true;
-            var c = new Conversions(Models.Conversions._recent);
+            var c = new Conversions(true);
             return View(c);
         }
 

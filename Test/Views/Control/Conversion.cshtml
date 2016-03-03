@@ -35,14 +35,12 @@
                         </tbody>
                     </table>
                 </div>
-                @form.FormGroup().TextAreaFor(m => m.c.Note)
+                @form.FormGroup().TextAreaFor(m => m.c.Comment)
             </div>
             <div class="col-xs-6">
                 @Html.HiddenFor(m => m.c.ConversionId)
                 @Html.HiddenFor(m => m.c.LineId)
-                @Html.HiddenFor(m => m.c.Completed)
-                @Html.HiddenFor(m => m.c.Started)
-                @form.FormGroup().TextBoxFor(m => m.c.Scheduled)
+                @form.FormGroup().TextBoxFor(m => m.c.Stamp)
                 @form.FormGroup().RadioButtonListFor(
                      m => m.c.SystemId,
                      m => m.systems,

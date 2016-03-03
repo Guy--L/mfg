@@ -20,6 +20,7 @@ namespace Test.Models
 
         public static string[] ips;
         public static Dictionary<int, int> lineids = null;
+        public static Dictionary<int, string> id2line = null;
 
         public Unit() { }
         public Unit(int id)
@@ -43,7 +44,9 @@ namespace Test.Models
         { 
             using (labDB db = new labDB())
             {
-                lineids = db.Fetch<linemap>(_map).ToDictionary(k => k.line, v => v.lineid);
+                var lmap = db.Fetch<linemap>(_map);
+                lineids = lmap.ToDictionary(k => k.line, v => v.lineid);
+                id2line = lmap.ToDictionary(k => k.lineid, v => Code(v.line / 10) + v.line % 10);
             }
         }
     }

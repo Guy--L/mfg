@@ -241,6 +241,17 @@ namespace Test.Models
             LineName = ln.Name;
         }
 
+        public CasingSample(Line ln)
+        {
+            product = ln.product;
+            Gly = new Reading(0, _type);
+            StatColor = ln.status.Color;
+            StatIcon = ln.status.Icon;
+            LineId = ln.LineId;
+            UnitId = ln.UnitId;
+            LineName = ln.Name;
+        }
+
         public CasingSample(int id)
         {
             if (id != 0)
@@ -927,6 +938,10 @@ namespace Test.Models
 	            sampleid int
             )
 
+            declare @@archivecut datetime
+
+            select @@archivecut = min(stamp) from [All]
+
             merge into [All] as target
             using (
 	            select l.sampleid, r.tagid,
@@ -940,7 +955,7 @@ namespace Test.Models
 		            and l.Completed is not null 
 		            and l.sampleid in ({0})	
 	            ) as source (sampleid, tagid, value, stamp, quality)
-            on 1 = 0
+            on source.stamp < @@archivecut
             when not matched then
 	            insert (tagid, value, stamp, quality)
 	            values (tagid, value, stamp, quality)
@@ -959,7 +974,45 @@ namespace Test.Models
 		            and l.Completed is not null 
 		            and l.sampleid in ({0})	
 	            ) as source (sampleid, tagid, value, stamp, quality)
-            on 1 = 0
+            on source.stamp < @@archivecut
+            when not matched then
+	            insert (tagid, value, stamp, quality)
+	            values (tagid, value, stamp, quality)
+            output inserted.tagid, source.sampleid into @@insertedtags;
+
+            merge into [Past] as target
+            using (
+	            select l.sampleid, r.tagid,
+	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
+	            l.stamp,
+	            192 as quality
+	            from mesdb.dbo.[LabResult] l
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_moist_pct' 
+		            and l.Completed is not null 
+		            and l.sampleid in ({0})	
+	            ) as source (sampleid, tagid, value, stamp, quality)
+            on source.stamp >= @@archivecut
+            when not matched then
+	            insert (tagid, value, stamp, quality)
+	            values (tagid, value, stamp, quality)
+            output inserted.tagid, source.sampleid into @@insertedtags;
+
+            merge into [Past] as target
+            using (
+	            select l.sampleid, r.tagid,
+                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
+	            l.stamp,
+	            192 as quality
+	            from mesdb.dbo.[LabResult] l
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_glyc_pct' 
+		            and l.Completed is not null 
+		            and l.sampleid in ({0})	
+	            ) as source (sampleid, tagid, value, stamp, quality)
+            on source.stamp >= @@archivecut
             when not matched then
 	            insert (tagid, value, stamp, quality)
 	            values (tagid, value, stamp, quality)
@@ -973,7 +1026,6 @@ namespace Test.Models
 
         public void Seal()
         {
-            
             var ids = string.Join(",",samples.SelectMany(x => x.Select(y => y.SampleId)).Where(k => k != 0).Distinct().ToArray());
             if (ids.Length == 0)
                 return;

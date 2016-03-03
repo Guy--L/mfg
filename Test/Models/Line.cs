@@ -29,11 +29,20 @@ namespace Test.Models
             SystemId = c.SystemId;
             ConversionId = c.ConversionId;
         }
+
+        public static Line Map(Line l, System y, ProductCode p)
+        {
+            l.status = Status.state[l.StatusId];
+            l.system = y;
+            l.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
+            l.ProductCodeId = l.product.ProductCodeId;
+            return l;
+        }
     }
 
     public class Lines
     {
-        public List<LineTx> lines { get; set; }
+        public List<Line> lines { get; set; }
         public List<System> systems { get; set; }
 
         public static string _linehistory = @"
@@ -96,7 +105,7 @@ namespace Test.Models
         {
             using (var labdb = new labDB())
             {
-                lines = labdb.Fetch<LineTx, Status, System, ProductCode, LineTx>(LineTx.Map,
+                lines = labdb.Fetch<Line, System, ProductCode, Line>(Line.Map,
                     _lineload + " order by l.LineNumber, l.UnitId");
                 systems = labdb.Fetch<System>(System._active);
             }

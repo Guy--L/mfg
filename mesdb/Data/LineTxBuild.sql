@@ -1,7 +1,4 @@
-﻿delete from linetx
-dbcc checkident(linetx, reset, 0)
-
-declare @stamp datetime
+﻿declare @stamp datetime
 declare @unitid int
 declare @systemid int
 declare @statusid int
@@ -22,7 +19,7 @@ join SolutionBatch b on b.SolutionRecipeId = r.SolutionRecipeId
 	and p.stamp <= coalesce(b.Completed, dateadd(year, 200, getdate()))
 join [Status] q on q.Code = p.RSCODE
 join unit u on u.Unit = p.inunit
-where year(p.stamp) = 2016
+where year(p.stamp) = 2016													--p.stamp > (select max(stamp) from linetx)
 order by p.stamp asc
 
 open tx

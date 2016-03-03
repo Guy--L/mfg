@@ -121,7 +121,8 @@
     <Build Include="Exempt.sql" />
     <Build Include="LineUpdateTrigger.sql" />
     <Build Include="User.sql" />
-    <Build Include="Data\LineOperation2Tx.sql" />
+    <None Include="Data\LineOperation2Tx.sql" />
+    <None Include="Data\LineTxBuild.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />
@@ -139,6 +140,7 @@
     <None Include="AgentJobs.sql" />
     <None Include="Data\InsertTriggerOnLineOperation.sql" />
     <None Include="Data\SinceNow.sql" />
+    <None Include="Data\ResetLabData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="mesdb.refactorlog" />

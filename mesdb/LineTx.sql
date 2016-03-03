@@ -10,6 +10,5 @@
     [LineNumber] INT NOT NULL, 
     [SystemId] INT NULL, 
     [StatusId] INT NOT NULL, 
-    [ProductCodeId] INT NOT NULL, 
-    [ConversionId] INT NOT NULL 
+    [ProductCodeId] INT NOT NULL
 )

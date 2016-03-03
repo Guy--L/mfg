@@ -1,4 +1,4 @@
-﻿@model List<Test.Models.LineTx>
+﻿@model List<Test.Models.Line>
 
 @{
     var numbers = Model.Select(s => s.LineNumber).Distinct().Count();
@@ -11,7 +11,7 @@
     <tr>
         <td>@(i + 1)</td>
         @foreach (var ls in Model.Skip(i * width).Take(width)) {
-            <td data-id="@ls.LineId" class="sys-@ls.SystemId">
+            <td data-id="@ls.LineId" class="sys-@ls.SystemId" title="@ls.product.ProductSpec since @ls.Stamp.ToString("MM/dd hh:mm")">
                 <button class="btn btn-@ls.status.Color sys-@ls.SystemId" data-id="@ls.LineId">
                     <i class="fa fa-@ls.status.Icon"></i> @ls.product._ProductCode</button>
             </td>

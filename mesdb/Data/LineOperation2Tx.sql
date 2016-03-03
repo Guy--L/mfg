@@ -1,4 +1,7 @@
-﻿update x set 
+﻿use mesdb
+go
+
+update x set 
  personid = 0
 ,stamp = p.stamp
 ,unitid = u.unitid

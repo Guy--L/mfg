@@ -12,6 +12,9 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
+	declare @archivecut datetime
+	select @archivecut = min(stamp) from taglogs.dbo.[all]
+
 	if update(productcodeid) 
 	begin
         declare @insertedtags table
@@ -21,7 +24,7 @@ BEGIN
 	        productcodeid int,
 			stamp datetime
         )
-		
+
 		merge taglogs.dbo.[all] as target
 		using (
 			select t.tagid, p.productcode+' '+p.productspec as product, i.stamp, 192 as quality, p.productcodeid, i.lineid
@@ -33,10 +36,27 @@ BEGIN
 			join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
 			where t.name = 'product_code' and d.Name = 'HMI'
 	    ) as source
-		on 1 = 0
+		on source.stamp < @archivecut
 		when not matched then
 			insert (tagid, value, stamp, quality)
 			values (tagid, product, stamp, quality)
+	    output inserted.tagid, source.lineid, source.productcodeid, inserted.stamp into @insertedtags;
+
+		merge taglogs.dbo.[past] as target
+		using (
+			select t.tagid, p.productcode+' '+p.productspec as product, i.stamp, p.productcodeid, i.lineid
+			from inserted i 
+			join [ProductCode] p on p.ProductCodeId = i.ProductCodeId 
+			join [Unit] u on u.unitid = i.UnitId
+			join taglogs.dbo.[Channel] c on (u.unit+cast(i.linenumber as char)) = c.name
+			join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
+			join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
+			where t.name = 'product_code' and d.Name = 'HMI'
+	    ) as source
+		on source.stamp >= @archivecut
+		when not matched then
+			insert (tagid, value, stamp)
+			values (tagid, product, stamp)
 	    output inserted.tagid, source.lineid, source.productcodeid, inserted.stamp into @insertedtags;
 
 		insert into taglogs.dbo.[Limit]
@@ -76,9 +96,9 @@ BEGIN
 		join taglogs.dbo.[Channel] c on (u.unit+cast(i.linenumber as char)) = c.name
 		join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
 		join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
-		where t.name = 'line_status'
+		where t.name = 'line_status' and i.stamp >= @archivecut
 	end
 
-	insert into linetx ([LineId], [PersonId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId], [ConversionId])
-	select lineid, personid, stamp, '', linetankid, unitid, linenumber, systemid, statusid, productcodeid, conversionid from inserted
+	insert into linetx ([LineId], [PersonId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId])
+	select lineid, personid, stamp, '', linetankid, unitid, linenumber, systemid, statusid, productcodeid from inserted
 END

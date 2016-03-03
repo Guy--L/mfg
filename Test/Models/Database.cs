@@ -1134,169 +1134,6 @@ namespace Test.Models
 	
 	}
 
-	[TableName("Conversion")]
-	[PrimaryKey("ConversionId")]
-	[ExplicitColumns]
-    public partial class Conversion : labDB.Record<Conversion>  
-    {        [Column] 		public int ConversionId 
-		{ 
-			get
-			{
-				return _ConversionId;
-			}
-			set
-			{
-				_ConversionId = value;
-				MarkColumnModified("ConversionId");
-			}
-		}
-		int _ConversionId;
-        [Column] 		public int LineId 
-		{ 
-			get
-			{
-				return _LineId;
-			}
-			set
-			{
-				_LineId = value;
-				MarkColumnModified("LineId");
-			}
-		}
-		int _LineId;
-        [Column] 		public int ProductCodeId 
-		{ 
-			get
-			{
-				return _ProductCodeId;
-			}
-			set
-			{
-				_ProductCodeId = value;
-				MarkColumnModified("ProductCodeId");
-			}
-		}
-		int _ProductCodeId;
-        [Column] 		public int SystemId 
-		{ 
-			get
-			{
-				return _SystemId;
-			}
-			set
-			{
-				_SystemId = value;
-				MarkColumnModified("SystemId");
-			}
-		}
-		int _SystemId;
-        [Column] 		public int SolutionRecipeId 
-		{ 
-			get
-			{
-				return _SolutionRecipeId;
-			}
-			set
-			{
-				_SolutionRecipeId = value;
-				MarkColumnModified("SolutionRecipeId");
-			}
-		}
-		int _SolutionRecipeId;
-        [Column] 		public int ExtruderId 
-		{ 
-			get
-			{
-				return _ExtruderId;
-			}
-			set
-			{
-				_ExtruderId = value;
-				MarkColumnModified("ExtruderId");
-			}
-		}
-		int _ExtruderId;
-        [Column] 		public DateTime Scheduled 
-		{ 
-			get
-			{
-				return _Scheduled;
-			}
-			set
-			{
-				_Scheduled = value;
-				MarkColumnModified("Scheduled");
-			}
-		}
-		DateTime _Scheduled;
-        [Column] 		public int StatusId 
-		{ 
-			get
-			{
-				return _StatusId;
-			}
-			set
-			{
-				_StatusId = value;
-				MarkColumnModified("StatusId");
-			}
-		}
-		int _StatusId;
-        [Column] 		public DateTime? Started 
-		{ 
-			get
-			{
-				return _Started;
-			}
-			set
-			{
-				_Started = value;
-				MarkColumnModified("Started");
-			}
-		}
-		DateTime? _Started;
-        [Column] 		public DateTime Completed 
-		{ 
-			get
-			{
-				return _Completed;
-			}
-			set
-			{
-				_Completed = value;
-				MarkColumnModified("Completed");
-			}
-		}
-		DateTime _Completed;
-        [Column] 		public int FinishFootage 
-		{ 
-			get
-			{
-				return _FinishFootage;
-			}
-			set
-			{
-				_FinishFootage = value;
-				MarkColumnModified("FinishFootage");
-			}
-		}
-		int _FinishFootage;
-        [Column] 		public string Note 
-		{ 
-			get
-			{
-				return _Note;
-			}
-			set
-			{
-				_Note = value;
-				MarkColumnModified("Note");
-			}
-		}
-		string _Note;
-	
-	}
-
 	[TableName("ProductCode")]
 	[PrimaryKey("ProductCodeId")]
 	[ExplicitColumns]
@@ -2076,19 +1913,6 @@ namespace Test.Models
 			}
 		}
 		int _ProductCodeId;
-        [Column] 		public int ConversionId 
-		{ 
-			get
-			{
-				return _ConversionId;
-			}
-			set
-			{
-				_ConversionId = value;
-				MarkColumnModified("ConversionId");
-			}
-		}
-		int _ConversionId;
 	
 	}
 
@@ -3374,6 +3198,104 @@ namespace Test.Models
 			}
 		}
 		DateTime? _DateTime;
+	
+	}
+
+	[TableName("Conversion")]
+	[PrimaryKey("ConversionId")]
+	[ExplicitColumns]
+    public partial class Conversion : labDB.Record<Conversion>  
+    {        [Column] 		public int ConversionId 
+		{ 
+			get
+			{
+				return _ConversionId;
+			}
+			set
+			{
+				_ConversionId = value;
+				MarkColumnModified("ConversionId");
+			}
+		}
+		int _ConversionId;
+        [Column] 		public int LineTxId 
+		{ 
+			get
+			{
+				return _LineTxId;
+			}
+			set
+			{
+				_LineTxId = value;
+				MarkColumnModified("LineTxId");
+			}
+		}
+		int _LineTxId;
+        [Column] 		public int SolutionRecipeId 
+		{ 
+			get
+			{
+				return _SolutionRecipeId;
+			}
+			set
+			{
+				_SolutionRecipeId = value;
+				MarkColumnModified("SolutionRecipeId");
+			}
+		}
+		int _SolutionRecipeId;
+        [Column] 		public int ExtruderId 
+		{ 
+			get
+			{
+				return _ExtruderId;
+			}
+			set
+			{
+				_ExtruderId = value;
+				MarkColumnModified("ExtruderId");
+			}
+		}
+		int _ExtruderId;
+        [Column] 		public int FinishFootage 
+		{ 
+			get
+			{
+				return _FinishFootage;
+			}
+			set
+			{
+				_FinishFootage = value;
+				MarkColumnModified("FinishFootage");
+			}
+		}
+		int _FinishFootage;
+        [Column] 		public int EndStateId 
+		{ 
+			get
+			{
+				return _EndStateId;
+			}
+			set
+			{
+				_EndStateId = value;
+				MarkColumnModified("EndStateId");
+			}
+		}
+		int _EndStateId;
+        [Column] 		public ConversionStates ConversionState 
+		{ 
+			get
+			{
+				return _ConversionState;
+			}
+			set
+			{
+				_ConversionState = value;
+				MarkColumnModified("ConversionState");
+			}
+		}
+		ConversionStates _ConversionState;
 	
 	}
 

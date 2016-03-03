@@ -1,15 +1,10 @@
 ﻿CREATE TABLE [dbo].[Conversion]
 (
-	[ConversionId] INT NOT NULL PRIMARY KEY identity, 
-    [LineId] INT NOT NULL, 
-    [ProductCodeId] INT NOT NULL, 
-    [SystemId] INT NOT NULL, 
+	[ConversionId] INT NOT NULL PRIMARY KEY IDENTITY, 
+	[LineTxId] int not null,
 	[SolutionRecipeId] int not null,
     [ExtruderId] INT NOT NULL, 
-    [Scheduled] DATETIME NOT NULL, 
-    [StatusId] INT NOT NULL default 1,
-    [Started] DATETIME NULL, 
-    [Completed] DATETIME NOT NULL, 
     [FinishFootage] INT NOT NULL, 
-    [Note] VARCHAR(50) NULL 
+    [EndStateId] INT NOT NULL, 
+    [ConversionState] INT NOT NULL, 
 )

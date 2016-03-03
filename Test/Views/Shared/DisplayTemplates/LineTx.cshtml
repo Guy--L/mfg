@@ -1,11 +1,11 @@
 ﻿@model Test.Models.LineTx
 
-<tr data-id="@Model.LineTxId" class='@(Model.IsConversion?"":("text-"+Model.status.Color))@(Model.Action == null ? "" : "txcurrent")'>
+<tr data-id="@Model.LineTxId" class='@("text-"+Model.status.Color)@(Model.Action == null ? "" : "txcurrent")'>
     <td>@Html.Raw(@Model.status.Iconic())</td>
     <td>@Model.product.FullCode</td>
     <td>@Model.Stamp.ToString("MM/dd HH:mm")</td>
     <td>@Model.system._System</td>
-    <td>@Model.Note</td>
+    <td>@Model.Comment</td>
     <td>@Html.Raw(Model.Action+" "+(Model.Action == null ? "" : "<span id='effective' class='time-hilite'></span>"))</td>
 </tr>
 

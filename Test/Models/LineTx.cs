@@ -11,86 +11,51 @@ namespace Test.Models
 
         private static string _byLine = @"
             select {0}
-                c.[LineTxId],
-                c.[LineId],
-                c.[PersonId],
-                c.[Stamp],
-                c.[Comment],
-                c.[LineTankId],
-                c.[UnitId],
-                c.[LineNumber],
-                c.[SystemId],
-                c.[StatusId],
-                c.[ProductCodeId],
-                c.[ConversionId]
-                  ,y.[StatusId]
-                  ,y.[Code]
-                  ,y.[Icon]
-                  ,y.[Color]
-                  ,s.[SystemId]
-                  ,s.[System]
-                  ,p.[ProductCodeId]
-                  ,p.[ProductCode]
-                  ,p.[ProductSpec]
-                  ,p.[PlastSpec]
+                c.[LineTxId]
+                ,c.[LineId]
+                ,c.[PersonId]
+                ,c.[Stamp]
+                ,c.[Comment]
+                ,c.[LineTankId]
+                ,c.[UnitId]
+                ,c.[LineNumber]
+                ,c.[SystemId]
+                ,c.[StatusId]
+                ,c.[ProductCodeId]
+                ,s.[SystemId]
+                ,s.[System]
+                ,p.[ProductCodeId]
+                ,p.[ProductCode]
+                ,p.[ProductSpec]
+                ,p.[PlastSpec]
+                ,v.[ConversionId]
+                ,v.[SolutionRecipeId]
+                ,v.[ExtruderId]
+                ,v.[FinishFootage]
+                ,v.[EndStateId]
+                ,v.[ConversionState]
             from linetx c
             join productcode p on p.productcodeid = c.productcodeid
             join system s on s.systemid = c.systemid
-            join status y on y.statusid = c.statusid
-            where c.lineid = @0 {1} order by c.stamp desc
-        ";
-
-        private static string _pendingByLine = @"
-            select
-                c.[LineId],
-                c.[Scheduled],
-                c.[Completed],
-                c.[Note],
-                c.[SystemId],
-                c.[StatusId],
-                c.[ProductCodeId],
-                c.[ConversionId],
-                c.[SolutionRecipeId]
-                  ,y.[StatusId]
-                  ,y.[Code]
-                  ,y.[Icon]
-                  ,y.[Color]
-                  ,s.[SystemId]
-                  ,s.[System]
-                  ,p.[ProductCodeId]
-                  ,p.[ProductCode]
-                  ,p.[ProductSpec]
-                  ,p.[PlastSpec]
-            from conversion c
-            join productcode p on p.productcodeid = c.productcodeid
-            join system s on s.systemid = c.systemid
-            join status y on y.statusid = c.statusid
-            where c.lineid = @0 order by dbo.SinceNow(c.[Started], c.[Completed])
+            left join conversion v on v.linetxid = c.linetxid
+            where c.lineid = @0 {1} order by c.stamp desc 
         ";
 
         public Status status { get; set; }
         public System system { get; set; }
         public ProductCode product { get; set; }
+        public Conversion conversion { get; set; }
 
-        public static LineTx Map(LineTx l, Status s, System y, ProductCode p)
+        public static LineTx Map(LineTx l, System y, ProductCode p, Conversion c)
         {
-            l.status = s;
+            l.status = Status.state[l.StatusId];
             l.system = y;
             l.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
             l.ProductCodeId = l.product.ProductCodeId;
-            l.IsConversion = l.SolutionRecipeId!=null;
-            if (l.IsConversion)
-                l.Stamp = l.Completed < DateTime.Now ? l.Completed : l.Scheduled;
+            l.conversion = c;
             return l;
         }
 
-        // Columns in Conversion table not in Line(Tx) table
-        [ResultColumn] public DateTime Scheduled { get; set; }
-        [ResultColumn] public DateTime Completed { get; set; }
-        [ResultColumn] public string Note { get; set; }
-        [ResultColumn] public int? SolutionRecipeId { get; set; }
-
-        public bool IsConversion { get; set; }
         public string Action { get; set; }
 
         public string Name
@@ -110,6 +75,17 @@ namespace Test.Models
             return string.Format(_byLine, top, "");
         }
 
+        public static int LatestTx(int lineid)
+        {
+            LineTx ltx = null;
+            using (labDB db = new labDB())
+            {
+                ltx = db.Fetch<LineTx>(priorByLine(1), lineid).SingleOrDefault();
+            }
+            if (ltx == null) return 0;
+            return ltx.LineTxId;
+        }
+
         public static Line Prior(int id)
         {
             List<Line> pair = null;
@@ -127,20 +103,15 @@ namespace Test.Models
         /// <returns>List of line transactions since conversions look like transactions</returns>
         public static List<LineTx> TimeLine(int id)
         {
-            List<LineTx> past = null;
-            List<LineTx> future = null;
+            List<LineTx> tx = null;
 
             using (labDB db = new labDB())
             {
-                past = db.Fetch<LineTx, Status, System, ProductCode, LineTx>(Map, priorByLine(10), id);
-                future = db.Fetch<LineTx, Status, System, ProductCode, LineTx>(Map, _pendingByLine, id);
+                tx = db.Fetch<LineTx, System, ProductCode, Conversion, LineTx>(Map, priorByLine(10), id);
             }
-            var latest = past.Any()?past.Max(p => p.Stamp):(DateTime.Now.AddYears(-200));
-            var pending = future.Where(f => f.Completed > latest);
-            if (pending.Any())
-                pending.Last().Action = (new Conversion(pending.Last())).Action;
-            var timeline = pending.Concat(past);
-            return timeline.ToList();
+            //if (pending.Any())
+            //    pending.Last().Action = (new Conversion(pending.Last())).Action;
+            return tx.ToList();
         }
     }
 }

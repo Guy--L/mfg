@@ -5,13 +5,14 @@ namespace Test.Models
 {
     public partial class Status
     {
-        public static Dictionary<int, string> legend;
         public static Dictionary<string, int> statuses;
+
+        public static Dictionary<int, Status> state;
 
         public static void SetIcons(List<Status> s)
         {
-            legend = s.ToDictionary(k => k.StatusId, n => n.Iconic());
             statuses = s.ToDictionary(k => k.Description, v => v.StatusId);
+            state = s.ToDictionary(k => k.StatusId, v => v);
         }
 
         public string Pretty(bool isActive)
