@@ -19,7 +19,7 @@ join SolutionBatch b on b.SolutionRecipeId = r.SolutionRecipeId
 	and p.stamp <= coalesce(b.Completed, dateadd(year, 200, getdate()))
 join [Status] q on q.Code = p.RSCODE
 join unit u on u.Unit = p.inunit
-where year(p.stamp) = 2016													--p.stamp > (select max(stamp) from linetx)
+where p.stamp > (select max(stamp) from linetx)
 order by p.stamp asc
 
 open tx

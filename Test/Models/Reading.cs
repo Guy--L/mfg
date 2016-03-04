@@ -129,10 +129,10 @@ namespace Test.Models
             {
                 nr = d.SingleOrDefault<Reading>(" where sampleid = @0", sampleid);
             }
-            ParameterId = parameterid;
-            parameter();
             if (nr != null)
                 this.InjectFrom(nr);
+            ParameterId = parameterid;
+            parameter();
         }
 
         public Reading(int id, string name) : this(id, TypeOf[name])

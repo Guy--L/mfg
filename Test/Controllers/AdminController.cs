@@ -43,18 +43,18 @@ namespace Test.Controllers
             if (!Directory.Exists(s))
             {
                 Error(s + " does not exist");
-                return RedirectToAction("CasingSamples");
+                return RedirectToAction("CasingSamples", "Home");
             }
             int year = 2016;
             if (!int.TryParse(y, out year))
             {
                 Error(y + " year is wrong");
-                return RedirectToAction("CasingSamples");
+                return RedirectToAction("CasingSamples", "Home");
             }
             s = CasingSamples.ReadExcels(s, year);
             TempData["stats"] = s;
             Success(s);
-            return RedirectToAction("CasingSamples");
+            return RedirectToAction("CasingSamples", "Home");
         }
 
         public ActionResult Completed()

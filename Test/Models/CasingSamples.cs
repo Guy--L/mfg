@@ -35,7 +35,8 @@ namespace Test.Models
         public int? Moist { get { return Gly?.R1; } set { Gly.R1 = value; } }
         public int? GlyWt { get { return Gly?.R2; } set { Gly.R2 = value; } }
         public int? DryWt { get { return Gly?.R3; } set { Gly.R3 = value; } }
-        public int? GlyArea {
+        public int? GlyArea
+        {
             get { return Gly?.R4; }
             set { Gly.R4 = value; }
         }
@@ -53,7 +54,7 @@ namespace Test.Models
         public string LineName { get; set; }
 
         public bool isPublished { get { return !((Completed ?? DateTime.MaxValue) > DateTime.Now); } }
-        public ProductCode _product; 
+        public ProductCode _product;
         public ProductCode product
         {
             get { return _product; }
@@ -65,7 +66,8 @@ namespace Test.Models
             }
         }
 
-        public string MoistSpec {
+        public string MoistSpec
+        {
             get
             {
                 if (product == null) return "0<50<100";
@@ -81,7 +83,8 @@ namespace Test.Models
                 }
             }
         }
-        public string GlySpec {
+        public string GlySpec
+        {
             get
             {
                 if (product == null) return "0<50<100";
@@ -104,7 +107,7 @@ namespace Test.Models
                 string speclass = "";
                 if (OutOfControl(MoistPct, _moist, -5)) speclass = "oocontrol";
                 if (OutOfSpec(MoistPct, _moist)) speclass = "oospec";
-                Debug.Write("line " + LineName + " moisture: " + speclass + ". "+MoistPct + " in ");
+                Debug.Write("line " + LineName + " moisture: " + speclass + ". " + MoistPct + " in ");
                 foreach (var d in _moist)
                 {
                     Debug.Write(d + " < ");
@@ -123,7 +126,8 @@ namespace Test.Models
                 return speclass;
             }
         }
-        public string SpecStatus {
+        public string SpecStatus
+        {
             get
             {
                 string speclass = "";
@@ -136,8 +140,10 @@ namespace Test.Models
             }
         }
 
-        public double? MoistPct {
-            get {
+        public double? MoistPct
+        {
+            get
+            {
                 if (!DryWt.HasValue || !Moist.HasValue || Moist.Value == 0.0 || DryWt.Value == 0.0)
                     return null;
                 return (1 - ((double)DryWt / (double)Moist)) * 100.0;
@@ -158,7 +164,8 @@ namespace Test.Models
         {
             if (!actual.HasValue || spec == null) return false;
             double low, high;
-            if (margin < 0) {
+            if (margin < 0)
+            {
                 low = spec[0];
                 high = spec[2];
             }
@@ -166,18 +173,20 @@ namespace Test.Models
             var val = Math.Round(actual.Value, 1);
             low -= ((double)margin / 10.0);
             high += ((double)margin / 10.0);
-            var result =  (val < low || high < val);
-            Debug.WriteLine("actual: " + actual.Value + ", round: "+ val+", low: " + low + ", high: " + high+", result: "+result);
+            var result = (val < low || high < val);
+            Debug.WriteLine("actual: " + actual.Value + ", round: " + val + ", low: " + low + ", high: " + high + ", result: " + result);
             return result;
         }
 
-        public double? GlyPct {
-            get {
+        public double? GlyPct
+        {
+            get
+            {
                 if (MoistPct == null) return null;
                 if (!GlyArea.HasValue || !GlySTD.HasValue || !GlyWt.HasValue || GlyArea.Value == 0 || GlySTD.Value == 0 || GlyWt.Value == 0)
                     return null;
-                  
-                return ((double)GlyArea/(double)GlySTD/2.0 / ((double)DryWt / (double)Moist * (double)GlyWt/1000.0 * (1 - (double) (Reading3??0)/ 1000.0))  )*100.0;
+
+                return ((double)GlyArea / (double)GlySTD / 2.0 / ((double)DryWt / (double)Moist * (double)GlyWt / 1000.0 * (1 - (double)(Reading3 ?? 0) / 1000.0))) * 100.0;
                 // var glypct = (r4/r5/2 / ( r3 / r1 * r2 / 1000 * (1 - OilPct / 100) * 100;
             }
         }
@@ -221,7 +230,7 @@ namespace Test.Models
             }
 
             //if (ParameterId == _type)
-                Gly = s;
+            Gly = s;
             //else
             //    Oil = s;
 
@@ -271,7 +280,7 @@ namespace Test.Models
             ParameterId = _type;
         }
 
-        public void Synchronize()
+        public bool Synchronize()
         {
             var time = Scheduled.ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -282,16 +291,17 @@ namespace Test.Models
                 if (s != null)
                 {
                     this.InjectFrom(s);
-                    return;
+                    return true;
                 }
 
                 var context = d.SingleOrDefault<LineTx>(LineTx.contextByLine(time), LineId);
                 if (context == null)
                 {
-                    throw new Exception("no product and system context found for line " + LineId + " at time " + time);
+                    return false;
                 }
                 ProductCodeId = context.ProductCodeId;
                 SystemId = context.SystemId;
+                return true;
             }
         }
 
@@ -300,7 +310,7 @@ namespace Test.Models
             Stamp = sampled;
             Scheduled = sampled;
             Note = "";
-            Tech = tech.Replace(".","").Trim().Substring(0, 2);
+            Tech = tech.Replace(".", "").Trim().Substring(0, 2);
             var linecell = r.GetCell(0);
             if (linecell?.CellType != CellType.Numeric)
             {
@@ -314,10 +324,14 @@ namespace Test.Models
                 return;
             }
             LineId = Unit.lineids[(int)line];
+            Debug.WriteLine("line: " + line + ", LineId: " + LineId);
+            if (!Synchronize())
+            {
+                LineId = 0;
+                return;
+            }
 
-            Synchronize(); 
-
-            var meter = r.GetCell(1).StringCellValue.Replace("--","-").Split('-');
+            var meter = r.GetCell(1).StringCellValue.Replace("--", "-").Split('-');
 
             int reel = 0;
             int.TryParse(meter[0], out reel);
@@ -341,15 +355,15 @@ namespace Test.Models
             {
                 Delm = (int)delmcell.NumericCellValue;
                 var rotocell = r.GetCell(13);
-                Roto = (rotocell.CellType == CellType.Numeric)? (int)rotocell.NumericCellValue: 0;                    // sometimes a text cell
+                Roto = (rotocell.CellType == CellType.Numeric) ? (int)rotocell.NumericCellValue : 0;                    // sometimes a text cell
                 var oilcell = r.GetCell(12);
-                OilPct = (oilcell?.CellType == CellType.Numeric) ? (int) (oilcell.NumericCellValue * 1000.0) : 0;
+                OilPct = (oilcell?.CellType == CellType.Numeric) ? (int)(oilcell.NumericCellValue * 1000.0) : 0;
 
                 Save();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Debug.WriteLine("saving CasingSample " + CasingSamples.current + ", " + LineId + ": " + e.Message+"\n"+e.StackTrace);
+                Debug.WriteLine("saving CasingSample " + CasingSamples.current + ", " + LineId + ": " + e.Message + "\n" + e.StackTrace);
             }
 
             try
@@ -377,7 +391,8 @@ namespace Test.Models
         public void ToRow(IRow r)
         {
             r.GetCell(1).SetCellValue(ReelNumber + "-" + Footage);
-            try {
+            try
+            {
                 if (Delm.HasValue) r.GetCell(2).SetCellValue(Delm.Value);
                 if (Roto.HasValue) r.GetCell(13).SetCellValue(Roto.Value);
                 if (OilPct.HasValue) r.GetCell(12).SetCellValue((double)OilPct.Value / (double)1000.0);
@@ -388,14 +403,14 @@ namespace Test.Models
                 if (GlySTD.HasValue) r.GetCell(9).SetCellValue(GlySTD.Value);
                 r.GetCell(10).CellStyle.FillPattern = FillPattern.NoFill;
                 r.GetCell(5).CellStyle.FillPattern = FillPattern.NoFill;
-                
-                if (GlyStatus.Contains("control"))     r.GetCell(10).CellStyle = CasingSamplesView.yellow;
-                else if (GlyStatus.Contains("spec"))   r.GetCell(10).CellStyle = CasingSamplesView.red;
 
-                if (MoistStatus.Contains("control"))   r.GetCell(5).CellStyle = CasingSamplesView.yellow;
+                if (GlyStatus.Contains("control")) r.GetCell(10).CellStyle = CasingSamplesView.yellow;
+                else if (GlyStatus.Contains("spec")) r.GetCell(10).CellStyle = CasingSamplesView.red;
+
+                if (MoistStatus.Contains("control")) r.GetCell(5).CellStyle = CasingSamplesView.yellow;
                 else if (MoistStatus.Contains("spec")) r.GetCell(5).CellStyle = CasingSamplesView.red;
             }
-            catch(Exception e) { Debug.WriteLine(Line + "error: " + e.Message + "\nstack: "+e.StackTrace); }
+            catch (Exception e) { Debug.WriteLine(Line + "error: " + e.Message + "\nstack: " + e.StackTrace); }
         }
     }
 
@@ -509,7 +524,8 @@ namespace Test.Models
             DateTime stamp = DateTime.MinValue;
 
             HSSFWorkbook hssfwb = null;
-            try {
+            try
+            {
                 hssfwb = new HSSFWorkbook(file);
             }
             catch (Exception e)
@@ -520,11 +536,40 @@ namespace Test.Models
             try
             {
                 ISheet s = hssfwb.GetSheet("Gly & Moist");
-                var julian = s.GetRow(2).GetCell(2)?.NumericCellValue;
+                var juliancell = s.GetRow(2).GetCell(2);
                 var shiftcell = s.GetRow(2).GetCell(4);
-                if (shiftcell?.CellType != CellType.Numeric)
-                    return null;
-                var shift = (int)shiftcell.NumericCellValue;
+                int julian, shift;
+                string[] parsed = { "", "" };
+
+                if (juliancell.CellType == CellType.Blank || shiftcell.CellType == CellType.Blank)
+                {
+                    var fs = file as FileStream;
+                    if (fs == null)
+                        return null;
+                    parsed = Path.GetFileNameWithoutExtension(fs.Name).Split('-');
+                }
+
+                if (juliancell.CellType == CellType.Blank)
+                {
+                    if (!int.TryParse(parsed[0], out julian))
+                        return null;
+                    if (julian < 1 || julian > 366)
+                        return null;
+                }
+                else
+                    julian = (int)juliancell?.NumericCellValue;
+
+                if (shiftcell.CellType == CellType.Blank)
+                {
+                    if (!int.TryParse(parsed[1], out shift))
+                        return null;
+                    if (shift < 1 || shift > 4)
+                        return null;
+                }
+                else
+                    shift = (int)shiftcell.NumericCellValue;
+
+
                 var tech = s.GetRow(2).GetCell(7)?.StringCellValue;
 
                 if (shift < 1 || shift > 4)
@@ -544,6 +589,7 @@ namespace Test.Models
                     if (s.GetRow(row) == null || s.GetRow(row).GetCell(0) == null || s.GetRow(row).GetCell(1) == null) //null is when the row only contains empty cells 
                         continue;
                     linerpt = "row: " + row;
+                    Debug.WriteLine(linerpt);
                     var c = new CasingSample(s.GetRow(row), stamp, tech);
                     linerpt = "line: " + c.LineId + ", row: " + row;
                     if (c.LineId == 0)
@@ -555,7 +601,7 @@ namespace Test.Models
             {
                 Debug.WriteLine("(" + current + "," + linerpt + ") exception in ReadExcel: " + e.Message);
                 Debug.WriteLine(e.StackTrace);
-                return new Tuple<int?, DateTime?>(0, DateTime.MinValue);
+                return null;
             }
             return new Tuple<int?, DateTime?>(samplecount, stamp);
         }
@@ -574,6 +620,11 @@ namespace Test.Models
                 {
                     current = set;
                     var count = ReadExcel(file);
+                    if (count == null)
+                    {
+                        Debug.WriteLine("skipping " + file.Name);
+                        continue;
+                    }
                     samplecount += count.Item1.HasValue ? count.Item1.Value : 0;
                     if (count.Item1.HasValue) filecount++;
                 }
@@ -623,13 +674,13 @@ namespace Test.Models
                         linerpt = "row: " + row;
                         var r = s.GetRow(row);
                         var defacto = r.GetCell(1).StringCellValue.Trim();
-                        var meter = defacto.Replace("--","-").Split('-');
+                        var meter = defacto.Replace("--", "-").Split('-');
 
                         int reel = 0;
                         int.TryParse(meter[0], out reel);
 
                         reel = 0;
-                        if (meter.Length > 1 && int.TryParse(meter[1].Replace(".","").Replace(",",""), out reel))
+                        if (meter.Length > 1 && int.TryParse(meter[1].Replace(".", "").Replace(",", ""), out reel))
                             continue;
 
                         hash.Add(defacto);
@@ -1022,11 +1073,11 @@ namespace Test.Models
             set t.relatedtagid = i.sampleid 
             from tag t
             join @@insertedtags i on t.tagid = i.tagid
-        ";        
+        ";
 
         public void Seal()
         {
-            var ids = string.Join(",",samples.SelectMany(x => x.Select(y => y.SampleId)).Where(k => k != 0).Distinct().ToArray());
+            var ids = string.Join(",", samples.SelectMany(x => x.Select(y => y.SampleId)).Where(k => k != 0).Distinct().ToArray());
             if (ids.Length == 0)
                 return;
 

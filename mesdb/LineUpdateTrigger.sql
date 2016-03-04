@@ -97,6 +97,17 @@ BEGIN
 		join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
 		join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
 		where t.name = 'line_status' and i.stamp >= @archivecut
+
+		insert into taglogs.dbo.[past]
+		select t.tagid, s.code, i.stamp
+		from inserted i 
+		join [Status] s on s.StatusId = i.StatusId 
+		join [Unit] u on u.unitid = i.UnitId
+		join taglogs.dbo.[Channel] c on (u.unit+cast(i.linenumber as char)) = c.name
+		join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
+		join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
+		where t.name = 'line_status' and i.stamp < @archivecut
+
 	end
 
 	insert into linetx ([LineId], [PersonId], [Stamp], [Comment], [LineTankId], [UnitId], [LineNumber], [SystemId], [StatusId], [ProductCodeId])

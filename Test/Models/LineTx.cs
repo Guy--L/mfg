@@ -65,7 +65,7 @@ namespace Test.Models
 
         public static string contextByLine(string when)
         {
-            var clause = " and stamp <= '" + when + "' ";
+            var clause = " and c.stamp <= '" + when + "' ";
             return string.Format(_byLine, " top 1 ", clause);
         }
 
