@@ -7,10 +7,15 @@
 }
 
 @section actions {
+@using (var form = Html.Bootstrap().Begin(new Form("GetSpreadSheet", "Home").Type(FormType.Inline).Id("zoomxlsform")))
+{ 
     <li>
         <i class="print fa fa-print"> print</i>
-        <div class="btn btn-xs btn-success datadownload"><i class="fa fa-cloud-download"></i>&nbsp;Download Data</div>
+            @Html.HiddenFor(m => m.zoomA)
+            @Html.HiddenFor(m => m.zoomB)
+            <button class="btn btn-xs btn-success" type="submit"><i class="fa fa-cloud-download"></i>&nbsp;Download viewed Data</button>
     </li>
+}
 }
 <h3>@Html.Raw(list)</h3>
 <div id="ChartContainer"></div>
@@ -20,11 +25,8 @@
     <script type="text/javascript" src='@Url.Content("~/Scripts/html2canvas.js")'></script>
     <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.resize.min.js")'></script>
     <script type="text/javascript">
+        var noReset = false;
         $(function () {
-            $('.datadownload').on('click', function (e) {
-                location.href = '@Url.Action("GetSpreadSheet", "Home", null, Request.Url.Scheme)';
-            });
-
             $('#ChartContainer').parent().addClass('chart-container');
 
             $('.print').on('click', function () {
@@ -117,10 +119,13 @@
                     },
                     yaxis : { min : area.y1, max : area.y2 }
                 });
+                zoomarea = area;
+                $('#@Html.IdFor(m => m.zoomA)').val(area.x1);
+                $('#@Html.IdFor(m => m.zoomB)').val(area.x2);
             });
 
             // When graph is clicked, draw the graph with default area.
-            Flotr.EventAdapter.observe(container, 'flotr:click', function () { graph = drawGraph(); });
+            Flotr.EventAdapter.observe(container, 'flotr:click', function () { console.log('clicked'); graph = drawGraph(); });
             </text>
             }
     });

@@ -54,11 +54,14 @@ namespace Tags.Controllers
         }
 
         [DeleteFile]
-        public ActionResult GetSpreadSheet()
+        [HttpPost]
+        public ActionResult GetSpreadSheet(Chart c)
         {
             var chart = TempData["chart"] as Chart;
             if (chart == null)
                 return new EmptyResult();
+            chart.zoomA = c.zoomA;
+            chart.zoomB = c.zoomB;
             Stream stream = new MemoryStream();
             var count = chart.Export(stream);
             stream.Position = 0;
