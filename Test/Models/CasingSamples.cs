@@ -979,6 +979,10 @@ namespace Test.Models
             update [sample] set completed = getdate() where sampleid in ({0})
         ";
 
+        private static string _close = @"
+            update [sample] set completed = getdate() where parameterid in ({0})
+        ";
+
         // move results from lab database to tags database
         // calculations are performed during the move 
         // 

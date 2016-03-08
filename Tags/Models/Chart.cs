@@ -15,6 +15,19 @@ namespace Tags.Models
             return string.Join(",", data.Select(q => "[new Date(" + moment(q).ToJSMSecs() + ")," + member(q) + "]").ToArray());
         }
 
+        public static string TimeLine<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member, int index)
+        {
+            var i = 0;
+            var diffhilite = data.Zip(data.Skip(1), (a, b) => {
+                i++;
+                var jsvalue = "[new Date(" + moment(a).ToJSMSecs() + ")," + i + "]";
+                if (member(a) == member(b))
+                    return jsvalue;
+                return jsvalue + ",[null]";
+            });
+            return string.Join(",", diffhilite.Select(s => s).ToArray());
+        }
+
         public static string Bounded<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member, DateTime a, DateTime b)
         {
             return string.Format(_somepoints, a.ToJSMSecs(), member(data.First()), data.Series(moment, member), b.ToJSMSecs(), member(data.Last()));
@@ -48,10 +61,15 @@ namespace Tags.Models
                {{ id: 'llolo{0}', data: lolo{0},                        lines: {{ show: true, steps: true }}, color: 'rgb(255,0,0)' }}
         ";
 
-        public static string _data = @"select TagId, Value, Stamp from [All] where TagId in ({0}) 
-                                                    union all
-                                                    select TagId, Value, Stamp from [Current]
-                                                    where TagId in ({0}) and rtrim(Value) != '' order by TagId, Stamp";
+        public static string _data = @"
+            select TagId, Value, Stamp 
+            from [All]
+            where TagId in ({0}) 
+                union all
+            select TagId, Value, Stamp  
+            from [Current]
+            where TagId in ({0}) and rtrim(Value) != '' order by TagId, Stamp";
+
         public static string _index = @"
             select t.TagId, t.Name, left(reverse(t.Name),2) as [SetPoint], c.Name as Channel, t.DataType 
                 from [Tag] t 
@@ -68,7 +86,8 @@ namespace Tags.Models
                 where c.ChannelId = {0} and s.Tag in ({1})";
 
         public Dictionary<int, string> index { get; set; }
-        public ILookup<int, All> data { get; set;}
+        public ILookup<int, All> scalar { get; set;}
+        public Dictionary<int, Dictionary<string, List<All>>> timelined { get; set; }
         public ILookup<int, Limit> limits { get; set; }
         public Dictionary<int, string> current { get; set; }
 
@@ -87,6 +106,16 @@ namespace Tags.Models
             return string.Format(_somepoints, a.ToJSMSecs(), s.First().Value,
                 s.Series(t => t.Stamp, q => q.Value),
                 b.ToJSMSecs(), current[s.Key]);
+        }
+
+        private string makeTimeLines(IGrouping<int, All> s, DateTime a, DateTime b, int index)
+        {
+            if (!s.Any())
+                return string.Format(_nopoints, a.ToJSMSecs(), b.ToJSMSecs(), index);
+
+            return string.Format(_somepoints, a.ToJSMSecs(), index,
+                s.TimeLine(t => t.Stamp, q => q.Value, index),
+                b.ToJSMSecs(), index);
         }
 
         private string makeBounds(IGrouping<int, Limit> g, int index, DateTime a, DateTime b)
@@ -109,9 +138,9 @@ namespace Tags.Models
         public Chart(object tags, object points)
         {
             index = tags as Dictionary<int, string>;
-            data = points as ILookup<int, All>;
+            scalar = points as ILookup<int, All>;
 
-            if (index == null || data == null)
+            if (index == null || scalar == null)
                 return;
         }
 
@@ -123,7 +152,7 @@ namespace Tags.Models
             this(string.Join(",", request))
         { }
 
-        public Chart(string include) 
+        public Chart(string include)
         {
             DateTime max = DateTime.Now;
             DateTime min = max.AddDays(-28);
@@ -134,17 +163,17 @@ namespace Tags.Models
                 var tags = t.Fetch<Tag>(string.Format(_index, include));                            // list of tags being charted
                 exportName = string.Join("_", tags.Select(v => v.Channel).Distinct().ToArray());    // set up name for spreadsheet download
 
-                var multichannel = tags.Select(v=>v.Channel).Distinct().Count() > 1;                // multiple channel queries?
+                var multichannel = tags.Select(v => v.Channel).Distinct().Count() > 1;                // multiple channel queries?
                 // multidevice needed: layflat tag is used in both wet and dry devices
 
-                index = tags.ToDictionary(i => i.TagId, i => (multichannel?(i.Channel + "."):"") + i.Name);
+                var stringValued = tags.Where(v => v.DataType.ToLower() == "string").Select(d => d.TagId);
+                index = tags.ToDictionary(i => i.TagId, i => (multichannel ? (i.Channel + ".") : "") + i.Name);
 
                 var samples = t.Fetch<All>(string.Format(_data, include));
-
                 if (!samples.Any())
                 {
-                    var taglist = string.Join(", ", index.Values.ToArray()); 
-                    series = "$('#ChartContainer').html('<h2><br />No data in last 28 days</h2><h4><i>for</i> " + taglist+"</h4>');";                      // explicit notice
+                    var taglist = string.Join(", ", index.Values.ToArray());
+                    series = "$('#ChartContainer').html('<h2><br />No data in last 28 days</h2><h4><i>for</i> " + taglist + "</h4>');";                      // explicit notice
                     isEmpty = true;
                     return;
                 }
@@ -152,17 +181,46 @@ namespace Tags.Models
                 min = samples.Min(d => d.Stamp);
                 max = samples.Max(d => d.Stamp);
 
-                limits = Limit.Specs(t, include, min, DateTime.Now).ToLookup(l => l.TagId);
+                limits = Limit.Specs(t, include, min, DateTime.Now).ToLookup(l => l.TagId);             // get limits for those tags that have them attached
+                var splitByType = samples.Where(d => stringValued.Contains(d.TagId));                   // some values are labels but most are float data points
 
-                data = samples.ToLookup(d => d.TagId);
+                timelined = splitByType.ToLookup(d => d.TagId).ToDictionary(d => d.Key, d => ThreadsByLabel(d));
+                scalar = samples.Except(splitByType).ToLookup(d => d.TagId);
+
                 current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);
             }
-            var sequence = data.Select((s, i) => "d" + i + "=[" + makeSeries(s, min, max) + "]").ToList();
+            var numeric = scalar.Select((s, i) => "d" + i + "=[" + makeSeries(s, min, max) + "]").ToList();
             var specs = limits.Select((m, j) => makeBounds(m, j, min, max)).ToList();
-            series = "var " + string.Join(",\n", sequence.ToArray()) + ";\n" + string.Join("\n", specs.ToArray());
-            charts = string.Join(",\n", specs.Select((t, u) => string.Format(_fills, u)).ToArray()) + (specs.Any() ? "," : "");
-            charts += string.Join(",\n", data.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
-            axes = @"yaxis:  { autoscale: true, autoscaleMargin: .1 },";
+
+            var q = 0;
+            foreach (var products in timelined)
+            {
+                var labels = timelined.Select((t, k) => "v" + k + "=[" + makeTimeLines(t, min, max, k) + "]").ToList();
+
+            }
+
+            series = "var " + string.Join(",\n", numeric.ToArray()) + ";\n" + string.Join("\n", specs.ToArray()) + ";\n" + (labels.Any()?("var " + string.Join("\n", labels.ToArray())+";"):"");
+            charts = string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray()) + (specs.Any() ? "," : "");
+            charts += string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray()) + (labels.Any() ? "," : "");
+            var q = 0;
+            foreach (var products in timelined)
+            {
+
+                charts += string.Join(",\n", products.Select((z, r) => "{yaxis:2, data:v" + (q + r) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + index[products.Key] + "'}"));
+                q += products.Value.Count();
+            }
+            charts += string.Join(",\n", timelined.Select((y, q) => "{yaxis:2, data:v" + q + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + index[y.First().TagId] + "'}").ToArray());
+            axes = @"yaxis: { autoscale: true, autoscaleMargin: .1 },";
+            if (labels.Any())
+            {
+                axes += @"
+                    y2axis: { ticks: [" + string.Join(",", timelined.Select((y, q) => "[" + q + ",'" + index[y.First().TagId] + "']").ToArray()) + "] },";
+            }
+        }
+
+        private Dictionary<string, List<All>> ThreadsByLabel(IGrouping <int, All> d)
+        {
+            return d.Select(e => e.Value).Distinct().ToDictionary(h => h, f => d.Where(g => g.Value == f).ToList());
         }
 
         public int Export(Stream path)
@@ -172,7 +230,7 @@ namespace Tags.Models
             foreach(var e in index)
             {
                 var ws = wb.Worksheets.Add(e.Value);
-                var all = data[e.Key];
+                var all = scalar[e.Key];
                 double dbl;
                 bool number = double.TryParse(all.First().Value, out dbl);
                 var t = all.Select((d, i) => {
