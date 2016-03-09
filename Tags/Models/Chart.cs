@@ -9,23 +9,17 @@ namespace Tags.Models
 {
     public static class MyExtensions {
         private static string _somepoints = "[new Date({0}),{1}],{2},[new Date({3}),{4}]";
+        private static string _mid = "[new Date({0}),{1}]";
+        private static string[] _end = new string[] { _mid + ",[null,null]", "[null,null]," + _mid };
 
         public static string Series<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member)
         {
             return string.Join(",", data.Select(q => "[new Date(" + moment(q).ToJSMSecs() + ")," + member(q) + "]").ToArray());
         }
 
-        public static string TimeLine<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member, int index)
+        public static string TimeLine<T>(this List<T> data, Func<T, DateTime> moment, Func<T, int> member, int index)
         {
-            var i = 0;
-            var diffhilite = data.Zip(data.Skip(1), (a, b) => {
-                i++;
-                var jsvalue = "[new Date(" + moment(a).ToJSMSecs() + ")," + i + "]";
-                if (member(a) == member(b))
-                    return jsvalue;
-                return jsvalue + ",[null]";
-            });
-            return string.Join(",", diffhilite.Select(s => s).ToArray());
+            return string.Join(",", data.Select(q => string.Format(member(q) < 0 ? _end[-member(q)-1] : _mid, moment(q).ToJSMSecs(), index)));
         }
 
         public static string Bounded<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member, DateTime a, DateTime b)
@@ -110,13 +104,13 @@ namespace Tags.Models
                 b.ToJSMSecs(), current[s.Key]);
         }
 
-        private string makeTimeLines(IGrouping<int, All> s, DateTime a, DateTime b, int index)
+        private string makeTimeLines(List<All> s, DateTime a, DateTime b, int index)
         {
             if (!s.Any())
                 return string.Format(_nopoints, a.ToJSMSecs(), b.ToJSMSecs(), index);
 
             return string.Format(_somepoints, a.ToJSMSecs(), index,
-                s.TimeLine(t => t.Stamp, q => q.Value, index),
+                s.TimeLine(t => t.Stamp, q => q.Quality, index),
                 b.ToJSMSecs(), index);
         }
 
@@ -186,43 +180,62 @@ namespace Tags.Models
                 limits = Limit.Specs(t, include, min, DateTime.Now).ToLookup(l => l.TagId);             // get limits for those tags that have them attached
                 var splitByType = samples.Where(d => stringValued.Contains(d.TagId));                   // some values are labels but most are float data points
 
-                timelined = splitByType.ToLookup(d => d.TagId).ToDictionary(d => d.Key, d => ThreadsByLabel(d));
-                scalar = samples.Except(splitByType).ToLookup(d => d.TagId);
+                timelined = splitByType.ToLookup(d => d.TagId).ToDictionary(d => d.Key, d => ThreadsByLabel(d));        // labels on a timeline to be y2axis
+                scalar = samples.Except(splitByType).ToLookup(d => d.TagId);                                            // tags with only numeric values
 
-                current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);
-            }
-            var numeric = scalar.Select((s, i) => "d" + i + "=[" + makeSeries(s, min, max) + "]").ToList();
-            var specs = limits.Select((m, j) => makeBounds(m, j, min, max)).ToList();
-
-            var q = 0;
-            foreach (var products in timelined)
-            {
-                var labels = timelined.Select((t, k) => "v" + k + "=[" + makeTimeLines(t, min, max, k) + "]").ToList();
-
+                current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);  // get values from right now
             }
 
-            series = "var " + string.Join(",\n", numeric.ToArray()) + ";\n" + string.Join("\n", specs.ToArray()) + ";\n" + (labels.Any()?("var " + string.Join("\n", labels.ToArray())+";"):"");
-            charts = string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray()) + (specs.Any() ? "," : "");
-            charts += string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray()) + (labels.Any() ? "," : "");
-            var q = 0;
-            foreach (var products in timelined)
-            {
+            // create client side data payload:  numeric timeline, specification lines, occupation lines
+            var numeric = scalar.Select((s, i) => "d" + i + "=[" + makeSeries(s, min, max) + "]").ToList();             // create javascript for numeric data
+            var specs = limits.Select((m, j) => makeBounds(m, j, min, max)).ToList();                                   // same for the limit lines
 
-                charts += string.Join(",\n", products.Select((z, r) => "{yaxis:2, data:v" + (q + r) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + index[products.Key] + "'}"));
-                q += products.Value.Count();
-            }
-            charts += string.Join(",\n", timelined.Select((y, q) => "{yaxis:2, data:v" + q + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + index[y.First().TagId] + "'}").ToArray());
+            // declare and set up javascript variables with data arrays
+            series = "var " + string.Join(",\n", numeric.ToArray()) + ";\n" + string.Join("\n", specs.ToArray()) + ";\n" + (timelined.Any()?"var ":"");
+            charts = "";
             axes = @"yaxis: { autoscale: true, autoscaleMargin: .1 },";
-            if (labels.Any())
+            axes += timelined.Any() ? "y2axis: { autoscale: true, autoscaleMargin: .05, ticks: [" : "";
+
+            var q = 1;
+            foreach (var tagtlines in timelined)
             {
-                axes += @"
-                    y2axis: { ticks: [" + string.Join(",", timelined.Select((y, q) => "[" + q + ",'" + index[y.First().TagId] + "']").ToArray()) + "] },";
+                var tlines = tagtlines.Value;
+                series += string.Join(",\n", tlines.Keys.Select((label, k) => "v" + (k+q) + "=[" + makeTimeLines(tlines[label], min, max, (k + q)) + "]").ToArray());
+                charts += string.Join(",\n", tlines.Keys.Select((label, r) => "{yaxis:2, data:v" + (r+q) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + label + "'}"));
+                axes += string.Join(",", tlines.Keys.Select((label, r) => "[" + (r+q) + ",'" + label + "']").ToArray());
+                
+                q += tlines.Count();          // assign each tag's value a timeline of it's own
+                q++;                                // put a spacer line between different tags 
             }
+
+            if (timelined.Any())
+            {
+                series += ";\n";
+                charts += ",\n";
+                axes += "] },";
+            }
+
+            charts += string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray()) + (specs.Any() ? "," : "");
+            charts += string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
         }
 
         private Dictionary<string, List<All>> ThreadsByLabel(IGrouping <int, All> d)
         {
-            return d.Select(e => e.Value).Distinct().ToDictionary(h => h, f => d.Where(g => g.Value == f).ToList());
+            var indelta = false;
+            var delta = d.Zip(d.Skip(1), (a, b) => {
+                if (a.Value != b.Value)
+                {
+                    a.Quality = -1;
+                    indelta = true;
+                } else if (indelta)
+                {
+                    a.Quality = -2;
+                    indelta = false;
+                }
+                return a;
+            });                  // mark end of runs of the same value to prepare for ending a line segment
+           
+            return delta.Select(e => e.Value).Distinct().ToDictionary(h => h, f => d.Where(g => g.Value == f).ToList());    // split tag into lists by value...  ie., value string is used as index to list of times
         }
 
         public int Export(Stream path)
