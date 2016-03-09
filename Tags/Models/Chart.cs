@@ -219,8 +219,8 @@ namespace Tags.Models
                 axes = axes.Substring(0, axes.Length - 1) + "] },";
             }
 
-            charts += (specs.Any() ? "," : "") + string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray());
-            charts += (scalar.Any() ? "," : "") + string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
+            charts += ((specs.Any() && charts.Length > 0) ? "," : "") + string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray());
+            charts += ((scalar.Any() && charts.Length > 0) ? "," : "") + string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
         }
 
         private Dictionary<string, List<All>> ThreadsByLabel(IGrouping <int, All> d)
