@@ -191,7 +191,7 @@ namespace Tags.Models
             var specs = limits.Select((m, j) => makeBounds(m, j, min, max)).ToList();                                   // same for the limit lines
 
             // declare and set up javascript variables with data arrays
-            series = "var " + string.Join(",\n", numeric.ToArray()) + ";\n" + string.Join("\n", specs.ToArray()) + ";\n" + (timelined.Any()?"var ":"");
+            series = (numeric.Any() ? "var " + string.Join(",\n", numeric.ToArray()) + ";\n" : "") + (specs.Any() ? (string.Join("\n", specs.ToArray()) + ";\n") : "") + (timelined.Any() ? "var " : "");
             charts = "";
             axes = @"yaxis: { autoscale: true, autoscaleMargin: .1 },";
             axes += timelined.Any() ? "y2axis: { autoscale: true, autoscaleMargin: .05, ticks: [" : "";
@@ -199,24 +199,28 @@ namespace Tags.Models
             var q = 1;
             foreach (var tagtlines in timelined)
             {
+                var line = index[tagtlines.Key].Split('.');
+                var prefix = "";
+                if (line.Length > 1)
+                    prefix = line[0];
                 var tlines = tagtlines.Value;
-                series += string.Join(",\n", tlines.Keys.Select((label, k) => "v" + (k+q) + "=[" + makeTimeLines(tlines[label], min, max, (k + q)) + "]").ToArray());
-                charts += string.Join(",\n", tlines.Keys.Select((label, r) => "{yaxis:2, data:v" + (r+q) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + label + "'}"));
-                axes += string.Join(",", tlines.Keys.Select((label, r) => "[" + (r+q) + ",'" + label + "']").ToArray());
-                
+                series += string.Join(",\n", tlines.Keys.Select((label, k) => "v" + (k + q) + "=[" + makeTimeLines(tlines[label], min, max, (k + q)) + "]").ToArray()) + ",\n";
+                charts += string.Join(",\n", tlines.Keys.Select((label, r) => "{yaxis:2, data:v" + (r + q) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + prefix + "." + label + "'}")) + ",";
+                axes += string.Join(",", tlines.Keys.Select((label, r) => "[" + (r + q) + ",'" + label + "']").ToArray()) + ",";
+
                 q += tlines.Count();          // assign each tag's value a timeline of it's own
                 q++;                                // put a spacer line between different tags 
             }
 
             if (timelined.Any())
             {
-                series += ";\n";
-                charts += ",\n";
-                axes += "] },";
+                series += " dummy = 0;\n";
+                charts = charts.Substring(0, charts.Length - 1) + "\n";
+                axes = axes.Substring(0, axes.Length - 1) + "] },";
             }
 
-            charts += string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray()) + (specs.Any() ? "," : "");
-            charts += string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
+            charts += (specs.Any() ? "," : "") + string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray());
+            charts += (scalar.Any() ? "," : "") + string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
         }
 
         private Dictionary<string, List<All>> ThreadsByLabel(IGrouping <int, All> d)
