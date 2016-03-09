@@ -91,6 +91,8 @@ namespace Tags.Models
         public ILookup<int, Limit> limits { get; set; }
         public Dictionary<int, string> current { get; set; }
 
+        public double zoomA { get; set; }
+        public double zoomB { get; set; }
         public string axes { get; set; }
         public string charts { get; set; }
         public string series { get; set; }
@@ -231,11 +233,18 @@ namespace Tags.Models
             {
                 var ws = wb.Worksheets.Add(e.Value);
                 var all = scalar[e.Key];
+
+                if (zoomA != 0)
+                    all = all.Where(d => d.Stamp >= zoomA.FromJSMSecs().ToLocalTime());
+
+                if (zoomB != 0)
+                    all = all.Where(d => d.Stamp <= zoomB.FromJSMSecs().ToLocalTime());
+
                 double dbl;
-                bool number = double.TryParse(all.First().Value, out dbl);
+                bool isNumber = double.TryParse(all.First().Value, out dbl);
                 var t = all.Select((d, i) => {
                     ws.Row(i + 1).Cell(1).SetValue<DateTime>(d.Stamp);
-                    if (number)
+                    if (isNumber)
                         ws.Row(i + 1).Cell(2).SetValue<double>(double.Parse(d.Value));
                     else
                         ws.Row(i + 1).Cell(2).SetValue<string>(d.Value);
@@ -267,6 +276,11 @@ namespace Tags.Models
         public static long ToJSMSecs(this DateTime dt)
         {
             return (long)((dt.ToUniversalTime().Ticks - DatetimeMinTimeTicks) / 10000);
+        }
+
+        public static DateTime FromJSMSecs(this double tm)
+        {
+            return new DateTime(((long) tm*10000) + DatetimeMinTimeTicks).ToLocalTime();
         }
     }
 }
