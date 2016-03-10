@@ -60,9 +60,7 @@ namespace Test.Models
         public List<ProductCode> products { get; set; }
 
         public static string _all = @"
-          SELECT c.[ConversionId]
-                  ,c.[Scheduled]
-                  ,l.[Stamp]
+          SELECT   l.[Stamp]
                   ,l.[LineId]
                   ,l.[UnitId]
                   ,l.[LineNumber]
@@ -97,8 +95,6 @@ namespace Test.Models
               from [dbo].[ProductCode] p
               left join [dbo].[Line] l on p.ProductCodeId = l.ProductCodeId
               left join [dbo].[Unit] u on u.UnitId = l.UnitId
-              left join [dbo].[Conversion] c on p.ProductCodeId = c.ProductCodeId
-              left join [dbo].[Line] n on c.LineId = n.LineId
               order by CASE WHEN l.lineid IS NULL THEN 1 ELSE 0 END, l.lineid
         ";
 
