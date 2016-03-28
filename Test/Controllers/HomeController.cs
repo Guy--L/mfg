@@ -256,7 +256,7 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult UploadCasing(HttpPostedFileBase file)
         {
-            var load = Models.CasingSamples.ReadExcel(file.InputStream);
+            var load = Models.CasingSamples.ReadExcel(file.InputStream, false);
 
             Success(load.Item1 + " casing sample records loaded for " + load.Item2);
             return RedirectToAction("CasingSamples");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -19,6 +20,7 @@ namespace Tags.Models
 
         public static string TimeLine<T>(this List<T> data, Func<T, DateTime> moment, Func<T, int> member, int index)
         {
+            // intervals are indicated using a -1 (end of value interval) or -2 (beginning of value interval) in the quality member
             return string.Join(",", data.Select(q => string.Format(member(q) < 0 ? _end[-member(q)-1] : _mid, moment(q).ToJSMSecs(), index)));
         }
 
@@ -43,6 +45,7 @@ namespace Tags.Models
             merge 
         ";
 
+        private static string _point = ",[new Date({0}),{1}]";
         private static string _nopoints = "[new Date({0}),{2}],[new Date({1}),{2}]";
         private static string _somepoints = "[new Date({0}),{1}],{2},[new Date({3}),{4}]";
         private static string _specs = "var hihi{0}=[{1}],hi{0}=[{2}],aim{0}=[{3}],lo{0}=[{4}],lolo{0}=[{5}];";
@@ -62,7 +65,22 @@ namespace Tags.Models
                 union all
             select TagId, Value, Stamp  
             from [Current]
-            where TagId in ({0}) and rtrim(Value) != '' order by TagId, Stamp";
+            where TagId in ({0}) and rtrim(Value) != '' 
+            order by TagId, Stamp";
+
+        public static string _dataSince = @"
+            select TagId, Value, Stamp
+            from [Past]
+            where TagId in ({0}) and Stamp >= '{1}'
+                union all
+            select TagId, Value, Stamp 
+            from [All]
+            where TagId in ({0}) and Stamp >= '{2}' 
+                union all
+            select TagId, Value, Stamp  
+            from [Current]
+            where TagId in ({0}) and rtrim(Value) != '' 
+            order by TagId, Stamp";
 
         public static string _index = @"
             select t.TagId, t.Name, left(reverse(t.Name),2) as [SetPoint], c.Name as Channel, t.DataType 
@@ -104,14 +122,12 @@ namespace Tags.Models
                 b.ToJSMSecs(), current[s.Key]);
         }
 
-        private string makeTimeLines(List<All> s, DateTime a, DateTime b, int index)
+        private string makeTimeLines(List<All> s, DateTime a, DateTime b, int index, bool current)
         {
             if (!s.Any())
                 return string.Format(_nopoints, a.ToJSMSecs(), b.ToJSMSecs(), index);
 
-            return string.Format(_somepoints, a.ToJSMSecs(), index,
-                s.TimeLine(t => t.Stamp, q => q.Quality, index),
-                b.ToJSMSecs(), index);
+            return s.TimeLine(t => t.Stamp, q => q.Quality, index) + (current ? string.Format(_point, DateTime.Now.ToJSMSecs(), index):"");
         }
 
         private string makeBounds(IGrouping<int, Limit> g, int index, DateTime a, DateTime b)
@@ -159,7 +175,7 @@ namespace Tags.Models
                 var tags = t.Fetch<Tag>(string.Format(_index, include));                            // list of tags being charted
                 exportName = string.Join("_", tags.Select(v => v.Channel).Distinct().ToArray());    // set up name for spreadsheet download
 
-                var multichannel = tags.Select(v => v.Channel).Distinct().Count() > 1;                // multiple channel queries?
+                var multichannel = tags.Select(v => v.Channel).Distinct().Count() > 1;              // multiple channel queries?
                 // multidevice needed: layflat tag is used in both wet and dry devices
 
                 var stringValued = tags.Where(v => v.DataType.ToLower() == "string").Select(d => d.TagId);
@@ -174,8 +190,11 @@ namespace Tags.Models
                     return;
                 }
                 isEmpty = false;
-                min = samples.Min(d => d.Stamp);
-                max = samples.Max(d => d.Stamp);
+
+                foreach(var s in samples)
+                {
+                    Debug.WriteLine(s.Stamp.ToString() + ": " + s.Value);
+                }
 
                 limits = Limit.Specs(t, include, min, DateTime.Now).ToLookup(l => l.TagId);             // get limits for those tags that have them attached
                 var splitByType = samples.Where(d => stringValued.Contains(d.TagId));                   // some values are labels but most are float data points
@@ -202,14 +221,15 @@ namespace Tags.Models
                 var line = index[tagtlines.Key].Split('.');
                 var prefix = "";
                 if (line.Length > 1)
-                    prefix = line[0];
+                    prefix = line[0]+".";
                 var tlines = tagtlines.Value;
-                series += string.Join(",\n", tlines.Keys.Select((label, k) => "v" + (k + q) + "=[" + makeTimeLines(tlines[label], min, max, (k + q)) + "]").ToArray()) + ",\n";
-                charts += string.Join(",\n", tlines.Keys.Select((label, r) => "{yaxis:2, data:v" + (r + q) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + prefix + "." + label + "'}")) + ",";
+                var curval = current[tagtlines.Key];
+                series += string.Join(",\n", tlines.Keys.Select((label, k) => "v" + (k + q) + "=[" + makeTimeLines(tlines[label], min, max, (k + q), curval == label) + "]").ToArray()) + ",\n";
+                charts += string.Join(",\n", tlines.Keys.Select((label, r) => "{yaxis:2, data:v" + (r + q) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + prefix + label + "'}")) + ",";
                 axes += string.Join(",", tlines.Keys.Select((label, r) => "[" + (r + q) + ",'" + label + "']").ToArray()) + ",";
 
                 q += tlines.Count();          // assign each tag's value a timeline of it's own
-                q++;                                // put a spacer line between different tags 
+                q++;                          // put a spacer line between different tags 
             }
 
             if (timelined.Any())

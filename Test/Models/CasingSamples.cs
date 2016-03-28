@@ -280,6 +280,11 @@ namespace Test.Models
             ParameterId = _type;
         }
 
+        /// <summary>
+        /// Get production context of sample using timestamp and line number.
+        /// Also catch retests using reel number and footage.
+        /// </summary>
+        /// <returns></returns>
         public bool Synchronize()
         {
             var time = Scheduled.ToString("yyyy-MM-dd HH:mm:ss");
@@ -287,7 +292,7 @@ namespace Test.Models
             var s = new Sample();
             using (labDB d = new labDB())
             {
-                s = d.SingleOrDefault<Sample>(" where scheduled = @0 and lineid = @1", time, LineId);
+                s = d.SingleOrDefault<Sample>(" where scheduled = @0 and lineid = @1 and reelnumber = @2 and footage = @3", time, LineId, ReelNumber, Footage);
                 if (s != null)
                 {
                     this.InjectFrom(s);
@@ -324,7 +329,7 @@ namespace Test.Models
                 return;
             }
             LineId = Unit.lineids[(int)line];
-            Debug.WriteLine("line: " + line + ", LineId: " + LineId);
+            //Debug.WriteLine("line: " + line + ", LineId: " + LineId);
             if (!Synchronize())
             {
                 LineId = 0;
@@ -345,15 +350,10 @@ namespace Test.Models
             }
             Footage = reel;
 
-            var delmcell = r.GetCell(2);
-            if (delmcell?.CellType != CellType.Numeric)
-            {
-                LineId = 0;
-                return;
-            }
             try
             {
-                Delm = (int)delmcell.NumericCellValue;
+                var delmcell = r.GetCell(2);
+                Delm = (delmcell.CellType == CellType.Numeric) ? (int)delmcell.NumericCellValue : 0;
                 var rotocell = r.GetCell(13);
                 Roto = (rotocell.CellType == CellType.Numeric) ? (int)rotocell.NumericCellValue : 0;                    // sometimes a text cell
                 var oilcell = r.GetCell(12);
@@ -514,12 +514,13 @@ namespace Test.Models
         //    }
         //    return filecount + " files read, " + samplecount + " samples recorded";
         //}
-        public static Tuple<int?, DateTime?> ReadExcel(Stream file)
+        public static Tuple<int?, DateTime?> ReadExcel(Stream file, bool publish)
         {
             var now = DateTime.Now;
             int year = now.Year;
             int day = now.DayOfYear;
 
+            int lastid = 0;
             int samplecount = 0;
             DateTime stamp = DateTime.MinValue;
 
@@ -588,12 +589,14 @@ namespace Test.Models
                 {
                     if (s.GetRow(row) == null || s.GetRow(row).GetCell(0) == null || s.GetRow(row).GetCell(1) == null) //null is when the row only contains empty cells 
                         continue;
-                    linerpt = "row: " + row;
-                    Debug.WriteLine(linerpt);
+                    linerpt = "row: " + row + " ";
+                    Debug.Write(linerpt);
                     var c = new CasingSample(s.GetRow(row), stamp, tech);
-                    linerpt = "line: " + c.LineId + ", row: " + row;
+                    linerpt = "line: " + c.LineId + ", row: " + row + ", stamp: " + stamp + (c.readings == null ? "" : ", readings: " + c.readings.Count());
+                    Debug.WriteLine(linerpt);
                     if (c.LineId == 0)
                         continue;
+                    lastid = c.SampleId;
                     samplecount++;
                 }
             }
@@ -619,7 +622,10 @@ namespace Test.Models
                 using (FileStream file = new FileStream(set, FileMode.Open, FileAccess.Read))
                 {
                     current = set;
-                    var count = ReadExcel(file);
+                    Debug.WriteLine("file: "+file.Name);
+                    Debug.Indent();
+                    var count = ReadExcel(file, true);
+                    Debug.Unindent();
                     if (count == null)
                     {
                         Debug.WriteLine("skipping " + file.Name);
@@ -1003,7 +1009,7 @@ namespace Test.Models
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
 	            192 as quality
-	            from mesdb.dbo.[LabResult] l
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
 	            where f.FieldName = 'csg_moist_pct' 
@@ -1022,7 +1028,7 @@ namespace Test.Models
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
 	            192 as quality
-	            from mesdb.dbo.[LabResult] l
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
 	            where f.FieldName = 'csg_glyc_pct' 
@@ -1039,38 +1045,36 @@ namespace Test.Models
             using (
 	            select l.sampleid, r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
-	            l.stamp,
-	            192 as quality
-	            from mesdb.dbo.[LabResult] l
+	            l.stamp
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
 	            where f.FieldName = 'csg_moist_pct' 
 		            and l.Completed is not null 
 		            and l.sampleid in ({0})	
-	            ) as source (sampleid, tagid, value, stamp, quality)
+	            ) as source (sampleid, tagid, value, stamp)
             on source.stamp >= @@archivecut
             when not matched then
-	            insert (tagid, value, stamp, quality)
-	            values (tagid, value, stamp, quality)
+	            insert (tagid, value, stamp)
+	            values (tagid, value, stamp)
             output inserted.tagid, source.sampleid into @@insertedtags;
 
             merge into [Past] as target
             using (
 	            select l.sampleid, r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
-	            l.stamp,
-	            192 as quality
-	            from mesdb.dbo.[LabResult] l
+	            l.stamp
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
 	            where f.FieldName = 'csg_glyc_pct' 
 		            and l.Completed is not null 
 		            and l.sampleid in ({0})	
-	            ) as source (sampleid, tagid, value, stamp, quality)
+	            ) as source (sampleid, tagid, value, stamp)
             on source.stamp >= @@archivecut
             when not matched then
-	            insert (tagid, value, stamp, quality)
-	            values (tagid, value, stamp, quality)
+	            insert (tagid, value, stamp)
+	            values (tagid, value, stamp)
             output inserted.tagid, source.sampleid into @@insertedtags;
 
             update t 
@@ -1085,6 +1089,7 @@ namespace Test.Models
             if (ids.Length == 0)
                 return;
 
+            Debug.WriteLine("sealing ids " + ids);
             using (labDB d = new labDB())
             {
                 d.Execute(string.Format(_complete, ids));

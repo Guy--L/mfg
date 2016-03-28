@@ -198,6 +198,10 @@
                 $elem.siblings('i.noter').removeClass('fa-file-o').removeClass('fa-file-text').addClass(value === '' ? 'fa-file-o' : 'fa-file-text');
                 $elem.parent().attr('title', value);
             };
+            $.connection.hub.start().done(function () {
+                lhub.server.setSampleTime(schedulestamp, schedulestamp);
+                $('input').not('.popup').on('change', updater);
+            });
             $.connection.hub.disconnected(function () {
                 setTimeout(function () {
                     $.connection.hub.start();
@@ -216,7 +220,8 @@
                 inputs[idx].select();
             }
             function masker() {
-                show = ($(this).html() === undefined) ? 'Sample' : $(this).html();
+                //show = (typeof $(this) === 'undefined' || typeof $(this).html() === 'undefined') ? 'Sample' : $(this).html();
+                show = $(this).is('button') ?$(this).html():'Sample';
                 $('button.btn').css('text-decoration', 'none');
                 $('button.' + show).css('text-decoration', 'underline');
                 var text = ($('button.' + show).attr('class').split(' ')[1]).replace('btn', 'text');
@@ -396,10 +401,6 @@
                 $('#CodeModal').modal('toggle');
                 $('input#recode').val('');
             }
-            $.connection.hub.start().done(function () {
-                lhub.server.setSampleTime(schedulestamp, schedulestamp);
-                $('input').not('.popup').on('change', updater);
-            });
             $('td i.fa-plus-circle').on('click', cloner);
             $('.step>button').on('click', masker);
             $('input').not('#note').on("keypress", function (e) {
