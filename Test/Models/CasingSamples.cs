@@ -436,6 +436,122 @@ namespace Test.Models
         public CasingSurvey() { }
     }
 
+    public class CasingArchive
+    {
+        private static string _complete = @"
+            update [sample] set completed = getdate() where stamp <= '{0}' 
+        ";
+
+        // move results from lab database to tags database
+        // calculations are performed during the move 
+        // 
+        private static string _labresult = @"
+            declare @@insertedtags table
+            (
+	            tagid int, 
+	            sampleid int
+            )
+
+            declare @@outcount int
+            declare @@archivecut datetime
+
+            select @@archivecut = min(stamp) from [All]
+
+            merge into [All] as target
+            using (
+	            select l.sampleid, r.tagid,
+	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
+	            l.stamp,
+	            192 as quality
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_moist_pct' 
+		            and l.Completed is not null 
+		            and l.stamp <= '{0}'
+	            ) as source (sampleid, tagid, value, stamp, quality)
+            on source.stamp < @@archivecut
+            when not matched then
+	            insert (tagid, value, stamp, quality)
+	            values (tagid, value, stamp, quality)
+            output inserted.tagid, source.sampleid into @@insertedtags;
+
+            select @outcount = count(*) from @@insertedtags
+            print N'after moisture in all '+@outcount 
+
+            merge into [All] as target
+            using (
+	            select l.sampleid, r.tagid,
+                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
+	            l.stamp,
+	            192 as quality
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_glyc_pct' 
+		            and l.Completed is not null 
+		            and l.stamp <= '{0}'
+	            ) as source (sampleid, tagid, value, stamp, quality)
+            on source.stamp < @@archivecut
+            when not matched then
+	            insert (tagid, value, stamp, quality)
+	            values (tagid, value, stamp, quality)
+            output inserted.tagid, source.sampleid into @@insertedtags;
+
+            select @outcount = count(*) from @@insertedtags
+            print N'after glycerin in all '+@outcount 
+
+            merge into [Past] as target
+            using (
+	            select l.sampleid, r.tagid,
+	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
+	            l.stamp
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_moist_pct' 
+		            and l.Completed is not null 
+		            and l.stamp <= '{0}'
+	            ) as source (sampleid, tagid, value, stamp)
+            on source.stamp >= @@archivecut
+            when not matched then
+	            insert (tagid, value, stamp)
+	            values (tagid, value, stamp)
+            output inserted.tagid, source.sampleid into @@insertedtags;
+
+            select @outcount = count(*) from @@insertedtags
+            print N'after moisture in past '+@outcount 
+
+            merge into [Past] as target
+            using (
+	            select l.sampleid, r.tagid,
+                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
+	            l.stamp
+	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	            where f.FieldName = 'csg_glyc_pct' 
+		            and l.Completed is not null 
+		            and l.stamp <= '{0}'
+	            ) as source (sampleid, tagid, value, stamp)
+            on source.stamp >= @@archivecut
+            when not matched then
+	            insert (tagid, value, stamp)
+	            values (tagid, value, stamp)
+            output inserted.tagid, source.sampleid into @@insertedtags;
+
+            select @outcount = count(*) from @@insertedtags
+            print N'after glycerin in past '+@outcount 
+
+            update t 
+            set t.relatedtagid = i.sampleid 
+            from tag t
+            join @@insertedtags i on t.tagid = i.tagid
+        ";
+
+
+    }
+
     public class CasingSamples
     {
         private static string _all = @";
