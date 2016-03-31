@@ -7,6 +7,8 @@ namespace Tags.Models
 {
     public partial class Limit
     {
+        public string TagName { get; set; }
+
         public static string _limits = @"
             select limitid, tagid, stamp, lolo, lo, aim, hi, hihi from (
              select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, 

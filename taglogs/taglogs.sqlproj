@@ -86,6 +86,9 @@
     <None Include="Data\SwipeQuery.sql" />
     <Build Include="UnpluggedTrigger.sql" />
     <Build Include="Limit.sql" />
+    <Build Include="Subscription.sql" />
+    <Build Include="NameNewCurrent.sql" />
+    <Build Include="SubscriptionValueTrigger.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="taglogs.refactorlog" />
@@ -96,5 +99,6 @@
     <None Include="Data\SetArchivedTags.sql" />
     <None Include="Data\J2DateTime.sql" />
     <None Include="Data\MapResult2Tag.sql" />
+    <None Include="Data\BatchAll2Current.sql" />
   </ItemGroup>
 </Project>

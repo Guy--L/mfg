@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -7,6 +6,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Tags.Controllers;
 using Tags.Models;
+using Tags.Hubs;
 using Tags.Properties;
 using TwitterBootstrapMVC;
 
@@ -26,6 +26,13 @@ namespace Tags
             XFactory.Initialize(Server.MapPath("~/App_Data/XML/"));
             Tag.All();
             TagMap.projectPath = Server.MapPath("~/App_Data/XML/TestOutput.xml");
+
+            TagHub.Start();
+        }
+
+        protected void Application_End()
+        {
+            TagHub.Stop();
         }
 
         protected void Session_Start(object sender, EventArgs e)

@@ -1,0 +1,118 @@
+﻿@model Tags.Models.Limit
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h3>@Model.TagName Limit Monitor</h3>
+<div id="ChartContainer"></div>
+
+@section scripts {
+    <script type="text/javascript" src='@Url.Content("~/Scripts/flotr2.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/html2canvas.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.resize.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/Scripts/jquery.signalR-2.2.0.min.js")'></script>
+    <script type="text/javascript" src='@Url.Content("~/signalr/hubs")'></script>
+
+    <script type="text/javascript">
+        var noReset = false;
+        $(function () {
+            $('#ChartContainer').parent().addClass('chart-container');
+
+            var container = document.getElementById('ChartContainer');
+
+            var thub = $.connection.tagHub;
+            thub.client.refreshLimit = function () {
+
+            }
+            thub.client.updatePoint = function (tagid, stamp, value) {
+
+            }
+            $.connection.hub.start().done(function () {
+                lhub.server.Subscribe(@Model.TagId);
+            });
+            @Html.Raw(Model.series)
+
+            @if (!Model.isEmpty)
+            {
+            <text>
+            var
+                options,
+                graph,
+                o;
+
+            options = {
+                shadowSize: 0,
+                xaxis : {
+                    mode: 'time',
+                    timeMode: 'local',
+                    labelsAngle: 45,
+                    autoscale: true,
+                    autoscaleMargin: 0.1
+                },
+                @Html.Raw(Model.axes)
+                selection : {
+                    mode : 'xy'
+                },
+                HtmlText: false,
+                mouse: {
+                    track: true,
+                    lineColor: 'purple',
+                    relative: true,
+                    position: 'ne',
+                    sensibility: 2, // => The smaller this value, the more precise you've to point
+                    trackDecimals: 2,
+                    trackFormatter: function (obj) { return shortStamp(obj.x) + ', ' + obj.y; }
+                }
+            };
+
+            function shortStamp(d)
+            {
+                var m = ''+d.getMinutes();
+                return '' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + ('0' + m).slice(-2);
+            }
+
+            // Draw graph with default options, overwriting with passed options
+            function drawGraph (opts) {
+
+                // Clone the options, so the 'options' variable always keeps intact.
+                o = Flotr._.extend(Flotr._.clone(options), opts || {});
+
+                // Return a new graph.
+                var f = Flotr.draw(
+                    container,
+                    [ @Html.Raw(Model.charts) ],
+                    o
+                );
+
+                $('div#completed').html('<small>drawn at ' + (new Date())+'</small>');
+                return f;
+            }
+
+            graph = drawGraph();
+
+            $('#ChartContainer').resize(function (e) {
+                graph = drawGraph();
+            });
+
+            Flotr.EventAdapter.observe(container, 'flotr:select', function (area) {
+                // Draw selected area
+                graph = drawGraph({
+                    xaxis: {
+                        min: area.x1, max: area.x2, mode: 'time',
+                        timeMode: 'local',
+                        labelsAngle: 45,
+                    },
+                    yaxis : { min : area.y1, max : area.y2 }
+                });
+                zoomarea = area;
+                $('#@Html.IdFor(m => m.zoomA)').val(area.x1);
+                $('#@Html.IdFor(m => m.zoomB)').val(area.x2);
+            });
+
+            // When graph is clicked, draw the graph with default area.
+            Flotr.EventAdapter.observe(container, 'flotr:click', function () { console.log('clicked'); graph = drawGraph(); });
+            </text>
+            }
+    });
+    </script>
+}

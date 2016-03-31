@@ -142,21 +142,6 @@ namespace Tags.Models
 		[Column] public int MaxY { get; set; } 	
 	}
 
-	[TableName("Limit")]
-	[PrimaryKey("LimitId")]
-	[ExplicitColumns]
-    public partial class Limit : tagDB.Record<Limit>  
-    {		
-		[Column] public int LimitId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public double LoLo { get; set; } 		
-		[Column] public double Lo { get; set; } 		
-		[Column] public double Aim { get; set; } 		
-		[Column] public double Hi { get; set; } 		
-		[Column] public double HiHi { get; set; } 	
-	}
-
 	[TableName("User")]
 	[PrimaryKey("UserId")]
 	[ExplicitColumns]
@@ -176,6 +161,28 @@ namespace Tags.Models
 		[Column] public int UserId { get; set; } 		
 		[Column] public int ChartId { get; set; } 		
 		[Column] public bool Shared { get; set; } 	
+	}
+
+	[TableName("Past")]
+	[PrimaryKey("PastId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class Past : tagDB.Record<Past>  
+    {		
+		[Column] public int PastId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 	
+	}
+
+	[TableName("Subscription")]
+	[PrimaryKey("SubscriptionId")]
+	[ExplicitColumns]
+    public partial class Subscription : tagDB.Record<Subscription>  
+    {		
+		[Column] public int SubscriptionId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public string Value { get; set; } 	
 	}
 
 	[TableName("SubMinute")]
@@ -351,15 +358,19 @@ namespace Tags.Models
 		[Column] public int? WordValue { get; set; } 	
 	}
 
-	[TableName("Past")]
-	[PrimaryKey("PastId", AutoIncrement=false)]
+	[TableName("Limit")]
+	[PrimaryKey("LimitId")]
 	[ExplicitColumns]
-    public partial class Past : tagDB.Record<Past>  
+    public partial class Limit : tagDB.Record<Limit>  
     {		
-		[Column] public int PastId { get; set; } 		
+		[Column] public int LimitId { get; set; } 		
 		[Column] public int TagId { get; set; } 		
-		[Column] public string Value { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 	
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public double LoLo { get; set; } 		
+		[Column] public double Lo { get; set; } 		
+		[Column] public double Aim { get; set; } 		
+		[Column] public double Hi { get; set; } 		
+		[Column] public double HiHi { get; set; } 	
 	}
 
 	[TableName("Current")]
