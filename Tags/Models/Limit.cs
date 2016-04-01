@@ -8,7 +8,7 @@ namespace Tags.Models
     public partial class Limit
     {
         public static string _limits = @"
-            select limitid, tagid, stamp, lolo, lo, aim, hi, hihi from (
+            select limitid, tagid, '{1}' stamp, lolo, lo, aim, hi, hihi from (
              select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, 
               ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp DESC) rn
              from limit

@@ -84,6 +84,21 @@ BEGIN
 		join @insertedtags i on i.lineid = r.LineId
 		join [ProductCode] p on p.ProductCodeId = i.productcodeid
 		where f.FieldName = 'csg_glyc_pct'
+
+		insert into taglogs.dbo.[Limit]
+		select t.tagid, i.stamp
+			, coalesce(p.LF_Min,0)
+			, coalesce(p.LF_LCL,0)
+			, coalesce(p.LF_Aim,0)
+			, coalesce(p.LF_UCL,0)
+			, coalesce(p.LF_Max,0)
+		from [ProductCode] p 
+		join @insertedtags i on p.ProductCodeId = i.productcodeid
+		join [Unit] u on u.unitid = i.UnitId
+		join taglogs.dbo.[Channel] c on (u.unit+cast(i.linenumber as char)) = c.name
+		join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
+		join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
+		where t.name = 'layflat_mm_pv'
 	end
 
 	if update(statusid)
