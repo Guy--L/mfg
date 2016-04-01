@@ -12,6 +12,7 @@ namespace Tags.Models
             </button>";
 
         public bool Cancel { get; set; }
+        public bool Monitor { get; set; }
         public string Channel { get; set; }
         public List<Tag> picklist { get; set; }
         public ILookup<string, Series> views { get; set; }
@@ -57,6 +58,7 @@ namespace Tags.Models
                 snippet = string.Join("\n", "chart.push(["+views.Select(v => string.Join(",",v.Select(y => y.TagId.ToString()).ToArray())).ToString()+"]);");
             //series = views.Select((v, x) => new Tuple<int, int[]>(x, v.Select(y => y.TagId).ToArray()));
             Cancel = false;
+            Monitor = false;
         }
     }
 }

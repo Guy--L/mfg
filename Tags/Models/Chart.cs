@@ -61,9 +61,9 @@ namespace Tags.Models
         public static string _data = @"
             select TagId, Value, Stamp 
             from [All]
-            where TagId in ({0}) 
+            where TagId in ({0}) and Stamp >= '{1}' and Stamp <= '{2}'
                 union all
-            select TagId, Value, Stamp  
+            select TagId, Value, getdate() Stamp  
             from [Current]
             where TagId in ({0}) and rtrim(Value) != '' 
             order by TagId, Stamp";
@@ -147,27 +147,35 @@ namespace Tags.Models
         public Chart()
         { }
 
-        public Chart(object tags, object points)
-        {
-            index = tags as Dictionary<int, string>;
-            scalar = points as ILookup<int, All>;
+        //public Chart(object tags, object points)
+        //{
+        //    index = tags as Dictionary<int, string>;
+        //    scalar = points as ILookup<int, All>;
 
-            if (index == null || scalar == null)
-                return;
-        }
+        //    if (index == null || scalar == null)
+        //        return;
+        //}
 
         public Chart(int channel, int[] request) : 
             this(string.Format(_correlate, channel, string.Join(",", request)))
         { }
 
-        public Chart(int[] request) :
-            this(string.Join(",", request))
+        public Chart(int[] request, DateTime min) :
+            this(string.Join(",", request), min)
         { }
 
-        public Chart(string include)
+        public Chart(int[] request) :
+            this(string.Join(",", request), DateTime.MinValue)
+        { }
+
+        public Chart(string include) : this(include, DateTime.MinValue)
+        { }
+
+        public Chart(string include, DateTime min)
         {
             DateTime max = DateTime.Now;
-            DateTime min = max.AddDays(-28);
+            if (min == DateTime.MinValue)
+                min = max.AddDays(-28);
 
             series = "";
 
@@ -181,7 +189,7 @@ namespace Tags.Models
                 var stringValued = tags.Where(v => v.DataType.ToLower() == "string").Select(d => d.TagId);
                 index = tags.ToDictionary(i => i.TagId, i => (multichannel ? (i.Channel + ".") : "") + i.Name);
 
-                var samples = t.Fetch<All>(string.Format(_data, include));
+                var samples = t.Fetch<All>(string.Format(_data, include, min.ToString("yyyy-MM-dd HH:mm:ss"), max.ToString("yyyy-MM-dd HH:mm:ss")));
                 if (!samples.Any())
                 {
                     var taglist = string.Join(", ", index.Values.ToArray());

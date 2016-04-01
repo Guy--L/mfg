@@ -27,7 +27,7 @@ namespace Tags.Controllers
         {
             var nobricks = id.Substring(1, id.Length - 2);
             var pt = new PickTagView(nobricks, _user);
-            TempData["LineId"] = id;
+            Session["LineId"] = id;
             return View(pt);
         }
 
@@ -37,36 +37,62 @@ namespace Tags.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction("Index", "Home");
 
-            if (p.Cancel)
-                return RedirectToAction("Review", "Home");
-            
+            TempData["picked"] = p;
+
+            if (p.Monitor)
+                return RedirectToAction("Picked2Monitor");
+
             if (p.picked == null)
             {
                 Error("Please pick at least one tag before charting");
-                var tid = TempData["LineId"] as string;
+                var tid = Session["LineId"] as string;
                 return RedirectToAction("TagsByLine", "Home", new { id = tid });
             }
+            if (p.Cancel)
+                return RedirectToAction("Review", "Home");
+
             ViewData["Channel"] = p.Channel;
             Chart.SaveView(_user, p.NewView, p.picked);
             var chart = new Chart(p.picked);
-            TempData["chart"] = chart;
+            Session["chart"] = chart;
             return View(chart);
+        }
+
+        public ActionResult Picked2Monitor()
+        {
+            var p = TempData["picked"] as PickTagView;
+
+            ViewData["Channel"] = p.Channel;
+            var twoHours = DateTime.Now.AddHours(-2);
+            var chart = new Chart(p.picked, twoHours);
+            Session["picked"] = p;
+            return View(chart);
+        }
+
+        public ActionResult RefreshMonitor()
+        {
+            var p = Session["picked"] as PickTagView;
+            if (p == null)
+                return new EmptyResult();
+
+            TempData["picked"] = p;
+            return RedirectToAction("Picked2Monitor");
         }
 
         [DeleteFile]
         [HttpPost]
         public ActionResult GetSpreadSheet(Chart c)
         {
-            var chart = TempData["chart"] as Chart;
+            var chart = Session["chart"] as Chart;
             if (chart == null)
                 return new EmptyResult();
+
             chart.zoomA = c.zoomA;
             chart.zoomB = c.zoomB;
             Stream stream = new MemoryStream();
             var count = chart.Export(stream);
             stream.Position = 0;
-            Debug.WriteLine(count);
-            TempData["chart"] = chart;
+            Session["chart"] = chart;
             return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             {
                 FileDownloadName = chart.exportName + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".xlsx"

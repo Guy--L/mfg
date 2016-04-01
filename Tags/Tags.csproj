@@ -317,6 +317,7 @@
     <Content Include="Views\Shared\DisplayTemplates\Group.cshtml" />
     <Content Include="Views\Admin\Groups.cshtml" />
     <Content Include="Views\Shared\_Alerts.cshtml" />
+    <Content Include="Views\Home\Picked2Monitor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
