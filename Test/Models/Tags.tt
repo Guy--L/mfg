@@ -11,8 +11,8 @@
 	ClassSuffix = ""; 
 	TrackModifiedColumns = false; 
 	IncludeViews = true;
-
-    // Read schema
+ 
+    // Read schema 
 	var tables = LoadTables();  
 
 	tables["__RefactorLog"].Ignore = true;

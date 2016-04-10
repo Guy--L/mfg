@@ -117,46 +117,6 @@ namespace Tags.Models
 		[Column] public int? _QUALITY { get; set; } 	
 	}
 
-	[TableName("Chart")]
-	[PrimaryKey("ChartId")]
-	[ExplicitColumns]
-    public partial class Chart : tagDB.Record<Chart>  
-    {		
-		[Column] public int ChartId { get; set; } 		
-		[Column] public string ChartName { get; set; } 		
-		[Column] public int OwnerId { get; set; } 	
-	}
-
-	[TableName("Series")]
-	[PrimaryKey("SeriesId")]
-	[ExplicitColumns]
-    public partial class Series : tagDB.Record<Series>  
-    {		
-		[Column] public int SeriesId { get; set; } 		
-		[Column] public int ChartId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public bool YAxis { get; set; } 		
-		[Column] public string Relabel { get; set; } 		
-		[Column] public int Scale { get; set; } 		
-		[Column] public int MinY { get; set; } 		
-		[Column] public int MaxY { get; set; } 	
-	}
-
-	[TableName("Limit")]
-	[PrimaryKey("LimitId")]
-	[ExplicitColumns]
-    public partial class Limit : tagDB.Record<Limit>  
-    {		
-		[Column] public int LimitId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public double LoLo { get; set; } 		
-		[Column] public double Lo { get; set; } 		
-		[Column] public double Aim { get; set; } 		
-		[Column] public double Hi { get; set; } 		
-		[Column] public double HiHi { get; set; } 	
-	}
-
 	[TableName("User")]
 	[PrimaryKey("UserId")]
 	[ExplicitColumns]
@@ -176,6 +136,28 @@ namespace Tags.Models
 		[Column] public int UserId { get; set; } 		
 		[Column] public int ChartId { get; set; } 		
 		[Column] public bool Shared { get; set; } 	
+	}
+
+	[TableName("Past")]
+	[PrimaryKey("PastId", AutoIncrement=false)]
+	[ExplicitColumns]
+    public partial class Past : tagDB.Record<Past>  
+    {		
+		[Column] public int PastId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 	
+	}
+
+	[TableName("Subscription")]
+	[PrimaryKey("SubscriptionId")]
+	[ExplicitColumns]
+    public partial class Subscription : tagDB.Record<Subscription>  
+    {		
+		[Column] public int SubscriptionId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public string Value { get; set; } 	
 	}
 
 	[TableName("SubMinute")]
@@ -198,6 +180,16 @@ namespace Tags.Models
 		[Column] public int Quality { get; set; } 	
 	}
 
+	[TableName("Graph")]
+	[PrimaryKey("GraphId")]
+	[ExplicitColumns]
+    public partial class Graph : tagDB.Record<Graph>  
+    {		
+		[Column] public int GraphId { get; set; } 		
+		[Column] public string GraphName { get; set; } 		
+		[Column] public int OwnerId { get; set; } 	
+	}
+
 	[TableName("HMI")]
 	[PrimaryKey("HMIId")]
 	[ExplicitColumns]
@@ -210,6 +202,21 @@ namespace Tags.Models
 		[Column] public bool RequestComplete { get; set; } 		
 		[Column] public bool Error { get; set; } 		
 		[Column] public DateTime Expires { get; set; } 	
+	}
+
+	[TableName("Plot")]
+	[PrimaryKey("PlotId")]
+	[ExplicitColumns]
+    public partial class Plot : tagDB.Record<Plot>  
+    {		
+		[Column] public int PlotId { get; set; } 		
+		[Column] public int GraphId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public bool YAxis { get; set; } 		
+		[Column] public string Relabel { get; set; } 		
+		[Column] public int Scale { get; set; } 		
+		[Column] public int MinY { get; set; } 		
+		[Column] public int MaxY { get; set; } 	
 	}
 
 	[TableName("Channel")]
@@ -351,15 +358,19 @@ namespace Tags.Models
 		[Column] public int? WordValue { get; set; } 	
 	}
 
-	[TableName("Past")]
-	[PrimaryKey("PastId", AutoIncrement=false)]
+	[TableName("Limit")]
+	[PrimaryKey("LimitId")]
 	[ExplicitColumns]
-    public partial class Past : tagDB.Record<Past>  
+    public partial class Limit : tagDB.Record<Limit>  
     {		
-		[Column] public int PastId { get; set; } 		
+		[Column] public int LimitId { get; set; } 		
 		[Column] public int TagId { get; set; } 		
-		[Column] public string Value { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 	
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public double LoLo { get; set; } 		
+		[Column] public double Lo { get; set; } 		
+		[Column] public double Aim { get; set; } 		
+		[Column] public double Hi { get; set; } 		
+		[Column] public double HiHi { get; set; } 	
 	}
 
 	[TableName("Current")]

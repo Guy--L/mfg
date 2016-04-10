@@ -235,16 +235,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Models\Conversion.cs" />
     <Compile Include="Models\Extruder.cs" />
+    <Compile Include="Models\Limit.cs" />
     <Compile Include="Models\Line.cs" />
     <Compile Include="Models\LineTx.cs" />
     <Compile Include="Models\SolutionRecipe.cs" />
     <Compile Include="Models\Status.cs" />
     <Compile Include="Models\System.cs" />
-    <Compile Include="Models\Tags.cs">
-      <DependentUpon>Tags.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="DatabaseUpdate.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -270,6 +266,11 @@
     <Compile Include="Models\SolutionChart.cs" />
     <Compile Include="Models\SolutionTest.cs" />
     <Compile Include="Models\Sample.cs" />
+    <Compile Include="Models\Tags.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Tags.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -428,10 +429,6 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="fonts\fontawesome-webfont.svg" />
-    <Content Include="Models\Tags.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Tags.cs</LastGenOutput>
-    </Content>
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -586,6 +583,10 @@
     <Content Include="SQL\PrevTestGroup.sql" />
     <Content Include="SQL\NextTestGroup.sql" />
     <Content Include="SQL\TestsByGroup.sql" />
+    <Content Include="Models\Tags.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Tags.cs</LastGenOutput>
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

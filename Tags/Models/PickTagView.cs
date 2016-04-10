@@ -15,7 +15,7 @@ namespace Tags.Models
         public bool Monitor { get; set; }
         public string Channel { get; set; }
         public List<Tag> picklist { get; set; }
-        public ILookup<string, Series> views { get; set; }
+        public ILookup<string, Plot> views { get; set; }
         public string charts { get; set; }
         //public IEnumerable<Tuple<int, int[]>> series { get; set; }
         public string snippet { get; set; }
@@ -51,7 +51,7 @@ namespace Tags.Models
                     }
                 ).ToList();
             }
-            views = Series.seriesByUser(user);
+            views = Plot.seriesByUser(user);
             charts = string.Join("\n",views.Select((v, x) => string.Format(chartbutton, x, v.Key)).ToArray());
             snippet = "";
             if (views.Any())

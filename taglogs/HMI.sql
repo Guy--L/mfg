@@ -8,5 +8,5 @@
     [Error] BIT NOT NULL, 
     [Expires] DATETIME NOT NULL, 
     CONSTRAINT [FK_HMI_ToChannel] FOREIGN KEY ([ChannelId]) REFERENCES [Channel]([ChannelId]), 
-    CONSTRAINT [FK_HMI_ToChart] FOREIGN KEY ([ChartId]) REFERENCES [Chart]([ChartId])
+    CONSTRAINT [FK_HMI_ToChart] FOREIGN KEY ([ChartId]) REFERENCES [Graph]([GraphId])
 )

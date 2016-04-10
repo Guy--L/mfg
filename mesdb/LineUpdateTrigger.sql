@@ -60,7 +60,7 @@ BEGIN
 	    output inserted.tagid, source.lineid, source.productcodeid, inserted.stamp into @insertedtags;
 
 		insert into taglogs.dbo.[Limit]
-		select r.tagid, i.stamp
+		select distinct r.tagid, i.stamp
 			, coalesce(p.reelmoist_min,0)
 			, coalesce(p.reelmoist_min + 0.5,0)
 			, coalesce(p.reelmoist_aim,0)
@@ -73,7 +73,7 @@ BEGIN
 		where f.FieldName = 'csg_moist_pct'
 
 		insert into taglogs.dbo.[Limit]
-		select r.tagid, i.stamp
+		select distinct r.tagid, i.stamp
 			, coalesce(p.gly_min,0)
 			, coalesce(p.gly_aim - 1.0,0)
 			, coalesce(p.gly_aim,0)
@@ -86,7 +86,7 @@ BEGIN
 		where f.FieldName = 'csg_glyc_pct'
 
 		insert into taglogs.dbo.[Limit]
-		select t.tagid, i.stamp
+		select distinct t.tagid, i.stamp
 			, coalesce(p.LF_Min,0)
 			, coalesce(p.LF_LCL,0)
 			, coalesce(p.LF_Aim,0)
@@ -94,17 +94,18 @@ BEGIN
 			, coalesce(p.LF_Max,0)
 		from [ProductCode] p 
 		join @insertedtags i on p.ProductCodeId = i.productcodeid
-		join [Unit] u on u.unitid = i.UnitId
-		join taglogs.dbo.[Channel] c on (u.unit+cast(i.linenumber as char)) = c.name
+		join [Line] l on l.lineid = i.lineid
+		join [Unit] u on u.unitid = l.UnitId
+		join taglogs.dbo.[Channel] c on (u.unit+cast(l.linenumber as char)) = c.name
 		join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
 		join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
-		where t.name = 'layflat_mm_pv'
+		where t.name = 'layflat_mm_pv' and d.name = 'Dry'
 	end
 
 	if update(statusid)
 	begin
 		insert into taglogs.dbo.[all]
-		select t.tagid, s.code, i.stamp, 192
+		select distinct t.tagid, s.code, i.stamp, 192
 		from inserted i 
 		join [Status] s on s.StatusId = i.StatusId 
 		join [Unit] u on u.unitid = i.UnitId
@@ -114,7 +115,7 @@ BEGIN
 		where t.name = 'line_status' and i.stamp >= @archivecut
 
 		insert into taglogs.dbo.[past]
-		select t.tagid, s.code, i.stamp
+		select distinct t.tagid, s.code, i.stamp
 		from inserted i 
 		join [Status] s on s.StatusId = i.StatusId 
 		join [Unit] u on u.unitid = i.UnitId

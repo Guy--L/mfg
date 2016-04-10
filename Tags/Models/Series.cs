@@ -6,7 +6,7 @@ using NPoco;
 
 namespace Tags.Models
 {
-    public partial class Series
+    public partial class Plot
     {
         private static string _implicitAddUser = @"
             Merge [user] u
@@ -23,32 +23,32 @@ namespace Tags.Models
             INSERT ([Login], [Identity]) VALUES (s.[Login], '');
 
             select
-            c.ChartId,
-            c.ChartName,
-            s.SeriesId, 
+            c.GraphId,
+            c.GraphName,
+            s.PlotId, 
             s.TagId, 
             s.YAxis,
             s.Relabel,
             s.Scale,
             s.MinY,
             s.MaxY
-            from Series s
-            join Chart c on s.ChartId = c.ChartId
-            join UserChart x on x.ChartId = c.ChartId
+            from Plot s
+            join Graph c on s.GraphId = c.GraphId
+            join UserChart x on x.ChartId = c.GraphId
             join [User] u on x.UserId = u.UserId
             where u.[Login] = '{0}'
         ";
 
-        [ResultColumn] public string ChartName { get; set; }
+        [ResultColumn] public string GraphName { get; set; }
 
-        public static ILookup<string, Series> seriesByUser(string user)
+        public static ILookup<string, Plot> seriesByUser(string user)
         {
-            ILookup<string, Series> results;
+            ILookup<string, Plot> results;
 
             using (tagDB tdb = new tagDB())
             {
-                var res = tdb.Fetch<Series>(string.Format(_seriesByUser, user));
-                results = res.ToLookup(k => k.ChartName);
+                var res = tdb.Fetch<Plot>(string.Format(_seriesByUser, user));
+                results = res.ToLookup(k => k.GraphName);
             }
             return results;
         }
@@ -59,8 +59,8 @@ namespace Tags.Models
 
             using (tagDB tdb = new tagDB())
             {
-                var res = tdb.Fetch<Series>(string.Format(_seriesByUser, user));
-                results = res.ToLookup(k => k.ChartName, m => m.TagId);
+                var res = tdb.Fetch<Plot>(string.Format(_seriesByUser, user));
+                results = res.ToLookup(k => k.GraphName, m => m.TagId);
             }
             return results;
         }

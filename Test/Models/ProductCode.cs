@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages.Html;
@@ -11,8 +12,9 @@ namespace Test.Models
 {
     public partial class ProductCode
     {
+        public List<Line> running { get; set; }
         [ResultColumn] public DateTime Scheduled { get; set; }
-        [ResultColumn] public string LineName { get; set; }
+        public string LineName { get { return running==null?"":string.Join(",", running.Select(r => r.unit._Unit + r.LineNumber).ToArray()); } }
 
         public static string Pending = @"
         ";
@@ -55,18 +57,40 @@ namespace Test.Models
         }
     }
 
+    public class PRelate
+    {
+        private ProductCode current;
+        public ProductCode Map(ProductCode p, Line l, Unit u)
+        {
+            if (p == null)
+                return current;
+
+            if (current != null && current.ProductCodeId == p.ProductCodeId)
+            {
+                if (l != null)
+                {
+                    l.unit = u;
+                    current.running.Add(l);
+                }
+                return null;
+            }
+            var prev = current;
+            current = p;
+            if (l != null)
+            {
+                current.running = new List<Line>();
+                l.unit = u;
+                current.running.Add(l);
+            }
+            return prev;            
+        }
+    }
     public class Products
     {
         public List<ProductCode> products { get; set; }
 
-        public static string _all = @"
-          SELECT   l.[Stamp]
-                  ,l.[LineId]
-                  ,l.[UnitId]
-                  ,l.[LineNumber]
-                  ,u.[Unit]
-                  ,u.[Unit]+cast(l.[LineNumber] as char) LineName
-                  ,p.[ProductCodeId]
+        public static string _get = @"
+          SELECT  p.[ProductCodeId]
                   ,p.[ProductCode]
                   ,p.[ProductSpec]
                   ,p.[IsActive]
@@ -92,9 +116,18 @@ namespace Test.Models
                   ,p.[Gly_Aim]
                   ,p.[Gly_Min]
                   ,p.[Gly_Max]
+                  ,l.[LineId]
+                  ,l.[Stamp]
+                  ,l.[UnitId]
+                  ,l.[LineNumber]
+                  ,u.[Unit]
+                  ,u.[Unit]+cast(l.[LineNumber] as char) LineName
               from [dbo].[ProductCode] p
               left join [dbo].[Line] l on p.ProductCodeId = l.ProductCodeId
               left join [dbo].[Unit] u on u.UnitId = l.UnitId
+        ";
+
+        public static string _all = _get + @"        
               order by CASE WHEN l.lineid IS NULL THEN 1 ELSE 0 END, l.lineid
         ";
 
@@ -107,21 +140,29 @@ namespace Test.Models
         {
             using (var labdb = new labDB())
             {
-                products = labdb.Fetch<ProductCode>(_all);
+                products = labdb.Fetch<ProductCode, Line, Unit, ProductCode>(new PRelate().Map, _all);
             }
         }
     }
 
     public class ProductView
     {
+        public bool retroActiveSpecs { get; set; }
         public ProductCode p { get; set; }
+        public string LineIds { get; set; }
+
 
         public ProductView() { }
         public ProductView(int id)
         {
+            if (id == 0) {
+                p = new ProductCode() { ProductCodeId = 0 };
+                return;
+            }
             using (var db = new labDB())
             {
-                p = id > 0 ? db.SingleOrDefaultById<ProductCode>(id) : new ProductCode() { ProductCodeId = 0 };
+                p = db.Fetch<ProductCode, Line, Unit, ProductCode>(new PRelate().Map, Products._get + " where p.productcodeid = @0", id).SingleOrDefault();
+                LineIds = p.running == null ? "" : string.Join(",", p.running.Select(i => i.LineId).ToArray());
             }
         }
 

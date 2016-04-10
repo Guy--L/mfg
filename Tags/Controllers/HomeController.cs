@@ -61,6 +61,12 @@ namespace Tags.Controllers
         public ActionResult Picked2Monitor()
         {
             var p = TempData["picked"] as PickTagView;
+            if (p.picked == null)
+            {
+                Error("Please pick at least one tag before charting");
+                var tid = Session["LineId"] as string;
+                return RedirectToAction("TagsByLine", "Home", new { id = tid });
+            }
 
             ViewData["Channel"] = p.Channel;
             var twoHours = DateTime.Now.AddHours(-2);

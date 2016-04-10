@@ -170,6 +170,7 @@ namespace Test.Controllers
         public ActionResult Product(int id)
         {
             var p = new ProductView(id);
+            Session["product"] = p.p;
             ViewBag.Cloned = false;
             return View(p);
         }
@@ -184,18 +185,24 @@ namespace Test.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveProduct(ProductCode p)
+        public ActionResult SaveProduct(ProductView pv)
         {
             // check for existing product
-            if (p.Exists())
+            if (pv.p.Exists())
             {
-                Error(p._ProductCode + " " + p.ProductSpec + " already exists");
-                var q = new ProductView(p);
+                Error(pv.p._ProductCode + " " + pv.p.ProductSpec + " already exists");
+                var q = new ProductView(pv.p);
                 ViewBag.Cloned = true;
                 return View("Product", q);
             }
-            p.Save();
-            Success("Saved product");
+            pv.p.Save();
+            var msg = "Saved product " + pv.p.FullCode + ".  ";
+            msg += Limit.UpdateLimits(pv.LineIds, pv.retroActiveSpecs);
+            if (msg.Contains("error"))
+                Error(msg);
+            else
+                Success(msg);
+
             return RedirectToAction("Products", "Control");
         }
     }

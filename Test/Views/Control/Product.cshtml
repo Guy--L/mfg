@@ -12,7 +12,8 @@
             //Html.Bootstrap().SubmitButton().Text("Ignore").Id("ignoreconversion").Style(ButtonStyle.Info),
             //Html.Bootstrap().SubmitButton().Text("Start").Id("startconversion").Style(ButtonStyle.Primary)
         };
-    } else
+    }
+    else
     {
         buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Save").Id("saveproduct").Style(ButtonStyle.Success),
@@ -25,67 +26,81 @@
 }
 <div class="container">
     <div class="row">
-        <div class="col-xs-12 text-primary"><h3>@(Model.p.ProductCodeId == 0 ? "Add " : "Edit ") Product and its Specs for Lab</h3></div>
+        <div class="col-xs-12 text-primary"><h3>@(Model.p.ProductCodeId == 0 ? "Add " : "Edit ") Product and its Specifications</h3></div>
     </div>
-@using (var form = Html.Bootstrap().Begin(new Form("SaveProduct", "Control").Id("productform").Type(FormType.Horizontal).LabelWidthXs(4)))
-{
-    <div class="row">
-        <div class="col-xs-6">
-            @form.FormGroup().TextBoxFor(m => m.p._ProductCode).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Code")
-            @form.FormGroup().TextBoxFor(m => m.p.ProductSpec).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Spec")
-            @form.FormGroup().CheckBoxFor(m => m.p.IsActive)
+    @using (var form = Html.Bootstrap().Begin(new Form("SaveProduct", "Control").Id("productform").Type(FormType.Horizontal).LabelWidthXs(4)))
+    {
+        <div class="row">
+            <div class="col-xs-6">
+                @form.FormGroup().TextBoxFor(m => m.p._ProductCode).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Code")
+                @form.FormGroup().TextBoxFor(m => m.p.ProductSpec).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Spec")
+                @form.FormGroup().CheckBoxFor(m => m.p.IsActive)
+                @if (!string.IsNullOrWhiteSpace(Model.p.LineName) && !ViewBag.Cloned)
+                {
+                    <div id="retrocheck">
+                    <b>In production on @Model.p.LineName</b>
+                    @form.FormGroup().CheckBoxFor(m => m.retroActiveSpecs).Label().LabelText("Check   Apply changes to last line update\nUncheck Apply changes now");
+                    </div>
+                }
+            </div>
+            <div class="col-xs-6">
+                @Html.HiddenFor(m => m.p.ProductCodeId)
+                @Html.HiddenFor(m => m.LineIds)
+                @Html.HiddenFor(m => m.p.FullCode)
+                <table class="table table-responsive" id="productspectable">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th style="text-align: left;">Min</th>
+                            <th style="text-align: left;" title="Low Control Limit">Low</th>
+                            <th style="text-align: left;">Aim</th>
+                            <th style="text-align: left;" title="High Control Limit">High</th>
+                            <th style="text-align: left;">Max</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>Reel Moisture</b></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Min).Label().Class("sr-only") </td>
+                            <td></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Aim).Label().Class("sr-only")</td>
+                            <td></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Max).Label().Class("sr-only") </td>
+                        </tr>
+                        <tr>
+                            <td><b>Glycerin</b></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Min).Label().Class("sr-only")</td>
+                            <td></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Aim).Label().Class("sr-only")</td>
+                            <td></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Max).Label().Class("sr-only")</td>
+                        </tr>
+                        <tr>
+                            <td><b>Oil</b></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Min).Label().Class("sr-only")</td>
+                            <td></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Aim).Label().Class("sr-only")</td>
+                            <td></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Max).Label().Class("sr-only")</td>
+                        </tr>
+                        <tr>
+                            <td><b>Layflat</b></td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.LF_Min).Label().Class("sr-only")</td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.LF_LCL).Label().Class("sr-only")</td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.LF_Aim).Label().Class("sr-only")</td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.LF_UCL).Label().Class("sr-only")</td>
+                            <td>@form.FormGroup().TextBoxFor(m => m.p.LF_Max).Label().Class("sr-only")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="col-xs-6">
-            @Html.HiddenFor(m => m.p.ProductCodeId)
-            <table class="table table-responsive" id="productspectable">
-                <thead><tr>
-                           <th>Parameter</th>
-                           <th style="text-align: left;">Min</th>
-                           <th style="text-align: left;" title="Low Control Limit">Low</th>
-                           <th style="text-align: left;">Aim</th>
-                           <th style="text-align: left;" title="High Control Limit">High</th>
-                           <th style="text-align: left;">Max</th>
-                </tr></thead>
-                <tbody><tr>
-                    <td><b>Reel Moisture</b></td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Min).Label().Class("sr-only") </td>
-                    <td></td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Aim).Label().Class("sr-only")</td>
-                           <td></td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.ReelMoist_Max).Label().Class("sr-only") </td>
-                </tr><tr>
-                     <td><b>Glycerin</b></td>
-                     <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Min).Label().Class("sr-only")</td>
-                         <td></td>
-                     <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Aim).Label().Class("sr-only")</td>
-                         <td></td>
-                     <td>@form.FormGroup().TextBoxFor(m => m.p.Gly_Max).Label().Class("sr-only")</td>
-                </tr><tr>
-                    <td><b>Oil</b></td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Min).Label().Class("sr-only")</td>
-                         <td></td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Aim).Label().Class("sr-only")</td>
-                         <td></td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.Oil_Max).Label().Class("sr-only")</td>
-                </tr>
-                <tr>
-                    <td><b>Layflat</b></td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.LF_Min).Label().Class("sr-only")</td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.LF_LCL).Label().Class("sr-only")</td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.LF_Aim).Label().Class("sr-only")</td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.LF_UCL).Label().Class("sr-only")</td>
-                    <td>@form.FormGroup().TextBoxFor(m => m.p.LF_Max).Label().Class("sr-only")</td>
-                </tr>
-                </tbody>
-            </table>
-</div>
-     </div>
-     <div class="row">
-         <div class="col-xs-12">
-            @(form.FormGroup().CustomControls(buttons.ToArray()))
-         </div>
-     </div>
-}
+        <div class="row">
+            <div class="col-xs-12">
+                @(form.FormGroup().CustomControls(buttons.ToArray()))
+            </div>
+        </div>
+    }
 </div>
 @section scripts{
     <script type="text/javascript">
@@ -97,11 +112,15 @@
                 e.preventDefault();
                 location.href = '@Url.Action("Products", "Control", null, Request.Url.Scheme)';
             });
-            @if (!ViewBag.Cloned) { 
+            @if (!ViewBag.Cloned) {
                 <text>
+                    $('#retrocheck').hide();
                     $('#cloneproduct').on('click', function(e) {
                         e.preventDefault();
                         location.href = '@Url.Action("CloneProduct", "Control", null, Request.Url.Scheme)/@Model.p.ProductCodeId';
+                    });
+                    $('#productspectable input').on('change', function (e) {
+                        $('#retrocheck').show();
                     });
                 </text>
             }

@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using NPoco;
 
 namespace Test.Models
 {
     public partial class Line
     {
+        public Unit unit { get; set; }
+        [ResultColumn] public string LineName { get; set; }
+
         private static string letters = " ABCDEFGHIJ";  // units start at 1
 
         public Status status { get; set; }

@@ -3,9 +3,9 @@
 @{
     ViewBag.Title = "Select Tags on "+Model.Channel;
     List<IHtmlString> buttons = new List<IHtmlString>() {
-            Html.Bootstrap().SubmitButton().Text("Chart").Tooltip("28 days, no update").Id("chart").Style(ButtonStyle.Success),
+            Html.Bootstrap().SubmitButton().Text("Chart").HtmlAttributes(new { title = "28 days, no update" }).Id("chart").Style(ButtonStyle.Success),
             Html.Raw(" "),
-            Html.Bootstrap().SubmitButton().Text("Monitor").Tooltip("2 hours, 1 update/minute").Id("monitor").Style(ButtonStyle.Info),
+            Html.Bootstrap().SubmitButton().Text("Monitor").HtmlAttributes(new { title = "2 hours, 1 update/minute" }).Id("monitor").Style(ButtonStyle.Info),
             Html.Raw(" "),
             Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
     };

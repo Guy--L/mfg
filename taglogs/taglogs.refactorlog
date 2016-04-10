@@ -189,4 +189,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="LimitId" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3ae52e07-996a-407e-b24f-1c7923883ae6" ChangeDateTime="04/07/2016 15:08:15">
+    <Property Name="ElementName" Value="[dbo].[Series].[SeriesId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Series]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PlotId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b018b88e-0f69-4216-8233-300b385c5332" ChangeDateTime="04/07/2016 15:14:23">
+    <Property Name="ElementName" Value="[dbo].[Chart].[ChartId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Chart]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="GraphId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8badd665-1e1a-4dcf-bac7-1b20bdb0ff35" ChangeDateTime="04/07/2016 15:14:34">
+    <Property Name="ElementName" Value="[dbo].[Chart].[ChartName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Chart]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="GraphName" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="77f12444-62d8-4de6-b806-94e230c476fd" ChangeDateTime="04/07/2016 15:14:57">
+    <Property Name="ElementName" Value="[dbo].[Series].[ChartId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Series]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="GraphId" />
+  </Operation>
 </Operations>
