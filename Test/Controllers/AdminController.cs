@@ -62,5 +62,12 @@ namespace Test.Controllers
             ViewBag.Message = TempData["stats"];
             return View();
         }
+
+        public ActionResult CompleteAll()
+        {
+            CasingArchive.complete();
+            CasingArchive.publish();
+            return RedirectToAction("CasingSamples", "Home");
+        }
     }
 }

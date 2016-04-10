@@ -446,64 +446,50 @@ namespace Test.Models
         // calculations are performed during the move 
         // 
         private static string _labresult = @"
+            declare @@archivecut datetime
             declare @@insertedtags table
             (
-	            tagid int, 
-	            sampleid int
+	            tabid int, 
+	            sampleid int,
+                stamp datetime
             )
-
-            declare @@outcount int
-            declare @@archivecut datetime
 
             select @@archivecut = min(stamp) from [All]
 
-            merge into [All] as target
-            using (
-	            select l.sampleid, r.tagid,
+            alter table [All] disable trigger SyncValue2Current
+            insert into [All] (tagid, value, stamp, quality)
+            output inserted.allid, inserted.quality, inserted.stamp into @@insertedtags
+	        select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
-	            192 as quality
+	            l.sampleid as quality
 	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
 	            where f.FieldName = 'csg_moist_pct' 
 		            and l.Completed is not null 
 		            and l.stamp <= '{0}'
-	            ) as source (sampleid, tagid, value, stamp, quality)
-            on source.stamp < @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp, quality)
-	            values (tagid, value, stamp, quality)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+                    and l.stamp >= @@archivecut
 
-            select @outcount = count(*) from @@insertedtags
-            print N'after moisture in all '+@outcount 
-
-            merge into [All] as target
-            using (
-	            select l.sampleid, r.tagid,
+            insert into [All] (tagid, value, stamp, quality)
+            output inserted.allid, inserted.quality, inserted.stamp into @@insertedtags
+            select r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
-	            192 as quality
+	            l.sampleid as quality
 	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
 	            where f.FieldName = 'csg_glyc_pct' 
 		            and l.Completed is not null 
 		            and l.stamp <= '{0}'
-	            ) as source (sampleid, tagid, value, stamp, quality)
-            on source.stamp < @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp, quality)
-	            values (tagid, value, stamp, quality)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+                    and l.stamp >= @@archivecut
 
-            select @outcount = count(*) from @@insertedtags
-            print N'after glycerin in all '+@outcount 
+            alter table [All] enable trigger SyncValue2Current
 
-            merge into [Past] as target
-            using (
-	            select l.sampleid, r.tagid,
+            insert into [Past] (tagid, value, stamp)
+            output -inserted.pastid, inserted.value, inserted.stamp into @@insertedtags
+            select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
 	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
@@ -512,19 +498,11 @@ namespace Test.Models
 	            where f.FieldName = 'csg_moist_pct' 
 		            and l.Completed is not null 
 		            and l.stamp <= '{0}'
-	            ) as source (sampleid, tagid, value, stamp)
-            on source.stamp >= @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp)
-	            values (tagid, value, stamp)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+                    and l.stamp < @@archivecut
 
-            select @outcount = count(*) from @@insertedtags
-            print N'after moisture in past '+@outcount 
-
-            merge into [Past] as target
-            using (
-	            select l.sampleid, r.tagid,
+            insert into [Past] (tagid, value, stamp)
+            output -inserted.pastid, inserted.value, inserted.stamp into @@insertedtags
+            select r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
 	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
@@ -533,23 +511,29 @@ namespace Test.Models
 	            where f.FieldName = 'csg_glyc_pct' 
 		            and l.Completed is not null 
 		            and l.stamp <= '{0}'
-	            ) as source (sampleid, tagid, value, stamp)
-            on source.stamp >= @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp)
-	            values (tagid, value, stamp)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+                    and l.stamp < @@archivecut
 
-            select @outcount = count(*) from @@insertedtags
-            print N'after glycerin in past '+@outcount 
-
-            update t 
-            set t.relatedtagid = i.sampleid 
-            from tag t
-            join @@insertedtags i on t.tagid = i.tagid
+            ---update t 
+            ---set t.relatedtagid = i.sampleid 
+            ---from tag t
+            ---join @@insertedtags i on t.tagid = i.tagid
         ";
 
+        public static void complete()
+        {
+            using (labDB d = new labDB())
+            {
+                var t = d.Execute(string.Format(_complete, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
+            }
+        }
 
+        public static void publish()
+        {
+            using (tagDB d = new tagDB())
+            {
+                var t = d.Execute(string.Format(_labresult, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
+            }
+        }
     }
 
     public class CasingSamples
