@@ -624,10 +624,10 @@ namespace Test.Models
             int samplecount = 0;
             DateTime stamp = DateTime.MinValue;
 
-            HSSFWorkbook hssfwb = null;
+            IWorkbook hssfwb = null;
             try
             {
-                hssfwb = new HSSFWorkbook(file);
+                hssfwb = WorkbookFactory.Create(file);
             }
             catch (Exception e)
             {
@@ -645,27 +645,22 @@ namespace Test.Models
                 if (juliancell.CellType == CellType.Blank || shiftcell.CellType == CellType.Blank)
                 {
                     var fs = file as FileStream;
-                    if (fs == null)
-                        return null;
+                    if (fs == null) return null;
                     parsed = Path.GetFileNameWithoutExtension(fs.Name).Split('-');
                 }
 
                 if (juliancell.CellType == CellType.Blank)
                 {
-                    if (!int.TryParse(parsed[0], out julian))
-                        return null;
-                    if (julian < 1 || julian > 366)
-                        return null;
+                    if (!int.TryParse(parsed[0], out julian))   return null;
+                    if (julian < 1 || julian > 366)             return null;
                 }
                 else
                     julian = (int)juliancell?.NumericCellValue;
 
                 if (shiftcell.CellType == CellType.Blank)
                 {
-                    if (!int.TryParse(parsed[1], out shift))
-                        return null;
-                    if (shift < 1 || shift > 4)
-                        return null;
+                    if (!int.TryParse(parsed[1], out shift))    return null;
+                    if (shift < 1 || shift > 4)                 return null;
                 }
                 else
                     shift = (int)shiftcell.NumericCellValue;
@@ -710,20 +705,22 @@ namespace Test.Models
         }
 
         public static string current = "";
-        public static string ReadExcels(string path, int year)
+
+        private static Tuple<int, int> readExcels(string path, string pattern)
         {
             int filecount = 0;
             int samplecount = 0;
 
-            var files = Directory.GetFiles(path, "*.xls", SearchOption.TopDirectoryOnly);
+            var files = Directory.GetFiles(path, pattern, SearchOption.TopDirectoryOnly);
 
             foreach (var set in files)
             {
                 using (FileStream file = new FileStream(set, FileMode.Open, FileAccess.Read))
                 {
                     current = set;
-                    Debug.WriteLine("file: "+file.Name);
+                    Debug.WriteLine("file: " + file.Name);
                     Debug.Indent();
+
                     var count = ReadExcel(file, true);
                     Debug.Unindent();
                     if (count == null)
@@ -735,71 +732,25 @@ namespace Test.Models
                     if (count.Item1.HasValue) filecount++;
                 }
             }
-            return filecount + " files read, " + samplecount + " samples recorded";
+            return new Tuple<int, int>(filecount, samplecount);
         }
 
-        public static string ReadExcelX(string path, int year)
+        public static string ReadExcels(string path, int year)
         {
             int filecount = 0;
             int samplecount = 0;
-            HashSet<string> hash = new HashSet<string>();
 
-            var files = Directory.GetFiles(path, "*.xls", SearchOption.TopDirectoryOnly);
-            DateTime batch = new DateTime(year, 1, 1, 0, 0, 0);
+            var t = readExcels(path, "*.xls");
 
-            foreach (var set in files)
-            {
-                HSSFWorkbook hssfwb;
-                using (FileStream file = new FileStream(set, FileMode.Open, FileAccess.Read))
-                {
-                    hssfwb = new HSSFWorkbook(file);
-                }
-                string linerpt = "";
-                try
-                {
-                    ISheet s = hssfwb.GetSheet("Gly & Moist");
-                    var julian = s.GetRow(2).GetCell(2)?.NumericCellValue;
-                    var shiftcell = s.GetRow(2).GetCell(4);
-                    if (shiftcell?.CellType != CellType.Numeric)
-                        continue;
-                    var shift = (int)shiftcell.NumericCellValue;
-                    var tech = s.GetRow(2).GetCell(7)?.StringCellValue;
+            filecount = t.Item1;
+            samplecount = t.Item2;
 
-                    if (shift < 1 || shift > 4)
-                    {
-                        Debug.WriteLine("(" + set + ", " + linerpt + ") weird shift in ReadExcel: " + shift);
-                        continue;
-                    }
+            t = readExcels(path, "*.xlsx");
 
-                    var stamp = batch.AddDays((int)julian).AddHours(_actual[shift - 1]);
+            filecount += t.Item1;
+            samplecount += t.Item2;
 
-                    for (int row = 7; row <= s.LastRowNum || row < 56; row++)
-                    {
-                        if (s.GetRow(row) == null || s.GetRow(row).GetCell(0) == null || s.GetRow(row).GetCell(1) == null) //null is when the row only contains empty cells 
-                            continue;
-                        linerpt = "row: " + row;
-                        var r = s.GetRow(row);
-                        var defacto = r.GetCell(1).StringCellValue.Trim();
-                        var meter = defacto.Replace("--", "-").Split('-');
-
-                        int reel = 0;
-                        int.TryParse(meter[0], out reel);
-
-                        reel = 0;
-                        if (meter.Length > 1 && int.TryParse(meter[1].Replace(".", "").Replace(",", ""), out reel))
-                            continue;
-
-                        hash.Add(defacto);
-                    }
-                    filecount++;
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("(" + set + ", " + linerpt + ") exception in ReadExcel: " + e.Message);
-                }
-            }
-            var uniques = filecount + " files read, " + samplecount + " samples recorded\n" + string.Join("<br />", hash);
-            return uniques;
+            return filecount + " files read, " + samplecount + " samples recorded";
         }
     }
 
