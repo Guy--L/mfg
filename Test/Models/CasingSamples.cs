@@ -447,18 +447,12 @@ namespace Test.Models
         // 
         private static string _labresult = @"
             declare @@archivecut datetime
-            declare @@insertedtags table
-            (
-	            tabid int, 
-	            sampleid int,
-                stamp datetime
-            )
 
             select @@archivecut = min(stamp) from [All]
 
             alter table [All] disable trigger SyncValue2Current
+
             insert into [All] (tagid, value, stamp, quality)
-            output inserted.allid, inserted.quality, inserted.stamp into @@insertedtags
 	        select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
@@ -472,7 +466,6 @@ namespace Test.Models
                     and l.stamp >= @@archivecut
 
             insert into [All] (tagid, value, stamp, quality)
-            output inserted.allid, inserted.quality, inserted.stamp into @@insertedtags
             select r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
@@ -488,7 +481,6 @@ namespace Test.Models
             alter table [All] enable trigger SyncValue2Current
 
             insert into [Past] (tagid, value, stamp)
-            output -inserted.pastid, inserted.value, inserted.stamp into @@insertedtags
             select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
@@ -501,7 +493,6 @@ namespace Test.Models
                     and l.stamp < @@archivecut
 
             insert into [Past] (tagid, value, stamp)
-            output -inserted.pastid, inserted.value, inserted.stamp into @@insertedtags
             select r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
@@ -513,10 +504,6 @@ namespace Test.Models
 		            and l.stamp <= '{0}'
                     and l.stamp < @@archivecut
 
-            ---update t 
-            ---set t.relatedtagid = i.sampleid 
-            ---from tag t
-            ---join @@insertedtags i on t.tagid = i.tagid
         ";
 
         public static void complete()
