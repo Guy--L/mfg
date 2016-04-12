@@ -297,6 +297,33 @@ namespace Tags.Models
                     return i;
                 }).ToList();
                 tot += t.Last()+1;
+            
+                if (limits.Contains(e.Key))
+                {
+                    var wl = wb.Worksheets.Add(e.Value + "_limits");
+                    var lim = limits[e.Key];
+                    int start = 0;
+                    long end = long.MaxValue;
+
+                    if (zoomA != 0)
+                        start = lim.Last(d => d.Stamp <= zoomA.FromJSMSecs().ToLocalTime()).LimitId;
+
+                    if (zoomB != 0)
+                        end = lim.Last(d => d.Stamp <= zoomB.FromJSMSecs().ToLocalTime()).LimitId;
+
+                    lim = lim.Where(d => d.LimitId >= start && d.LimitId <= end);
+
+                    var s = lim.Select((d, i) => {
+                        wl.Row(i + 1).Cell(1).SetValue<DateTime>(d.Stamp);
+                        wl.Row(i + 1).Cell(2).SetValue<double>(d.LoLo);
+                        wl.Row(i + 1).Cell(3).SetValue<double>(d.Lo);
+                        wl.Row(i + 1).Cell(4).SetValue<double>(d.Aim);
+                        wl.Row(i + 1).Cell(5).SetValue<double>(d.Hi);
+                        wl.Row(i + 1).Cell(6).SetValue<double>(d.HiHi);
+                        return i;
+                    }).ToList();
+                    tot += s.Last() + 1;
+                }
             }
             wb.SaveAs(path);
             return tot;
