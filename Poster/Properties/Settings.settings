@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Poster.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="uploadto" Type="System.String" Scope="User">
+      <Value Profile="(Default)">//localhost:32323/</Value>
+    </Setting>
+    <Setting Name="uploadfrom" Type="System.String" Scope="User">
+      <Value Profile="(Default)">c:\pslab2016</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
