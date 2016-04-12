@@ -7,6 +7,8 @@ namespace Tags.Models
 {
     public partial class Limit
     {
+        private const double clipmargin = 10.0;
+
         public static string _limits = @"
             select limitid, tagid, '{1}' stamp, lolo, lo, aim, hi, hihi from (
              select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, 
@@ -23,6 +25,18 @@ namespace Tags.Models
         public static List<Limit> Specs(tagDB t, string tags, DateTime minstamp, DateTime maxstamp)
         {
             return t.Fetch<Limit>(string.Format(_limits, tags, minstamp.ToString("yyyy-MM-dd HH:mm:ss"), maxstamp.ToString("yyyy-MM-dd HH:mm:ss")));
+        }
+
+        public string Clip(string value)
+        {
+            double dbl = 0.0;
+            if (!double.TryParse(value, out dbl))
+                return "0.0";
+            if (LoLo - clipmargin <= dbl && dbl <= HiHi + clipmargin)
+                return dbl.ToString();
+            if (dbl < LoLo - clipmargin)
+                return (LoLo - clipmargin).ToString();
+            return (HiHi + clipmargin).ToString();
         }
     }
 }

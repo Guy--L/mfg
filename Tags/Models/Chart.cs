@@ -199,18 +199,19 @@ namespace Tags.Models
                 }
                 isEmpty = false;
 
-                foreach(var s in samples)
-                {
-                    Debug.WriteLine(s.Stamp.ToString() + ": " + s.Value);
-                }
-
                 limits = Limit.Specs(t, include, min, DateTime.Now).ToLookup(l => l.TagId);             // get limits for those tags that have them attached
                 var splitByType = samples.Where(d => stringValued.Contains(d.TagId));                   // some values are labels but most are float data points
 
                 timelined = splitByType.ToLookup(d => d.TagId).ToDictionary(d => d.Key, d => ThreadsByLabel(d));        // labels on a timeline to be y2axis
-                scalar = samples.Except(splitByType).ToLookup(d => d.TagId);                                            // tags with only numeric values
+                scalar = samples.Except(splitByType).ToLookup(n => n.TagId);                                                                    // tags with only numeric values
 
                 current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);  // get values from right now
+            }
+
+            // for those tags with limits, filter out values so that lolo-10 < value < hihi+10
+            foreach (var lm in limits)
+            {
+                var limited = scalar[lm.Key].Select(u => { u.Value = lm.Last(m => m.Stamp <= u.Stamp).Clip(u.Value); return u; }).ToList();
             }
 
             // create client side data payload:  numeric timeline, specification lines, occupation lines
@@ -221,7 +222,7 @@ namespace Tags.Models
             series = (numeric.Any() ? "var " + string.Join(",\n", numeric.ToArray()) + ";\n" : "") + (specs.Any() ? (string.Join("\n", specs.ToArray()) + ";\n") : "") + (timelined.Any() ? "var " : "");
             charts = "";
             axes = @"yaxis: { autoscale: true, autoscaleMargin: .1 },";
-            axes += timelined.Any() ? "y2axis: { autoscale: true, autoscaleMargin: .05, ticks: [" : "";
+            axes += timelined.Any() ? "y2axis: { autoscale: true, autoscaleMargin: .05, ticks: [" : "";                 // todo ** may want to remove autoscale and set the top margin to (last tag vertical)*5
 
             var q = 1;
             foreach (var tagtlines in timelined)
