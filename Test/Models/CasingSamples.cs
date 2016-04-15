@@ -436,93 +436,6 @@ namespace Test.Models
         public CasingSurvey() { }
     }
 
-    public class CasingArchive
-    {
-        private static string _complete = @"
-            update [sample] set completed = getdate() where stamp <= '{0}' 
-        ";
-
-        // move results from lab database to tags database
-        // calculations are performed during the move 
-        // 
-        private static string _labresult = @"
-            declare @@archivecut datetime
-
-            select @@archivecut = min(stamp) from [All]
-
-            alter table [All] disable trigger SyncValue2Current
-
-            insert into [All] (tagid, value, stamp, quality)
-	        select r.tagid,
-	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
-	            l.stamp,
-	            l.sampleid as quality
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_moist_pct' 
-		            and l.Completed is not null 
-		            and l.stamp <= '{0}'
-                    and l.stamp >= @@archivecut
-
-            insert into [All] (tagid, value, stamp, quality)
-            select r.tagid,
-                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
-	            l.stamp,
-	            l.sampleid as quality
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_glyc_pct' 
-		            and l.Completed is not null 
-		            and l.stamp <= '{0}'
-                    and l.stamp >= @@archivecut
-
-            alter table [All] enable trigger SyncValue2Current
-
-            insert into [Past] (tagid, value, stamp)
-            select r.tagid,
-	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
-	            l.stamp
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_moist_pct' 
-		            and l.Completed is not null 
-		            and l.stamp <= '{0}'
-                    and l.stamp < @@archivecut
-
-            insert into [Past] (tagid, value, stamp)
-            select r.tagid,
-                cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
-	            l.stamp
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_glyc_pct' 
-		            and l.Completed is not null 
-		            and l.stamp <= '{0}'
-                    and l.stamp < @@archivecut
-
-        ";
-
-        public static void complete()
-        {
-            using (labDB d = new labDB())
-            {
-                var t = d.Execute(string.Format(_complete, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
-            }
-        }
-
-        public static void publish()
-        {
-            using (tagDB d = new tagDB())
-            {
-                var t = d.Execute(string.Format(_labresult, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
-            }
-        }
-    }
-
     public class CasingSamples
     {
         private static string _all = @";
@@ -610,7 +523,8 @@ namespace Test.Models
             int lastid = 0;
             int samplecount = 0;
             DateTime stamp = DateTime.MinValue;
-
+            List<int> addIds = new List<int>();
+             
             IWorkbook hssfwb = null;
             try
             {
@@ -679,15 +593,23 @@ namespace Test.Models
                     if (c.LineId == 0)
                         continue;
                     lastid = c.SampleId;
+                    addIds.Add(c.SampleId);
                     samplecount++;
                 }
             }
             catch (Exception e)
             {
-                Debug.WriteLine("(" + current + "," + linerpt + ") exception in ReadExcel: " + e.Message);
+                Debug.WriteLine("(" + current + ", " + linerpt + ", lastid: "+lastid+") exception in ReadExcel: " + e.Message);
                 Debug.WriteLine(e.StackTrace);
                 return null;
             }
+            if (publish)
+            {
+                var ids = string.Join(",", addIds.Select(i => i));
+                CasingSampleArchive.complete(ids);
+                CasingSampleArchive.publish(ids);
+            }
+
             return new Tuple<int?, DateTime?>(samplecount, stamp);
         }
 

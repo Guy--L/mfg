@@ -261,5 +261,13 @@ namespace Test.Controllers
             Success(load.Item1 + " casing sample records loaded for " + load.Item2);
             return RedirectToAction("CasingSamples");
         }
+
+        [HttpPost]
+        public ActionResult UploadCasings(HttpPostedFileBase file)
+        {
+            var load = Models.CasingSamples.ReadExcel(file.InputStream, true);
+
+            return Content(load.Item2.Value.ToString("MM/dd HH:mm") + "\t" + load.Item1);
+        }
     }
 }

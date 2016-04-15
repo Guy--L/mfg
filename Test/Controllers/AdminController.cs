@@ -63,10 +63,10 @@ namespace Test.Controllers
             return View();
         }
 
-        public ActionResult CompleteAll()
+        public ActionResult CompleteAll(int year)
         {
-            CasingArchive.complete();
-            CasingArchive.publish();
+            CasingSampleArchive.complete(year);
+            CasingSampleArchive.publish(year);
             return RedirectToAction("CasingSamples", "Home");
         }
     }

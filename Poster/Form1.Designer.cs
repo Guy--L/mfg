@@ -34,6 +34,8 @@
             this.indir = new System.Windows.Forms.TextBox();
             this.Picker = new System.Windows.Forms.Button();
             this.openFiler = new System.Windows.Forms.OpenFileDialog();
+            this.button1 = new System.Windows.Forms.Button();
+            this.Messages = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // inputDir
@@ -56,7 +58,7 @@
             // 
             // Picker
             // 
-            this.Picker.Location = new System.Drawing.Point(13, 59);
+            this.Picker.Location = new System.Drawing.Point(13, 54);
             this.Picker.Name = "Picker";
             this.Picker.Size = new System.Drawing.Size(85, 23);
             this.Picker.TabIndex = 2;
@@ -67,12 +69,35 @@
             // openFiler
             // 
             this.openFiler.FileName = "openFileDialog1";
+            this.openFiler.Multiselect = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(126, 53);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(115, 23);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // Messages
+            // 
+            this.Messages.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.Messages.Location = new System.Drawing.Point(0, 83);
+            this.Messages.Multiline = true;
+            this.Messages.Name = "Messages";
+            this.Messages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.Messages.Size = new System.Drawing.Size(346, 158);
+            this.Messages.TabIndex = 4;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(346, 241);
+            this.Controls.Add(this.Messages);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.Picker);
             this.Controls.Add(this.indir);
             this.Controls.Add(this.inputDir);
@@ -92,6 +117,8 @@
         private System.Windows.Forms.TextBox indir;
         private System.Windows.Forms.Button Picker;
         private System.Windows.Forms.OpenFileDialog openFiler;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox Messages;
     }
 }
 

@@ -233,6 +233,7 @@
     <Compile Include="Controllers\ControlController.cs" />
     <Compile Include="Controllers\DeleteFileAttribute.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\CasingSampleArchive.cs" />
     <Compile Include="Models\Conversion.cs" />
     <Compile Include="Models\Extruder.cs" />
     <Compile Include="Models\Limit.cs" />

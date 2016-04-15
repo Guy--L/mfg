@@ -25,7 +25,7 @@ namespace Poster.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("//localhost:32323/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:49458/Home/UploadCasings")]
         public string uploadto {
             get {
                 return ((string)(this["uploadto"]));
@@ -44,6 +44,18 @@ namespace Poster.Properties {
             }
             set {
                 this["uploadfrom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string recent {
+            get {
+                return ((string)(this["recent"]));
+            }
+            set {
+                this["recent"] = value;
             }
         }
     }
