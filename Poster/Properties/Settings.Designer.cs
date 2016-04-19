@@ -25,7 +25,19 @@ namespace Poster.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:49458/Home/UploadCasings")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string recent {
+            get {
+                return ((string)(this["recent"]));
+            }
+            set {
+                this["recent"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://mfg/Home/UploadCasings")]
         public string uploadto {
             get {
                 return ((string)(this["uploadto"]));
@@ -37,25 +49,13 @@ namespace Poster.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("c:\\pslab2016")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Nitta\\Desktop")]
         public string uploadfrom {
             get {
                 return ((string)(this["uploadfrom"]));
             }
             set {
                 this["uploadfrom"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string recent {
-            get {
-                return ((string)(this["recent"]));
-            }
-            set {
-                this["recent"] = value;
             }
         }
     }

@@ -44,9 +44,15 @@
             $('#@Html.IdFor(m=>m.Cancel)').val(true);
         });
         $('#monitor').on('click', function () {
+            console.log('monitor clicked');
             $('#@Html.IdFor(m=>m.Monitor)').val(true);
         });
-        $('.chartbtn').on('click', function () {
+        $('#chart').on('click', function () {
+            console.log('chart clicked');
+            $('#@Html.IdFor(m=>m.Monitor)').val(false);
+        });
+        $('.chart').on('click', function () {
+            console.log('chart clicked');
             var chart = $(this).data('id');
             demo1.val(charts[chart]);
         });
