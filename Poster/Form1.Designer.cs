@@ -50,7 +50,6 @@
             // 
             // indir
             // 
-            this.indir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.indir.Location = new System.Drawing.Point(126, 16);
             this.indir.Name = "indir";
             this.indir.Size = new System.Drawing.Size(208, 20);

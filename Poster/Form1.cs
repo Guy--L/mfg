@@ -74,6 +74,8 @@ namespace Poster
             return julian.ToString().PadLeft(3, '0') + "-" + shift;
         }
 
+        private static StringComparer str = StringComparer.OrdinalIgnoreCase;
+        
         async void Upload(string[] files)
         {
             string last = "";
@@ -91,7 +93,7 @@ namespace Poster
                     using (Stream fileStream = File.OpenRead(path))
                     {
                         request.Add(new StreamContent(fileStream), "file", file);
-                        last = file;
+                        if (str.Compare(file, last) > 0) last = file;
 
                         var response = await client.PostAsync(_upto, request);
                         response.EnsureSuccessStatusCode();
@@ -101,7 +103,7 @@ namespace Poster
                 }
                 catch (Exception e)
                 {
-                    Messages.AppendLine(e.Message);
+                    Messages.AppendLine(file +": "+ e.Message);
                 }
             }
             Messages.AppendLine("Done.");
