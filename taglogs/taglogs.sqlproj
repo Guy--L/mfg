@@ -72,7 +72,7 @@
     <Build Include="User.sql" />
     <Build Include="Graph.sql" />
     <Build Include="Plot.sql" />
-    <Build Include="UserChart.sql" />
+    <Build Include="UserGraph.sql" />
     <Build Include="HMI.sql" />
     <Build Include="Operation.sql" />
     <Build Include="Role.sql" />
@@ -88,6 +88,9 @@
     <Build Include="Limit.sql" />
     <None Include="Data\LatestLimits.sql" />
     <None Include="Data\DeleteDupLimits.sql" />
+    <Build Include="UpdatePlot.sql" />
+    <Build Include="UserDefinedTableType1.sql" />
+    <Build Include="SplitInts.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="taglogs.refactorlog" />

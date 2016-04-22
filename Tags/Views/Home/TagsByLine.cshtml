@@ -15,6 +15,7 @@
 @using (var form = Html.Bootstrap().Begin(new Form("PickedTags", "Home").Id("picktagform")))
 {
     <div class="col-md-5">
+        @Html.HiddenFor(m => m.DeletedViews)
         @Html.HiddenFor(m => m.Monitor)
         @Html.HiddenFor(m => m.Cancel)
         @Html.HiddenFor(m => m.Channel)
@@ -25,13 +26,19 @@
     <div class="col-md-6">
         @form.FormGroup().TextBoxFor(m=>m.NewView).Tooltip("Record selected tags as a named view")
     <hr />
-        @Html.Raw(Model.charts)
+        <div class="row-fluid">
+            @form.FormGroup().CheckBoxFor(m=>m.EditViews).Tooltip("Review tags before charting (vs not)")
+            @Html.Raw(Model.charts)
+        </div>
     </div>
 }
 </div>
 
 @section scripts{
     <script type="text/javascript">
+        var editMode = false;
+        var $viewBox = $('#@Html.IdFor(m => m.NewView)')
+        var $editBox = $('#@Html.IdFor(m=>m.EditViews)');
         var charts = [];
         @Model.snippet
         var demo1 = $('select[name="picked"]').bootstrapDualListbox({
@@ -39,25 +46,52 @@
             selectedListLabel: 'Selected',
             preserveSelectionOnMove: true
         });
-        $('#@Html.IdFor(m=>m.NewView)').prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length > 0));
+        $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length > 0));
         $('#cancel').on('click',function () {
             $('#@Html.IdFor(m=>m.Cancel)').val(true);
         });
         $('#monitor').on('click', function () {
-            console.log('monitor clicked');
             $('#@Html.IdFor(m=>m.Monitor)').val(true);
         });
         $('#chart').on('click', function () {
-            console.log('chart clicked');
             $('#@Html.IdFor(m=>m.Monitor)').val(false);
         });
-        $('.chart').on('click', function () {
-            console.log('chart clicked');
+        $('.chartbtn').on('click', function (e) {
             var chart = $(this).data('id');
             demo1.val(charts[chart]);
+            if (editMode) {
+                e.preventDefault();
+                demo1.bootstrapDualListbox('refresh', true);
+                $viewBox.val($.trim($(this).text()));
+            }
+        });
+        $('.chartdel').on('click', function (e) {
+            var id = $(this).data('id');
+            var graph = $(this).data('graphid');
+            if ($.trim($(this).text()) == $viewBox.val())
+                $viewBox.val('');
+            $('.view' + id).remove();
+            var $dead = $('#@Html.IdFor(m=>m.DeletedViews)');
+            $dead.val($dead.val()+","+graph);
+        });
+        $editBox.on('click', function () {
+            var checked = $editBox.is(':checked');
+            if (checked)
+                $('.chartdel').show();
+            else
+                $('.chartdel').hide();
+            editMode = checked;
         });
         demo1.on('change', function () {
-            $('#@Html.IdFor(m=>m.NewView)').prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
+             $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
+        });
+        $(function () {
+            $('.chartdel').hide();
+            $.each(charts, function (i, v) {
+                if (v === null || v.every(function (w) { return w === null; })) {
+                    $('.view' + i).attr('disabled', 'disabled');
+                }
+            });
         });
     </script>
 }

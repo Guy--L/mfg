@@ -20,7 +20,8 @@ namespace Test.App_Start
                 "~/Scripts/jquery.inputmask/jquery.inputmask.date.extensions.js",
                 "~/Scripts/jquery.inputmask/jquery.inputmask.numeric.extensions.js",
                 "~/Scripts/jquery.bootstrap-duallistbox.js",
-                "~/Scripts/respond.js"));
+                "~/Scripts/respond.js",
+                "~/Scripts/TwitterBootstrapMvcJs.js"));
 
             BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/base").Include(
                 "~/Content/bootstrap.css",

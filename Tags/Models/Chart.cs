@@ -35,15 +35,6 @@ namespace Tags.Models
         private static string _delview = @"
             
         ";
-        private static string _updview = @"
-            Merge [user] u
-            using (select [Identity] = '{0}') s 
-            ON s.[Identity] = u.[Identity]
-            WHEN NOT matched THEN 
-            INSERT ([Identity]) VALUES (s.[Identity]);
-
-            merge 
-        ";
 
         private static string _point = ",[new Date({0}),{1}]";
         private static string _nopoints = "[new Date({0}),{2}],[new Date({1}),{2}]";
@@ -335,16 +326,6 @@ namespace Tags.Models
             return tot;
         }
 
-        public static void SaveView(string user, string name, int[] tagids)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return;
-
-            using (tagDB t = new tagDB())
-            {
-               
-            }
-        }
     }
 
     public static class DateTimeJavaScript

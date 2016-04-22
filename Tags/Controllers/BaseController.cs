@@ -38,6 +38,7 @@ namespace Tags.Controllers
         protected bool _timeout;
         protected bool _IsAdmin;
         protected string _user;
+        protected User _login;
         protected List<string> _roles;
 
         public void Attention(string message)
@@ -71,6 +72,7 @@ namespace Tags.Controllers
         {
             ViewBag.built = built;
             ViewBag.User = _user = Session["user"] as string;
+            ViewBag.Login = _login = Session["login"] as User;
             _roles = Session["roles"] as List<string>;
             ViewBag.IsAdmin = _IsAdmin = false;
             if (_roles != null)

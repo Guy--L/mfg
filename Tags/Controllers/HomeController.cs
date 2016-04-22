@@ -39,6 +39,12 @@ namespace Tags.Controllers
 
             TempData["picked"] = p;
 
+            if (p.NewView != null && !string.IsNullOrWhiteSpace(p.NewView) && p.picked != null)
+                Graph.SaveView(_login, p.NewView, p.picked);
+
+            if (p.DeletedViews != null && !string.IsNullOrWhiteSpace(p.DeletedViews))
+                Graph.DeleteView(p.DeletedViews.Substring(1));
+
             if (p.Monitor)
                 return RedirectToAction("Picked2Monitor");
 
@@ -52,7 +58,6 @@ namespace Tags.Controllers
                 return RedirectToAction("Review", "Home");
 
             ViewData["Channel"] = p.Channel;
-            Chart.SaveView(_user, p.NewView, p.picked);
             var chart = new Chart(p.picked);
             Session["chart"] = chart;
             return View(chart);

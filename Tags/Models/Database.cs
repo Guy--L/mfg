@@ -104,19 +104,6 @@ namespace Tags.Models
 	}
 	
 
-	[TableName("Keptest")]
-	[PrimaryKey("id")]
-	[ExplicitColumns]
-    public partial class Keptest : tagDB.Record<Keptest>  
-    {		
-		[Column] public int id { get; set; } 		
-		[Column] public string _NAME { get; set; } 		
-		[Column] public int? _NUMERICID { get; set; } 		
-		[Column] public string _VALUE { get; set; } 		
-		[Column] public DateTime? _TIMESTAMP { get; set; } 		
-		[Column] public int? _QUALITY { get; set; } 	
-	}
-
 	[TableName("User")]
 	[PrimaryKey("UserId")]
 	[ExplicitColumns]
@@ -127,37 +114,29 @@ namespace Tags.Models
 		[Column] public string Login { get; set; } 	
 	}
 
-	[TableName("UserChart")]
-	[PrimaryKey("UserChartId")]
+	[TableName("Graph")]
+	[PrimaryKey("GraphId")]
 	[ExplicitColumns]
-    public partial class UserChart : tagDB.Record<UserChart>  
+    public partial class Graph : tagDB.Record<Graph>  
     {		
-		[Column] public int UserChartId { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public int ChartId { get; set; } 		
-		[Column] public bool Shared { get; set; } 	
+		[Column] public int GraphId { get; set; } 		
+		[Column] public string GraphName { get; set; } 		
+		[Column] public int OwnerId { get; set; } 	
 	}
 
-	[TableName("Past")]
-	[PrimaryKey("PastId", AutoIncrement=false)]
+	[TableName("Plot")]
+	[PrimaryKey("PlotId")]
 	[ExplicitColumns]
-    public partial class Past : tagDB.Record<Past>  
+    public partial class Plot : tagDB.Record<Plot>  
     {		
-		[Column] public int PastId { get; set; } 		
+		[Column] public int PlotId { get; set; } 		
+		[Column] public int GraphId { get; set; } 		
 		[Column] public int TagId { get; set; } 		
-		[Column] public string Value { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 	
-	}
-
-	[TableName("Subscription")]
-	[PrimaryKey("SubscriptionId")]
-	[ExplicitColumns]
-    public partial class Subscription : tagDB.Record<Subscription>  
-    {		
-		[Column] public int SubscriptionId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public string Value { get; set; } 	
+		[Column] public bool YAxis { get; set; } 		
+		[Column] public string Relabel { get; set; } 		
+		[Column] public int Scale { get; set; } 		
+		[Column] public int MinY { get; set; } 		
+		[Column] public int MaxY { get; set; } 	
 	}
 
 	[TableName("SubMinute")]
@@ -180,16 +159,6 @@ namespace Tags.Models
 		[Column] public int Quality { get; set; } 	
 	}
 
-	[TableName("Graph")]
-	[PrimaryKey("GraphId")]
-	[ExplicitColumns]
-    public partial class Graph : tagDB.Record<Graph>  
-    {		
-		[Column] public int GraphId { get; set; } 		
-		[Column] public string GraphName { get; set; } 		
-		[Column] public int OwnerId { get; set; } 	
-	}
-
 	[TableName("HMI")]
 	[PrimaryKey("HMIId")]
 	[ExplicitColumns]
@@ -204,19 +173,26 @@ namespace Tags.Models
 		[Column] public DateTime Expires { get; set; } 	
 	}
 
-	[TableName("Plot")]
-	[PrimaryKey("PlotId")]
+	[TableName("Past")]
+	[PrimaryKey("PastId", AutoIncrement=false)]
 	[ExplicitColumns]
-    public partial class Plot : tagDB.Record<Plot>  
+    public partial class Past : tagDB.Record<Past>  
     {		
-		[Column] public int PlotId { get; set; } 		
-		[Column] public int GraphId { get; set; } 		
+		[Column] public int PastId { get; set; } 		
 		[Column] public int TagId { get; set; } 		
-		[Column] public bool YAxis { get; set; } 		
-		[Column] public string Relabel { get; set; } 		
-		[Column] public int Scale { get; set; } 		
-		[Column] public int MinY { get; set; } 		
-		[Column] public int MaxY { get; set; } 	
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 	
+	}
+
+	[TableName("UserGraph")]
+	[PrimaryKey("UserGraphId")]
+	[ExplicitColumns]
+    public partial class UserGraph : tagDB.Record<UserGraph>  
+    {		
+		[Column] public int UserGraphId { get; set; } 		
+		[Column] public int UserId { get; set; } 		
+		[Column] public int GraphId { get; set; } 		
+		[Column] public bool Shared { get; set; } 	
 	}
 
 	[TableName("Channel")]

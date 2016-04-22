@@ -2,5 +2,6 @@
 (
 	[GraphId] INT NOT NULL PRIMARY KEY IDENTITY, 
     [GraphName] VARCHAR(50) NOT NULL, 
-    [OwnerId] INT NOT NULL 
+    [UserId] INT NULL, 
+    [Shared] BIT NOT NULL 
 )

@@ -44,6 +44,7 @@ namespace Tags
                 var u = new User(user);
                 if (u == null || u.UserId == 0)
                     return;
+                Session["login"] = u;
                 var roles = u.Roles();
                 Session["roles"] = roles.Select(r => r._Role).ToList();
             }

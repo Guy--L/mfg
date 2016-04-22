@@ -113,7 +113,6 @@ namespace Test.Controllers
         public ActionResult SolutionTests(int id)
         {
             SolutionTests t = new SolutionTests();
-            //            t.User = Session["user"].ToString();
             using (labDB db = new labDB())
             {
                 t.list = db.Fetch<SolutionTest>(Resources.SolutionTestByBatch, id);

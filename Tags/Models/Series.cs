@@ -31,15 +31,17 @@ namespace Tags.Models
             s.Relabel,
             s.Scale,
             s.MinY,
-            s.MaxY
-            from Plot s
-            join Graph c on s.GraphId = c.GraphId
-            join UserChart x on x.ChartId = c.GraphId
-            join [User] u on x.UserId = u.UserId
+            s.MaxY,
+            t.Name Path
+            from [Plot] s
+            join [Current] t on t.TagId = s.Tagid
+            join [Graph] c on s.GraphId = c.GraphId
+            join [User] u on c.UserId = u.UserId
             where u.[Login] = '{0}'
         ";
 
         [ResultColumn] public string GraphName { get; set; }
+        [ResultColumn] public string Path { get; set; }
 
         public static ILookup<string, Plot> seriesByUser(string user)
         {
