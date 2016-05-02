@@ -141,7 +141,7 @@ namespace Test.Models
             using (var db = new labDB())
             {
                 line = db.Fetch<Line>(Lines._lineload + " where l.lineid = @0", lineid).SingleOrDefault();
-                systems = db.Fetch<System>(string.Format(System._attime, stamp.ToString("yyyy-MM-dd HH:mm:ss")));
+                systems = db.Fetch<System>(string.Format(System._attime, stamp.ToStamp()));
                 products = db.Fetch<ProductCode>(" order by productcode, productspec");
 
                 timeline = LineTx.TimeLine(lineid);

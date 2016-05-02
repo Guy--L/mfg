@@ -13,7 +13,7 @@ namespace Tags.Models
         private static string _mid = "[new Date({0}),{1}]";
         private static string[] _end = new string[] { _mid + ",[null,null]", "[null,null]," + _mid };
 
-        public static string Series<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member)
+        public static string LineSeries<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member)
         {
             return string.Join(",", data.Select(q => "[new Date(" + moment(q).ToJSMSecs() + ")," + member(q) + "]").ToArray());
         }
@@ -26,7 +26,12 @@ namespace Tags.Models
 
         public static string Bounded<T>(this IGrouping<int, T> data, Func<T, DateTime> moment, Func<T, string> member, DateTime a, DateTime b)
         {
-            return string.Format(_somepoints, a.ToJSMSecs(), member(data.First()), data.Series(moment, member), b.ToJSMSecs(), member(data.Last()));
+            return string.Format(_somepoints, a.ToJSMSecs(), member(data.First()), data.LineSeries(moment, member), b.ToJSMSecs(), member(data.Last()));
+        }
+
+        public static string ToStamp(this DateTime stamp)
+        {
+            return stamp.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 
@@ -109,7 +114,7 @@ namespace Tags.Models
                 return string.Format(_nopoints, a.ToJSMSecs(), b.ToJSMSecs(), current[s.Key]);
             
             return string.Format(_somepoints, a.ToJSMSecs(), s.First().Value,
-                s.Series(t => t.Stamp, q => q.Value),
+                s.LineSeries(t => t.Stamp, q => q.Value),
                 b.ToJSMSecs(), current[s.Key]);
         }
 
@@ -180,7 +185,7 @@ namespace Tags.Models
                 var stringValued = tags.Where(v => v.DataType.ToLower() == "string").Select(d => d.TagId);
                 index = tags.ToDictionary(i => i.TagId, i => (multichannel ? (i.Channel + ".") : "") + i.Name);
 
-                var samples = t.Fetch<All>(string.Format(_data, include, min.ToString("yyyy-MM-dd HH:mm:ss"), max.ToString("yyyy-MM-dd HH:mm:ss")));
+                var samples = t.Fetch<All>(string.Format(_data, include, min.ToStamp(), max.ToStamp()));
                 if (!samples.Any())
                 {
                     var taglist = string.Join(", ", index.Values.ToArray());

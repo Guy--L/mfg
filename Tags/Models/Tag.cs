@@ -10,6 +10,29 @@ namespace Tags.Models
 {
 	public partial class Tag
 	{
+        private static string _byName = @"
+            select
+            c.Name+'.'+d.Name+'.'+t.Name as [Path],
+            t.TagId,
+            t.DeviceId,
+            t.Name,
+            t.Address,
+            c.Name as [Channel],
+            d.Name as [Device],
+            tt.TagId CanonId
+            from Tag t
+            join Device d on t.DeviceId = d.DeviceId
+			join Channel c on c.ChannelId = d.ChannelId
+            join Tag tt on t.Name = tt.Name
+            join Device dd on d.Name = dd.Name and tt.DeviceId = dd.DeviceId
+        ";
+
+        private static string _byTags = _byName + @" where tt.TagId in ({0})";
+        private static string _byGraph = _byName + @"
+            join Plot p on p.tagid = tt.tagid
+            where p.graphid = {0}
+        ";
+
         private static string _syncCurrent = @"
             insert into [Current] (TagId, Name, Value, Stamp, SubMinute)
             select b.TagId, c.[Name]+'.'+d.[Name]+'.'+b.[Name] as [Name], '', getdate(), 0
@@ -79,11 +102,22 @@ namespace Tags.Models
              WHERE TagId = {0}
             ";
 
+        public static Dictionary<string, Type> types = new Dictionary<string, Type>
+        {
+            { "Word", typeof(int) },
+            { "BCD", typeof(int) },
+            { "", typeof(string) },
+            { "Float", typeof(double) },
+            { "Boolean", typeof(bool) },
+            { "String", typeof(string) }
+        };
+
         [ResultColumn] public string Path { get; set; }
         [ResultColumn] public string Unique { get; set; }
         [ResultColumn] public string Device { get; set; }
         [ResultColumn] public string Channel { get; set; }
         [ResultColumn] public string SetPoint { get; set; }
+        [ResultColumn] public int CanonId { get; set; }
 
         public bool IsSetPoint { get { return SetPoint == "ps" || SetPoint == "ti"; } }
 

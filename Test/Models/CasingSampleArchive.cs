@@ -85,7 +85,7 @@ namespace Test.Models
         {
             using (labDB d = new labDB())
             {
-                var t = d.Execute(string.Format(_complete, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), yr));
+                var t = d.Execute(string.Format(_complete, DateTime.Now.ToStamp(), yr));
             }
         }
 
@@ -102,7 +102,7 @@ namespace Test.Models
             using (tagDB d = new tagDB())
             {
                 var query = string.Format(_labresult, _year);
-                query = string.Format(query, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), yr);
+                query = string.Format(query, DateTime.Now.ToStamp(), yr);
                 var t = d.Execute(query);
             }
         }

@@ -1,7 +1,11 @@
-﻿@model Tags.Models.User
+﻿@model Tags.Models.Review
 
-<tr data-id="@Model.UserId">
-    <td>@Model.Login</td>
-    <td>@Model.Identity</td>
-    <td><button class="btn btn-primary btn-xs"><i class="fa fa-ticket"></i> Access</button></td>
+<tr data-id="@Model.ReviewId">
+    <td>@Model.Name</td>
+    <td>@Model.Schedule</td>
+    <td>
+    <button class='btn btn-danger btn-xs reviewdel view{0}' data-id='{0}' data-reviewid='@Model.ReviewId'>
+        <i class='fa fa-remove'></i>
+    </button>
+    </td>
 </tr>

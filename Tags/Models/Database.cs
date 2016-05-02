@@ -68,9 +68,9 @@ namespace Tags.Models
 		public class Record<T> where T:new()
 		{
 			public static tagDB repo { get { return tagDB.GetInstance(); } }
-			public bool IsNew() { return repo.IsNew<T>(this); }
+			public bool IsNew() { return repo.IsNew(this); }
 			public object Insert() { return repo.Insert(this); }
-			public void Save() { repo.Save<T>(this); }
+			public void Save() { repo.Save(this); }
 			public int Update() { return repo.Update(this); }
 			public int Update(IEnumerable<string> columns) { return repo.Update(this, columns); }
 			public static int Update(string sql, params object[] args) { return repo.Update<T>(sql, args); }
@@ -121,7 +121,9 @@ namespace Tags.Models
     {		
 		[Column] public int GraphId { get; set; } 		
 		[Column] public string GraphName { get; set; } 		
-		[Column] public int OwnerId { get; set; } 	
+		[Column] public int? UserId { get; set; } 		
+		[Column] public bool Shared { get; set; } 		
+		[Column] public int? ReviewId { get; set; } 	
 	}
 
 	[TableName("Plot")]
@@ -148,17 +150,6 @@ namespace Tags.Models
 	
 	}
 
-	[TableName("sample")]
-	[ExplicitColumns]
-    public partial class sample : tagDB.Record<sample>  
-    {		
-		[Column] public int AllId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public string Value { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 		
-		[Column] public int Quality { get; set; } 	
-	}
-
 	[TableName("HMI")]
 	[PrimaryKey("HMIId")]
 	[ExplicitColumns]
@@ -182,17 +173,6 @@ namespace Tags.Models
 		[Column] public int TagId { get; set; } 		
 		[Column] public string Value { get; set; } 		
 		[Column] public DateTime Stamp { get; set; } 	
-	}
-
-	[TableName("UserGraph")]
-	[PrimaryKey("UserGraphId")]
-	[ExplicitColumns]
-    public partial class UserGraph : tagDB.Record<UserGraph>  
-    {		
-		[Column] public int UserGraphId { get; set; } 		
-		[Column] public int UserId { get; set; } 		
-		[Column] public int GraphId { get; set; } 		
-		[Column] public bool Shared { get; set; } 	
 	}
 
 	[TableName("Channel")]
@@ -276,6 +256,16 @@ namespace Tags.Models
 		[Column] public bool IsLogged { get; set; } 		
 		[Column] public bool IsArchived { get; set; } 		
 		[Column] public int? RelatedTagId { get; set; } 	
+	}
+
+	[TableName("Review")]
+	[PrimaryKey("ReviewId")]
+	[ExplicitColumns]
+    public partial class Review : tagDB.Record<Review>  
+    {		
+		[Column] public int ReviewId { get; set; } 		
+		[Column] public string Name { get; set; } 		
+		[Column] public string Schedule { get; set; } 	
 	}
 
 	[TableName("TagHistory")]

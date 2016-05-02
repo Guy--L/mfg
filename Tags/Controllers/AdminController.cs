@@ -32,6 +32,21 @@ namespace Tags.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult PickReview()
+        {
+            var p = new PickReview(0);
+            return View(p);
+        }
+
+        [HttpPost]
+        public ActionResult PickedReview(PickReview p)
+        {
+            if (p.NewReview != null && !string.IsNullOrWhiteSpace(p.NewReview) && p.picked != null)
+                Review.Save(p.NewReview, p.NewSchedule, p.picked);
+
+            return RedirectToAction("PickReview", "Admin");
+        }
+
         [HttpPost]
         public ActionResult Upload(HttpPostedFileBase file)
         {

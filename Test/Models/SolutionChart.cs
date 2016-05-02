@@ -226,6 +226,10 @@ namespace Test.Models
 
     public static class DataModelExtension
     {
+        public static string ToStamp(this DateTime stamp)
+        {
+            return stamp.ToString("yyyy-MM-dd HH:mm:ss");
+        }
 
         public static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
         /// <summary>

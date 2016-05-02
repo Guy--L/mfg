@@ -89,7 +89,7 @@
             $('.chartdel').hide();
             $.each(charts, function (i, v) {
                 if (v === null || v.every(function (w) { return w === null; })) {
-                    $('.view' + i).attr('disabled', 'disabled');
+                    $('.chartbtn.view' + i).attr('disabled', 'disabled');
                 }
             });
         });

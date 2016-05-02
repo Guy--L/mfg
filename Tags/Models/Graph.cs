@@ -1,57 +1,12 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
+using NPoco;
 
 namespace Tags.Models
 {
     public partial class Graph
     {
-        private static string _updview = @";
-            declare @@graphid as int
-            declare @@tagname as table(
-                [Id] int,
-                [Device] [varchar](64),
-                [Name] [varchar](64)
-            ), @@userid as int
-
-            insert into @@tagname 
-            select t.TagId, d.Name, t.Name 
-            from Tag t 
-            join Device d on d.DeviceId = t.DeviceId
-            where t.TagId in ({0})
-
-            Merge [user] u
-            using (select [Login] = @0) s 
-            ON s.[Login] = u.[Login]
-            WHEN NOT matched THEN 
-            INSERT ([Login], [Identity]) VALUES (s.[Login], @1);
-
-            select @@userid = userid from [user] where [Login] = @0
-
-            merge [graph] g
-            using (select [Name] = @2) n
-            on n.[Name] = g.[GraphName] and g.[UserId] = @@userid
-            when not matched then 
-            insert ([GraphName], [UserId], [Shared])
-            values (n.[Name], @@userid, 0);
-
-            select @@graphid = graphid from [graph] where graphname = @2 and userid = @@userid
-
-            delete p
-            from [plot] p
-            join [tag] t on t.tagid = p.tagid
-            join [device] d on d.deviceid = t.deviceid
-            left join @@tagname n on t.name = n.name and d.name = n.device
-            where n.name is null and p.graphid = @graphid
-
-            insert [plot]
-            select @@graphid, t.id, 0, t.name, 1, -1, -1
-            from @@tagname t
-            left join [plot] p on t.id = p.tagid and p.graphid = @@graphid
-            where p.plotid is null
-        ";
-
         private static string _graphsByUser = @"
             select g.graphname
                 ,g.shared
@@ -65,18 +20,59 @@ namespace Tags.Models
         private static string _deleteView = @"
             delete p
             from plot p
-            where p.graphid in (@0)
+            where p.graphid in ({0})
 
             delete g 
             from graph g 
-            where g.graphid in (@0)
+            where g.graphid in ({0})
         ";
+
+        private static string _plotsByReview = @"
+            select c.*, s.*
+            from [Graph] c
+            join [Plot] s on s.GraphId = c.GraphId
+            where c.[ReviewId] = {0}
+            order by c.GraphId, s.PlotId
+        ";
+
+        private static string _tagsByGraph = @"
+            select
+                c.Name+'.'+d.Name+'.'+t.Name as [Path],
+                t.TagId,
+                t.DeviceId,
+                t.Name,
+                t.Address,
+                c.Name as [Channel],
+                d.Name as [Device],
+                p.TagId as [CanonId]
+            from Tag t
+            join Device d on t.DeviceId = d.DeviceId
+			join Channel c on c.ChannelId = d.ChannelId
+            join Tag tt on t.Name = tt.Name
+            join Device dd on d.Name = dd.Name and tt.DeviceId = dd.DeviceId
+            join plot p on p.tagid = tt.tagid
+            where p.GraphId = @0
+            order by p.plotid
+        ";
+
+        public DateTime start { get; set; }
+        public DateTime end { get; set; }
+        [Reference(ReferenceType.Many, ColumnName = "GraphId", ReferenceMemberName = "GraphId")]
+        public List<Plot> plots { get; set; }
+
+        public static List<Graph> All()
+        {
+            using (tagDB t = new tagDB())
+            {
+                return t.Fetch<Graph>();
+            }
+        }
 
         public static void DeleteView(string ids)
         {
             using (tagDB t = new tagDB())
             {
-                t.Execute(_deleteView, ids);
+                t.Execute(string.Format(_deleteView, ids));
             }
         }
 
@@ -87,6 +83,31 @@ namespace Tags.Models
             {
                 t.Execute(";exec dbo.UpdatePlot @0, @1, @2, @3", user.Login, user.Identity, name, ids);
             }
+        }
+
+        public static List<Graph> plotsByReview(int reviewId)
+        {
+            List<Graph> results;
+
+            using (tagDB tdb = new tagDB())
+            {
+//                results = tdb.FetchOneToMany<Graph>(g => g.plots, string.Format(_plotsByReview, reviewId));
+                results = tdb.Fetch<Graph>(string.Format(_plotsByReview, reviewId));
+
+            }
+            return results;
+        }
+
+        public List<string> Canon()
+        {
+            List<Tag> tags;
+            using (tagDB t = new tagDB())
+            {
+                tags = t.Fetch<Tag>(_tagsByGraph, GraphId);
+            }
+            plots.Select(p => { p.tags = tags.Where(q => q.CanonId == p.TagId).ToList(); return 1; });
+            
+            return tags.Select(c => c.Channel).Distinct().ToList();
         }
     }
 }

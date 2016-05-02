@@ -9,6 +9,9 @@ using Tags.Controllers;
 using Tags.Models;
 using Tags.Properties;
 using TwitterBootstrapMVC;
+using Quartz;
+using Quartz.Impl;
+using Tags.Hubs;
 
 namespace Tags
 {
@@ -26,6 +29,16 @@ namespace Tags
             XFactory.Initialize(Server.MapPath("~/App_Data/XML/"));
             Tag.All();
             TagMap.projectPath = Server.MapPath("~/App_Data/XML/TestOutput.xml");
+
+            ISchedulerFactory schedFact = new StdSchedulerFactory();
+            // get a scheduler
+            TagHub.sched = schedFact.GetScheduler();
+            TagHub.sched.Start();
+        }
+
+        protected void Application_Stop()
+        {
+            TagHub.sched.Shutdown();
         }
 
         protected void Session_Start(object sender, EventArgs e)

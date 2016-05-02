@@ -9,12 +9,13 @@ namespace Tags.Models
     {
         private static string chartbutton = @"
             <div class='col-md-4'>
-                <button class='btn btn-success btn-xs chartbtn view{0}' data-id='{0}' type='submit'>
+                <button class='btn btn-success btn-xs chartbtn view{0}' data-id='{0}' type='submit' title='{3}'>
                     <i class='fa fa-line-chart'></i> {1}
                 </button>
                 <button class='btn btn-danger btn-xs chartdel view{0}' data-id='{0}' data-graphid='{2}'>
                     <i class='fa fa-remove'></i>
                 </button>
+                <br />
             </div>
         ";
 
@@ -69,12 +70,14 @@ namespace Tags.Models
                     }
                 ).ToList();
 
-                views = Plot.seriesByUser(user);
+                views = Plot.plotsByUser(user);
 
                 if (views.Any())
                 {
                     charts = string.Join("\n", views.Select((v, x) => 
-                                    string.Format(chartbutton, x, v.Key, v.First().GraphId)).ToArray());
+                                    string.Format(chartbutton, x, v.Key, v.First().GraphId,
+                                    string.Join("\n", v.Select(t => t.Path.TagPart()))
+                                    )).ToArray());
 
                     var tagsByName = picklist.ToLookup(t => t.Path.TagPart(), v => v.TagId);
                     var ctags = views.Select(view => "charts.push([" + 
@@ -82,7 +85,6 @@ namespace Tags.Models
                                     {
                                         var ids = tagsByName[plot.Path.TagPart()];
                                         var lst = string.Join(",", ids);
-                                        Debug.WriteLine(view.Key + ": " + lst);
                                         return ids.Any() ? lst : null;
                                     })) + "]);");
 

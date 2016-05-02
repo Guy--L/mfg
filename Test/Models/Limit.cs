@@ -105,7 +105,7 @@ namespace Test.Models
                         deleted = db.ExecuteScalar<int>(string.Format(_deleteLimits, lineids));
 
                     error = deleted + " deleted old limit records. ";
-                    var now = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    var now = DateTime.Now.ToStamp();
                     var inserted = db.ExecuteScalar<int>(string.Format(_insertLimits, lineids, replace ? "i.stamp" : "'"+now+"'"));
 
                     return deleted + " deleted old limit records, " + inserted + " inserted new limit records.";

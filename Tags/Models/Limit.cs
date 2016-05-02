@@ -24,7 +24,7 @@ namespace Tags.Models
         
         public static List<Limit> Specs(tagDB t, string tags, DateTime minstamp, DateTime maxstamp)
         {
-            return t.Fetch<Limit>(string.Format(_limits, tags, minstamp.ToString("yyyy-MM-dd HH:mm:ss"), maxstamp.ToString("yyyy-MM-dd HH:mm:ss")));
+            return t.Fetch<Limit>(string.Format(_limits, tags, minstamp.ToStamp(), maxstamp.ToStamp()));
         }
 
         public string Clip(string value)

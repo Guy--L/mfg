@@ -8,14 +8,7 @@ namespace Tags.Models
 {
     public partial class Plot
     {
-        private static string _implicitAddUser = @"
-            Merge [user] u
-            using (select [Identity] = '{0}') s 
-            ON s.[Identity] = u.[Identity]
-            WHEN NOT matched THEN 
-            INSERT ([Identity]) VALUES (s.[Identity]);
-        ";
-        private static string _seriesByUser = @";
+        private static string _plotsByUser = @";
             Merge [user] u
             using (select [Login] = '{0}') s 
             ON s.[Login] = u.[Login]
@@ -39,17 +32,19 @@ namespace Tags.Models
             join [User] u on c.UserId = u.UserId
             where u.[Login] = '{0}'
         ";
-
         [ResultColumn] public string GraphName { get; set; }
         [ResultColumn] public string Path { get; set; }
 
-        public static ILookup<string, Plot> seriesByUser(string user)
+        public List<Tag> tags { get; set; }
+        public Tag filter { get; set; }
+
+        public static ILookup<string, Plot> plotsByUser(string user)
         {
             ILookup<string, Plot> results;
 
             using (tagDB tdb = new tagDB())
             {
-                var res = tdb.Fetch<Plot>(string.Format(_seriesByUser, user));
+                var res = tdb.Fetch<Plot>(string.Format(_plotsByUser, user));
                 results = res.ToLookup(k => k.GraphName);
             }
             return results;
@@ -61,20 +56,11 @@ namespace Tags.Models
 
             using (tagDB tdb = new tagDB())
             {
-                var res = tdb.Fetch<Plot>(string.Format(_seriesByUser, user));
+                var res = tdb.Fetch<Plot>(string.Format(_plotsByUser, user));
                 results = res.ToLookup(k => k.GraphName, m => m.TagId);
             }
             return results;
         }
 
-        //public static IEnumerable<Series> seriesByUser(string user)
-        //{
-        //    IEnumerable<Series> res;
-        //    using (tagDB tdb = new tagDB())
-        //    {
-        //        res = tdb.Fetch<Series>(string.Format(_seriesByUser, user));
-        //    }
-        //    return res;
-        //}
     }
 }

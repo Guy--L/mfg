@@ -27,6 +27,8 @@ namespace Tags
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
+                      "~/Content/jquery-gentleSelect.css",
+                      "~/Content/jquery-cron.css",
                       "~/Content/font-awesome.css"));
         }
     }

@@ -287,7 +287,7 @@ namespace Test.Models
         /// <returns></returns>
         public bool Synchronize()
         {
-            var time = Scheduled.ToString("yyyy-MM-dd HH:mm:ss");
+            var time = Scheduled.ToStamp();
 
             var s = new Sample();
             using (labDB d = new labDB())
@@ -891,7 +891,7 @@ namespace Test.Models
                 if (id == 0)
                 {
                     ScheduleTime = CasingSample.NextSlot();
-                    var time = ScheduleTime.ToString("yyyy-MM-dd HH:mm:ss");
+                    var time = ScheduleTime.ToStamp();
                     sset = d.Fetch<Sample, Status, Reading, ProductCode, CasingSample>(Link, _batch + _bytime, time);
                 }
                 else
