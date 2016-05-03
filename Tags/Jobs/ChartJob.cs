@@ -15,13 +15,24 @@ namespace Tags.Jobs
     public class ChartJob : IJob
     {
         private static string _alldata = @"
+            select * from (
+            select TagId, '{1}' Stamp, Value from (
+             select n.tagid, n.stamp, n.value, 
+              ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp DESC) rn
+             from [All] n
+             join dbo.SplitInts('{0}',',') s on s.Item = n.TagId
+             where stamp < '{1}'
+            ) a where rn = 1
+            union all
             select
                 a.TagId,
                 a.Stamp,
-                a.Value 
+                a.Value
             from [All] a
-            join dbo.SplitInts('{0}') s on s.Item = a.TagId
-            where a.Stamp >= {1} and a.Stamp <= {2}            
+            join dbo.SplitInts('{0}',',') s on s.Item = a.TagId
+            where a.Stamp >= '{1}' and a.Stamp <= '{2}' 
+            ) q
+            order by q.TagId, q.Stamp           
         ";
 
         private List<Graph> deck;
@@ -55,7 +66,7 @@ namespace Tags.Jobs
         public void Render()
         {
             var path = WebConfigurationManager.AppSettings["graphjoboutdir"];
-            var template = WebConfigurationManager.AppSettings["graphjoboutdir"];
+            var template = WebConfigurationManager.AppSettings["graphjobtemplate"];
             var root = Path.Combine(path, DateTime.Now.ToString(template));
 
             time = new Dictionary<int, List<DateTime>>();   // cache data between graphs
@@ -66,7 +77,7 @@ namespace Tags.Jobs
             deck.Select(g =>
             {
                 end = DateTime.Now.AddDays(-21);
-                start = end.AddDays(-28);
+                start = end.AddDays(-7);
 
                 var channels = g.Canon();           // get all tags for all lines
                 var tags = Read(g);                 // get data for period and list of tags
@@ -87,14 +98,19 @@ namespace Tags.Jobs
 
         public List<Tag> Read(Graph g)
         {
-            var tagtype = g.plots.SelectMany(p => p.tags).ToDictionary(k => k.TagId, v => Tag.types[v.DataType]);
-            var tagsInGraph = g.plots.SelectMany(p => p.tags);
+            var taga = g.Plots.SelectMany(p => p.tags);
+            var tagtype = taga.ToDictionary(k => k.TagId, v => Tag.types[v.DataType]);
+            var tagsInGraph = g.Plots.SelectMany(p => p.tags);
 
             var taglist = string.Join(",", tagsInGraph.Select(i => i.TagId).Except(time.Keys).ToArray());
 
+            var st = start.ToStamp();
+            var et = end.ToStamp();
+
             using (tagDB t = new tagDB())
             {
-                var all = t.Fetch<All>(string.Format(_alldata, taglist, start.ToStamp(), end.ToStamp())).ToLookup(k => k.TagId, v => v);
+                var query = string.Format(_alldata, taglist, start.ToStamp(), end.ToStamp());
+                var all = t.Fetch<All>(query).ToLookup(k => k.TagId, v => v);
                 limits = Limit.Specs(t, taglist, start, end).ToLookup(l => l.TagId);             // get limits for those tags that have them attached
 
                 all.Select(a =>
@@ -127,20 +143,28 @@ namespace Tags.Jobs
             var stringValued = slice.Where(v => v.DataType.ToLower() == "string");
             var line = slice.First().Channel;
             
-            c.Titles.Add(line + " " + g.GraphName + " (" + start.ToString("MM/dd") + " - " + end.ToString("MM/dd/yy"));
+            c.Titles.Add(line + " " + g.GraphName + " (" + start.ToString("MM/dd") + " - " + end.ToString("MM/dd/yy") + ")");
             c.Titles[0].Font = new Font("Arial", 14, FontStyle.Bold);
 
-            var a = new ChartArea();
+            var a = new ChartArea("Production");
             a.AxisY.MajorGrid.LineColor = Color.LightGray;
             a.AxisY.IsStartedFromZero = false;
             a.AxisX.IsMarginVisible = false;
             a.AxisX.LabelStyle.Enabled = false;
 
+            a.AxisX.LabelStyle.Format = "dd/MMM\nhh:mm tt";
+            a.AxisX.MajorGrid.LineColor = Color.LightGray;
+            a.AxisX.LabelStyle.ForeColor = Color.Black;
+            a.AxisX.LabelStyle.Font = new Font("Arial", 14);
+            a.AxisX.IsLabelAutoFit = true;
+            a.AxisX.LabelStyle.Enabled = true;
             c.ChartAreas.Add(a);
 
             foreach (var tag in slice.Except(stringValued))
             {
-                var p = g.plots.Single(t => tag.CanonId == t.TagId);
+                if (!value.ContainsKey(tag.TagId)) continue;
+
+                var p = g.Plots.Single(t => tag.CanonId == t.TagId);
                 var s = new Series(p.Relabel)
                 { 
                     ChartType = SeriesChartType.FastLine,
@@ -148,32 +172,44 @@ namespace Tags.Jobs
                 };
                 s.Points.DataBindXY(time[tag.TagId], value[tag.TagId]);     
                 c.Series.Add(s);
+                s.ChartArea = "Production";
             }
-            a.AxisX.LabelStyle.Format = "dd/MMM\nhh:mm";
-            a.AxisX.MajorGrid.LineColor = Color.LightGray;
-            a.AxisX.LabelStyle.ForeColor = Color.Black;
-            a.AxisX.LabelStyle.Font = new Font("Arial", 14);
-            a.AxisX.IsLabelAutoFit = true;
-            a.AxisX.LabelStyle.Enabled = true;
+
+            var filename = line + " " + g.GraphName + " " + DateTime.Now.ToString("MMddyy") + ".png";
+            if (c.Series.Count == 0)
+            {
+                Console.WriteLine("no data for " + filename);
+                return;
+            }
 
             foreach (var tag in stringValued)
             {
+                if (!value.ContainsKey(tag.TagId)) continue;
                 var values = value[tag.TagId];
+                if (values.Count == 0) continue;
                 var times = time[tag.TagId];
 
                 for (int j = 1; j < values.Count(); j++) {
                     var t = new StripLine();
                     t.BackColor = ColorTranslator.FromHtml(backgrounds[(j-1) % backgrounds.Length]);
                     t.IntervalOffset = times[j-1].ToOADate();
-                    t.StripWidth = times[j].ToOADate() - t.IntervalOffset;
+                    var rdg = times[j].ToOADate();
+                    t.StripWidth = rdg - t.IntervalOffset;
                     t.Text = values[j-1].ToString();
                     t.Font = new Font("Arial", 14, FontStyle.Bold);
                     a.AxisX.StripLines.Add(t);
                 }
             }
+            c.Legends.Add(new Legend("Legend")
+            {
+                IsDockedInsideChartArea = true,
+                DockedToChartArea = "Production",
+                BackColor = Color.Transparent
+            });
 
-            var filename = Path.Combine(path, line + " " + g.GraphName + " " + DateTime.Now.ToString("MMddyy"));
-            c.SaveImage(filename, ChartImageFormat.Png);
+            var outname = Path.Combine(path, filename);
+            Console.WriteLine(outname);
+            c.SaveImage(outname, ChartImageFormat.Png);
         }
     }
 }

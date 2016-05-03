@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System;
 using NPoco;
+using NPoco.Expressions;
+using NPoco.Linq;
 
 namespace Tags.Models
 {
     public partial class Graph
     {
+        [Reference(ReferenceType.Many, ColumnName = "GraphId", ReferenceMemberName = "GraphId")]
+        [Column] public List<Plot> Plots { get; set; }
+
         private static string _graphsByUser = @"
             select g.graphname
                 ,g.shared
@@ -28,11 +33,23 @@ namespace Tags.Models
         ";
 
         private static string _plotsByReview = @"
-            select c.*, s.*
-            from [Graph] c
-            join [Plot] s on s.GraphId = c.GraphId
-            where c.[ReviewId] = {0}
-            order by c.GraphId, s.PlotId
+            select 
+            g.GraphId,
+            g.GraphName,
+            g.UserId,
+            g.Shared,
+            g.ReviewId,
+            p.PlotId as Plots__PlotId,
+            p.GraphId as Plots__GraphId,
+            p.TagId as Plots__TagId,
+            p.YAxis as Plots__YAxis,
+            p.Relabel as Plots__Relabel,
+            p.Scale as Plots__Scale,
+            p.MinY as Plots__MinY,
+            p.MaxY as Plots__MaxY
+            from [Graph] g
+            inner join [Plot] p on p.GraphId = g.GraphId
+            where g.ReviewId = @0
         ";
 
         private static string _tagsByGraph = @"
@@ -42,6 +59,7 @@ namespace Tags.Models
                 t.DeviceId,
                 t.Name,
                 t.Address,
+                t.DataType,
                 c.Name as [Channel],
                 d.Name as [Device],
                 p.TagId as [CanonId]
@@ -57,8 +75,7 @@ namespace Tags.Models
 
         public DateTime start { get; set; }
         public DateTime end { get; set; }
-        [Reference(ReferenceType.Many, ColumnName = "GraphId", ReferenceMemberName = "GraphId")]
-        public List<Plot> plots { get; set; }
+
 
         public static List<Graph> All()
         {
@@ -91,9 +108,7 @@ namespace Tags.Models
 
             using (tagDB tdb = new tagDB())
             {
-//                results = tdb.FetchOneToMany<Graph>(g => g.plots, string.Format(_plotsByReview, reviewId));
-                results = tdb.Fetch<Graph>(string.Format(_plotsByReview, reviewId));
-
+                results = tdb.FetchOneToMany<Graph>(g => g.Plots, _plotsByReview, reviewId);
             }
             return results;
         }
@@ -105,7 +120,7 @@ namespace Tags.Models
             {
                 tags = t.Fetch<Tag>(_tagsByGraph, GraphId);
             }
-            plots.Select(p => { p.tags = tags.Where(q => q.CanonId == p.TagId).ToList(); return 1; });
+            Plots.Select(p => { p.tags = tags.Where(q => q.CanonId == p.TagId).ToList(); return 1; }).ToList();
             
             return tags.Select(c => c.Channel).Distinct().ToList();
         }

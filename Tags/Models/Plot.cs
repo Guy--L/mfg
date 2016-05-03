@@ -32,7 +32,9 @@ namespace Tags.Models
             join [User] u on c.UserId = u.UserId
             where u.[Login] = '{0}'
         ";
-        [ResultColumn] public string GraphName { get; set; }
+
+        [Reference(ReferenceType.OneToOne, ColumnName = "GraphId", ReferenceMemberName = "GraphId")]
+        public Graph graph { get; set; }
         [ResultColumn] public string Path { get; set; }
 
         public List<Tag> tags { get; set; }
@@ -45,7 +47,7 @@ namespace Tags.Models
             using (tagDB tdb = new tagDB())
             {
                 var res = tdb.Fetch<Plot>(string.Format(_plotsByUser, user));
-                results = res.ToLookup(k => k.GraphName);
+                results = res.ToLookup(k => k.graph.GraphName);
             }
             return results;
         }
@@ -57,7 +59,7 @@ namespace Tags.Models
             using (tagDB tdb = new tagDB())
             {
                 var res = tdb.Fetch<Plot>(string.Format(_plotsByUser, user));
-                results = res.ToLookup(k => k.GraphName, m => m.TagId);
+                results = res.ToLookup(k => k.graph.GraphName, m => m.TagId);
             }
             return results;
         }
