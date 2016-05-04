@@ -19,10 +19,10 @@ namespace Test.Models
     public partial class Conversion
     {
         private static string _all = @"
-            select c.conversionid, c.solutionrecipeid, c.linetxid, c.extruderid, c.finishfootage, c.note, c.endstateid, c.conversionstate,
+            select c.conversionid, c.solutionrecipeid, c.linetxid, c.extruderid, c.finishfootage, c.endstateid, c.conversionstate,
                 n.lineid, n.personid, n.stamp, n.comment, n.linetankid, n.unitid, n.linenumber, n.systemid, n.statusid, n.productcodeid
             from conversion c
-            {0} join linetxn n on c.linetxid = n.linetxid
+            {0} join linetx n on c.linetxid = n.linetxid
             ";
 
         public int SystemId { get; set; }

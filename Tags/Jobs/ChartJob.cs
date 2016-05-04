@@ -9,12 +9,27 @@ using System.Web.Configuration;
 using System.Windows.Forms.DataVisualization.Charting;
 using cx = System.Windows.Forms.DataVisualization.Charting;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace Tags.Jobs
 {
     public class ChartJob : IJob
     {
-        private static string _alldata = @"
+        private static string _alldata = @";
+            with end1 as (
+                select TagId, '{2}' Stamp, Value from (
+                 select n.tagid, n.stamp, n.value, 
+                  ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp asc) rn
+                 from [All] n
+                 join dbo.SplitInts('{0}',',') s on s.Item = n.TagId
+                 where stamp > '{2}'
+                ) a where rn = 1
+            ),
+            end2 as (
+                select c.TagId, '{2}' Stamp, c.Value
+                from [Current] c
+                join dbo.SplitInts('{0}',',') s on s.Item = c.TagId
+            )
             select * from (
                 select TagId, '{1}' Stamp, Value from (
                  select n.tagid, n.stamp, n.value, 
@@ -24,21 +39,16 @@ namespace Tags.Jobs
                  where stamp < '{1}'
                 ) a where rn = 1
             union all
-                select
-                    a.TagId,
-                    a.Stamp,
-                    a.Value
+                select a.TagId, a.Stamp, a.Value
                 from [All] a
                 join dbo.SplitInts('{0}',',') s on s.Item = a.TagId
                 where a.Stamp >= '{1}' and a.Stamp <= '{2}' 
             union all
-                select TagId, '{2}' Stamp, Value from (
-                 select n.tagid, n.stamp, n.value, 
-                  ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp asc) rn
-                 from [All] n
-                 join dbo.SplitInts('{0}',',') s on s.Item = n.TagId
-                 where stamp > '{2}'
-                ) a where rn = 1
+                select * from end1
+            union all
+                select * from end2 where not exists (
+                    select null from end1
+                )
             ) q
             order by q.TagId, q.Stamp           
         ";
@@ -71,7 +81,13 @@ namespace Tags.Jobs
             CronExpression cr = new CronExpression(cron);
         }
 
-        public void Render(DateTime a, DateTime b)
+        /// <summary>
+        /// Render graphs listed under the review given for the time interval given.
+        /// </summary>
+        /// <param name="reviewId">Review containing graphs for rendering</param>
+        /// <param name="a">Start time</param>
+        /// <param name="b">End time</param>
+        public void Render(int reviewId, DateTime a, DateTime b)
         {
             var path = WebConfigurationManager.AppSettings["graphjoboutdir"];
             var template = WebConfigurationManager.AppSettings["graphjobtemplate"];
@@ -80,7 +96,7 @@ namespace Tags.Jobs
             time = new Dictionary<int, List<DateTime>>();   // cache data between graphs
             value = new Dictionary<int, List<object>>();
 
-            deck = Graph.plotsByReview(1);          // get all graphs in this review
+            deck = Graph.plotsByReview(reviewId);           // get all graphs in this review
 
             deck.Select(g =>
             {
@@ -102,13 +118,19 @@ namespace Tags.Jobs
             }).ToList();
         }
 
+        /// <summary>
+        /// Read all the data across all devices contained in this graph
+        /// Store tag timestamps and values in respective member dictionaries
+        /// </summary>
+        /// <param name="g">Graph Id</param>
+        /// <returns>List of Tags in this Graph</returns>
         public List<Tag> Read(Graph g)
         {
-            var taga = g.Plots.SelectMany(p => p.tags);
-            var tagtype = taga.ToDictionary(k => k.TagId, v => Tag.types[v.DataType]);
             var tagsInGraph = g.Plots.SelectMany(p => p.tags);
+            var tagtype = tagsInGraph.ToDictionary(k => k.TagId, v => Tag.types[v.DataType]);
 
             var taglist = string.Join(",", tagsInGraph.Select(i => i.TagId).Except(time.Keys).ToArray());
+            Debug.WriteLine(tagsInGraph.Any(t => t.TagId == 3250));
 
             using (tagDB t = new tagDB())
             {
@@ -137,6 +159,12 @@ namespace Tags.Jobs
             "#FAE5D3"
         };
 
+        /// <summary>
+        /// Render one graph for this device
+        /// </summary>
+        /// <param name="g">graph id</param>
+        /// <param name="path">path under which to store graph</param>
+        /// <param name="slice">list of graph relevant tags for this device</param>
         public void Render(Graph g, string path, IEnumerable<Tag> slice)
         {
             // get data for interval and channel
@@ -228,7 +256,7 @@ namespace Tags.Jobs
             }
             c.Legends.Add(new Legend("Legend")
             {
-                IsDockedInsideChartArea = true,
+                IsDockedInsideChartArea = false,
                 DockedToChartArea = "Production",
                 BackColor = Color.FromArgb(192, Color.White)
             });
