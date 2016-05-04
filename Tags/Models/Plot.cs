@@ -34,7 +34,7 @@ namespace Tags.Models
         ";
 
         [Reference(ReferenceType.OneToOne, ColumnName = "GraphId", ReferenceMemberName = "GraphId")]
-        public Graph graph { get; set; }
+        [Column] public Graph graph { get; set; }
         [ResultColumn] public string Path { get; set; }
 
         public List<Tag> tags { get; set; }

@@ -16,21 +16,29 @@ namespace Tags.Jobs
     {
         private static string _alldata = @"
             select * from (
-            select TagId, '{1}' Stamp, Value from (
-             select n.tagid, n.stamp, n.value, 
-              ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp DESC) rn
-             from [All] n
-             join dbo.SplitInts('{0}',',') s on s.Item = n.TagId
-             where stamp < '{1}'
-            ) a where rn = 1
+                select TagId, '{1}' Stamp, Value from (
+                 select n.tagid, n.stamp, n.value, 
+                  ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp DESC) rn
+                 from [All] n
+                 join dbo.SplitInts('{0}',',') s on s.Item = n.TagId
+                 where stamp < '{1}'
+                ) a where rn = 1
             union all
-            select
-                a.TagId,
-                a.Stamp,
-                a.Value
-            from [All] a
-            join dbo.SplitInts('{0}',',') s on s.Item = a.TagId
-            where a.Stamp >= '{1}' and a.Stamp <= '{2}' 
+                select
+                    a.TagId,
+                    a.Stamp,
+                    a.Value
+                from [All] a
+                join dbo.SplitInts('{0}',',') s on s.Item = a.TagId
+                where a.Stamp >= '{1}' and a.Stamp <= '{2}' 
+            union all
+                select TagId, '{2}' Stamp, Value from (
+                 select n.tagid, n.stamp, n.value, 
+                  ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp asc) rn
+                 from [All] n
+                 join dbo.SplitInts('{0}',',') s on s.Item = n.TagId
+                 where stamp > '{2}'
+                ) a where rn = 1
             ) q
             order by q.TagId, q.Stamp           
         ";
@@ -63,7 +71,7 @@ namespace Tags.Jobs
             CronExpression cr = new CronExpression(cron);
         }
 
-        public void Render()
+        public void Render(DateTime a, DateTime b)
         {
             var path = WebConfigurationManager.AppSettings["graphjoboutdir"];
             var template = WebConfigurationManager.AppSettings["graphjobtemplate"];
@@ -76,8 +84,8 @@ namespace Tags.Jobs
 
             deck.Select(g =>
             {
-                end = DateTime.Now.AddDays(-21);
-                start = end.AddDays(-7);
+                end = b;
+                start = a;
 
                 var channels = g.Canon();           // get all tags for all lines
                 var tags = Read(g);                 // get data for period and list of tags
@@ -85,11 +93,9 @@ namespace Tags.Jobs
                 channels.Select(line =>
                 {
                     var linedir = Path.Combine(root, line);
-                    Directory.CreateDirectory(linedir);         // create directory for charts
-
                     var slice = tags.Where(t => t.Channel == line);
 
-                    Render(g, linedir, slice);                    // create chart for this line and  
+                    Render(g, linedir, slice);      // create chart for this line and  
                     return 1;
                 }).ToList();
                 return 1;
@@ -104,14 +110,11 @@ namespace Tags.Jobs
 
             var taglist = string.Join(",", tagsInGraph.Select(i => i.TagId).Except(time.Keys).ToArray());
 
-            var st = start.ToStamp();
-            var et = end.ToStamp();
-
             using (tagDB t = new tagDB())
             {
                 var query = string.Format(_alldata, taglist, start.ToStamp(), end.ToStamp());
                 var all = t.Fetch<All>(query).ToLookup(k => k.TagId, v => v);
-                limits = Limit.Specs(t, taglist, start, end).ToLookup(l => l.TagId);             // get limits for those tags that have them attached
+                limits = Limit.Specs(t, taglist, start, end).ToLookup(l => l.TagId);        // get limits for those tags that have them attached
 
                 all.Select(a =>
                 {
@@ -142,6 +145,8 @@ namespace Tags.Jobs
 
             var stringValued = slice.Where(v => v.DataType.ToLower() == "string");
             var line = slice.First().Channel;
+            var tids = slice.Select(s => s.TagId);
+            var lims = limits.Where(m => tids.Contains(m.Key));
             
             c.Titles.Add(line + " " + g.GraphName + " (" + start.ToString("MM/dd") + " - " + end.ToString("MM/dd/yy") + ")");
             c.Titles[0].Font = new Font("Arial", 14, FontStyle.Bold);
@@ -160,6 +165,27 @@ namespace Tags.Jobs
             a.AxisX.LabelStyle.Enabled = true;
             c.ChartAreas.Add(a);
 
+            foreach (var tag in lims)
+            {
+                if (!value.ContainsKey(tag.Key)) continue;
+
+                var lolo = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Red, IsVisibleInLegend = false };
+                var lo = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Green, IsVisibleInLegend = false };
+                var aim = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Blue, IsVisibleInLegend = false };
+                var hi = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Green, IsVisibleInLegend = false };
+                var hihi = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Red, IsVisibleInLegend = false };
+
+                var time = tag.Select(l => l.Stamp).ToList();
+                lolo.Points.DataBindXY(time, tag.Select(l => l.LoLo).ToList());
+                lo.Points.DataBindXY(time, tag.Select(l => l.Lo).ToList());
+                aim.Points.DataBindXY(time, tag.Select(l => l.Aim).ToList());
+                hi.Points.DataBindXY(time, tag.Select(l => l.Hi).ToList());
+                hihi.Points.DataBindXY(time, tag.Select(l => l.HiHi).ToList());
+
+                c.Series.Add(lolo); c.Series.Add(lo); c.Series.Add(aim); c.Series.Add(hi); c.Series.Add(hihi);
+                lolo.ChartArea = lo.ChartArea = aim.ChartArea = hi.ChartArea = hihi.ChartArea = "Production"; 
+            }
+
             foreach (var tag in slice.Except(stringValued))
             {
                 if (!value.ContainsKey(tag.TagId)) continue;
@@ -167,7 +193,7 @@ namespace Tags.Jobs
                 var p = g.Plots.Single(t => tag.CanonId == t.TagId);
                 var s = new Series(p.Relabel)
                 { 
-                    ChartType = SeriesChartType.FastLine,
+                    ChartType = tag.IsSetPoint?SeriesChartType.StepLine:SeriesChartType.FastLine,
                     XValueType = ChartValueType.DateTime
                 };
                 s.Points.DataBindXY(time[tag.TagId], value[tag.TagId]);     
@@ -191,7 +217,7 @@ namespace Tags.Jobs
 
                 for (int j = 1; j < values.Count(); j++) {
                     var t = new StripLine();
-                    t.BackColor = ColorTranslator.FromHtml(backgrounds[(j-1) % backgrounds.Length]);
+                    t.BackColor = Color.FromArgb(127, ColorTranslator.FromHtml(backgrounds[(j-1) % backgrounds.Length]));
                     t.IntervalOffset = times[j-1].ToOADate();
                     var rdg = times[j].ToOADate();
                     t.StripWidth = rdg - t.IntervalOffset;
@@ -204,9 +230,10 @@ namespace Tags.Jobs
             {
                 IsDockedInsideChartArea = true,
                 DockedToChartArea = "Production",
-                BackColor = Color.Transparent
+                BackColor = Color.FromArgb(192, Color.White)
             });
 
+            Directory.CreateDirectory(path);         // create directory for charts
             var outname = Path.Combine(path, filename);
             Console.WriteLine(outname);
             c.SaveImage(outname, ChartImageFormat.Png);

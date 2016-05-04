@@ -13,7 +13,7 @@ namespace ChartJobTest
         {
             Console.WriteLine("start");
             var cj = new ChartJob();
-            cj.Render();
+            cj.Render(DateTime.Now.AddDays(-28), DateTime.Now.AddDays(-21));
             Console.WriteLine("done");
             Console.ReadKey();
         }
