@@ -1,7 +1,7 @@
 ﻿@model PickTagView
 
 @{
-    ViewBag.Title = "Select Tags on "+Model.Channel;
+    ViewBag.Title = "Select Tags on "+Model.Channel+" via "+ViewBag.QuickUser;
     List<IHtmlString> buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Chart").HtmlAttributes(new { title = "28 days, no update" }).Id("chart").Style(ButtonStyle.Success),
             Html.Raw(" "),

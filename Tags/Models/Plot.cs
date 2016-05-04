@@ -16,8 +16,6 @@ namespace Tags.Models
             INSERT ([Login], [Identity]) VALUES (s.[Login], '');
 
             select
-            c.GraphId,
-            c.GraphName,
             s.PlotId, 
             s.TagId, 
             s.YAxis,
@@ -25,7 +23,9 @@ namespace Tags.Models
             s.Scale,
             s.MinY,
             s.MaxY,
-            t.Name Path
+            t.Name [Path],
+            c.GraphId,
+            c.GraphName
             from [Plot] s
             join [Current] t on t.TagId = s.Tagid
             join [Graph] c on s.GraphId = c.GraphId
@@ -33,9 +33,10 @@ namespace Tags.Models
             where u.[Login] = '{0}'
         ";
 
+        [ResultColumn] public string Path { get; set; }
+
         [Reference(ReferenceType.OneToOne, ColumnName = "GraphId", ReferenceMemberName = "GraphId")]
         [Column] public Graph graph { get; set; }
-        [ResultColumn] public string Path { get; set; }
 
         public List<Tag> tags { get; set; }
         public Tag filter { get; set; }
@@ -43,6 +44,9 @@ namespace Tags.Models
         public static ILookup<string, Plot> plotsByUser(string user)
         {
             ILookup<string, Plot> results;
+
+            var usr = user.Split('\\');
+            user = usr[1].Trim();
 
             using (tagDB tdb = new tagDB())
             {

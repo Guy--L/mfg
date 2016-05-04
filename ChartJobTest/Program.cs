@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tags.Jobs;
 
 namespace ChartJobTest
@@ -13,7 +9,7 @@ namespace ChartJobTest
         {
             Console.WriteLine("start");
             var cj = new ChartJob();
-            cj.Render(1, DateTime.Now.AddDays(-28), DateTime.Now.AddDays(-21));
+            cj.Render(1, DateTime.Now.AddDays(-7), DateTime.Now);
             Console.WriteLine("done");
             Console.ReadKey();
         }

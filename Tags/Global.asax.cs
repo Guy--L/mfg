@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Threading;
 using Tags.Controllers;
 using Tags.Models;
 using Tags.Properties;
@@ -45,8 +46,6 @@ namespace Tags
         {
 #if DEBUG
             var user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            if (user == "GUYLISTER3546\\guy" || user == "NETFDOMAIN\\lister")
-                user = "lister";
 #else
             var user = Thread.CurrentPrincipal.Identity.Name;
 #endif
@@ -54,7 +53,8 @@ namespace Tags
             HttpContext.Current.Session["user"] = user;
             if (user != null)
             {
-                var u = new User(user);
+                var usr = user.Split('\\')[1];
+                var u = new User(usr);
                 if (u == null || u.UserId == 0)
                     return;
                 Session["login"] = u;

@@ -28,6 +28,7 @@ namespace Tags.Controllers
             var nobricks = id.Substring(1, id.Length - 2);
             var pt = new PickTagView(nobricks, _user);
             Session["LineId"] = id;
+            ViewBag.QuickUser = _user;
             return View(pt);
         }
 
