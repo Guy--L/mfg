@@ -27,13 +27,13 @@ namespace Tags.Models
         {
             if (id == 0) return;
             var user = SingleOrDefault(" where userid = @0", id);
-            copy(user);
+            if (user != null) copy(user);
         }
 
         public User(string login)
         {
             var user = SingleOrDefault(" where login = @0", login);
-            copy(user);
+            if (user != null) copy(user);
         }
 
         public List<Role> Roles()

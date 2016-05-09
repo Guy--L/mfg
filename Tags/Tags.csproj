@@ -57,6 +57,10 @@
       <HintPath>..\packages\Common.Logging.Core.3.0.0\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="CronExpressionDescriptor, Version=1.17.0.0, Culture=neutral, PublicKeyToken=a2ab0e0f73f9b037, processorArchitecture=MSIL">
+      <HintPath>..\packages\CronExpressionDescriptor.1.17.0\lib\net45\CronExpressionDescriptor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
@@ -95,8 +99,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NPoco, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\NPoco\artifacts\bin\NPoco\Debug\net45\NPoco.dll</HintPath>
+      <HintPath>..\packages\NPoco.3.2.0\lib\net45\NPoco.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -266,6 +270,7 @@
     <Content Include="Content\img\disk.png" />
     <Content Include="Content\img\expand.png" />
     <Content Include="Content\img\loading.gif" />
+    <Content Include="Content\jqCron.css" />
     <Content Include="Content\jquery-cron.css" />
     <Content Include="Content\jquery-gentleSelect.css" />
     <Content Include="favicon.ico" />
@@ -315,13 +320,11 @@
     <Content Include="Scripts\flotr2.nolibs.js" />
     <Content Include="Scripts\html2canvas.js" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\jqCron.js" />
+    <Content Include="Scripts\jqCron.min.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
-    <Content Include="Scripts\jquery-cron-min.js" />
-    <Content Include="Scripts\jquery-cron.js" />
-    <Content Include="Scripts\jquery-gentleSelect-min.js" />
-    <Content Include="Scripts\jquery-gentleSelect.js" />
     <Content Include="Scripts\jquery.bootstrap-duallistbox.js" />
     <Content Include="Scripts\flot.fillbetween.js" />
     <Content Include="Scripts\jquery.resize.min.js" />
@@ -338,6 +341,7 @@
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\translator.js" />
     <Content Include="Scripts\TwitterBootstrapMvcJs.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">

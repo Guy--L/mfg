@@ -42,7 +42,7 @@ namespace Tags.Controllers
         public ActionResult PickedReview(PickReview p)
         {
             if (p.NewReview != null && !string.IsNullOrWhiteSpace(p.NewReview) && p.picked != null)
-                Review.Save(p.NewReview, p.NewSchedule, p.picked);
+                Review.Save(p.NewReview, p.EditSchedule, p.picked);
 
             return RedirectToAction("PickReview", "Admin");
         }

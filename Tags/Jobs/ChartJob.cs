@@ -91,7 +91,7 @@ namespace Tags.Jobs
         {
             var path = WebConfigurationManager.AppSettings["graphjoboutdir"];
             var template = WebConfigurationManager.AppSettings["graphjobtemplate"];
-            var root = Path.Combine(path, DateTime.Now.ToString(template));
+            var root = Path.Combine(path, b.ToString(template));
 
             time = new Dictionary<int, List<DateTime>>();   // cache data between graphs
             value = new Dictionary<int, List<object>>();
@@ -130,7 +130,6 @@ namespace Tags.Jobs
             var tagtype = tagsInGraph.ToDictionary(k => k.TagId, v => Tag.types[v.DataType]);
 
             var taglist = string.Join(",", tagsInGraph.Select(i => i.TagId).Except(time.Keys).ToArray());
-            Debug.WriteLine(tagsInGraph.Any(t => t.TagId == 3250));
 
             using (tagDB t = new tagDB())
             {
@@ -140,11 +139,21 @@ namespace Tags.Jobs
 
                 all.Select(a =>
                 {
+                    var limited = limits.Contains(a.Key);
+                    var envelope = limited ? limits[a.Key]: null;
                     time[a.Key] = a.Select(u => u.Stamp).ToList();
-                    value[a.Key] = a.Select(u => Convert.ChangeType(u.Value, tagtype[u.TagId])).ToList();
+                    value[a.Key] = a.Select(u =>
+                    {
+                        var v = Convert.ChangeType(u.Value, tagtype[u.TagId]);
+                        if (!limited) return v;
+                        var prior = envelope.LastOrDefault(m => m.Stamp <= u.Stamp);
+                        if (prior == null) return v;
+                        return prior.Clip(v);
+                    }).ToList();
                     return 1;
                 }).ToList();
             }
+
             return tagsInGraph.ToList();
         }
 
@@ -169,13 +178,13 @@ namespace Tags.Jobs
         {
             // get data for interval and channel
             // make chart
-            var c = new cx.Chart() { Size = new Size(1920, 1080) };
+            var c = new cx.Chart() { Size = new Size(2560, 1440) };
 
             var stringValued = slice.Where(v => v.DataType.ToLower() == "string");
             var line = slice.First().Channel;
             var tids = slice.Select(s => s.TagId);
             var lims = limits.Where(m => tids.Contains(m.Key));
-            
+
             c.Titles.Add(line + " " + g.GraphName + " (" + start.ToString("MM/dd") + " - " + end.ToString("MM/dd/yy") + ")");
             c.Titles[0].Font = new Font("Arial", 14, FontStyle.Bold);
 
@@ -193,9 +202,9 @@ namespace Tags.Jobs
             a.AxisX.LabelStyle.Enabled = true;
             c.ChartAreas.Add(a);
 
-            foreach (var tag in lims)
+            foreach (var lim in lims)
             {
-                if (!value.ContainsKey(tag.Key)) continue;
+                if (!value.ContainsKey(lim.Key)) continue;
 
                 var lolo = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Red, IsVisibleInLegend = false };
                 var lo = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Green, IsVisibleInLegend = false };
@@ -203,15 +212,26 @@ namespace Tags.Jobs
                 var hi = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Green, IsVisibleInLegend = false };
                 var hihi = new Series("") { ChartType = SeriesChartType.StepLine, XValueType = ChartValueType.DateTime, Color = Color.Red, IsVisibleInLegend = false };
 
-                var time = tag.Select(l => l.Stamp).ToList();
-                lolo.Points.DataBindXY(time, tag.Select(l => l.LoLo).ToList());
-                lo.Points.DataBindXY(time, tag.Select(l => l.Lo).ToList());
-                aim.Points.DataBindXY(time, tag.Select(l => l.Aim).ToList());
-                hi.Points.DataBindXY(time, tag.Select(l => l.Hi).ToList());
-                hihi.Points.DataBindXY(time, tag.Select(l => l.HiHi).ToList());
+                var time = lim.Select(l => l.Stamp).ToList();
+                lolo.Points.DataBindXY(time, lim.Select(l => l.LoLo).ToList());
+                lo.Points.DataBindXY(time, lim.Select(l => l.Lo).ToList());
+                aim.Points.DataBindXY(time, lim.Select(l => l.Aim).ToList());
+                hi.Points.DataBindXY(time, lim.Select(l => l.Hi).ToList());
+                hihi.Points.DataBindXY(time, lim.Select(l => l.HiHi).ToList());
 
                 c.Series.Add(lolo); c.Series.Add(lo); c.Series.Add(aim); c.Series.Add(hi); c.Series.Add(hihi);
-                lolo.ChartArea = lo.ChartArea = aim.ChartArea = hi.ChartArea = hihi.ChartArea = "Production"; 
+                lolo.ChartArea = lo.ChartArea = aim.ChartArea = hi.ChartArea = hihi.ChartArea = "Production";
+            }
+
+            if ((line == "C3" || line == "B1") && g.GraphName == "layflat")
+            {
+                lims.Select(x => x.Select(y =>
+                {
+                    Debug.WriteLine(y.ToString());
+                    return 1;
+                }).ToList()).ToList();
+                var t = slice.Except(stringValued).First();
+                Debug.WriteLine(t.Name+": "+t.TagId);
             }
 
             foreach (var tag in slice.Except(stringValued))
@@ -229,7 +249,7 @@ namespace Tags.Jobs
                 s.ChartArea = "Production";
             }
 
-            var filename = line + " " + g.GraphName + " " + DateTime.Now.ToString("MMddyy") + ".png";
+            var filename = line + " " + g.GraphName + " " + end.ToString("MMddyy") + ".png";
             if (c.Series.Count == 0)
             {
                 Console.WriteLine("no data for " + filename);
