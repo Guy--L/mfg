@@ -13,6 +13,9 @@ using TwitterBootstrapMVC;
 using Quartz;
 using Quartz.Impl;
 using Tags.Hubs;
+using Common.Logging.Configuration;
+using spc = System.Collections.Specialized;
+using System.Configuration;
 
 namespace Tags
 {
@@ -31,8 +34,11 @@ namespace Tags
             Tag.All();
             TagMap.projectPath = Server.MapPath("~/App_Data/XML/TestOutput.xml");
 
-            ISchedulerFactory schedFact = new StdSchedulerFactory();
+            var config = (spc.NameValueCollection) ConfigurationManager.GetSection("quartz");
+            ISchedulerFactory schedFact = new StdSchedulerFactory(config);
             // get a scheduler
+            NameValueCollection properties = new NameValueCollection();
+            Common.Logging.LogManager.Adapter = new Common.Logging.EventSource.EventSourceLoggerFactoryAdapter(properties);
             TagHub.sched = schedFact.GetScheduler();
             TagHub.sched.Start();
         }

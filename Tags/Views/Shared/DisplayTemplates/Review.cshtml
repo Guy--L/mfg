@@ -1,7 +1,18 @@
 ﻿@model Tags.Models.Review
 
-<tr data-id="@Model.ReviewId" data-schedule="@Model.Schedule" class="reviewrow" id='review_@Model.ReviewId'>
+<tr data-id="@Model.index" data-reviewid="@Model.ReviewId" data-schedule="@Model.Schedule" class="reviewrow" id='review_@Model.ReviewId'>
     <td class="reviewname">@Model.Name</td>
     <td>@Model.descriptor</td>
-    <td><button class="btn btn-primary btn-xs reviewdel"><i class="fa fa-remove"></i></button></td>
+    <td class="lastrun">@Model.lastrun.ToString("MM/dd HH:mm")</td>
+    <td>
+        @if (Model.running)
+        {
+            <button class="btn btn-warning btn-xs reviewstop" id="job_@Model.ReviewId"><i class="fa fa-stop"></i></button>
+        }
+        else
+        {
+            <button class="btn btn-success btn-xs reviewstart" id="job_@Model.ReviewId"><i class="fa fa-play"></i></button>
+        }
+        <button class="btn btn-danger btn-xs reviewdel"><i class="fa fa-remove"></i></button>
+    </td>
 </tr>

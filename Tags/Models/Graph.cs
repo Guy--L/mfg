@@ -76,7 +76,6 @@ namespace Tags.Models
         public DateTime start { get; set; }
         public DateTime end { get; set; }
 
-
         public static List<Graph> All()
         {
             using (tagDB t = new tagDB())

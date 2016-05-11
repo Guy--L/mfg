@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using CronExpressionDescriptor;
+using Quartz;
+using Quartz.Impl.Matchers;
+using Tags.Hubs;
 
 namespace Tags.Models
 {
     public partial class Review
     {
+        public int index { get; set; }
+        public TimeSpan interval { get; set; }
+        public bool running { get; set; }
+        public DateTime lastrun { get; set; }
         public string descriptor { get; set; }
         public List<Graph> graphs { get; set; }
+
+        public Review() { }
 
         public static List<Review> All()
         {
@@ -19,7 +28,7 @@ namespace Tags.Models
             {
                 reviews = t.Fetch<Review>();
             }
-            reviews.Any(r => { r.descriptor = ExpressionDescriptor.GetDescription(r.Schedule); return false; });
+            TagHub.JobList(reviews);
             return reviews;
         }
 

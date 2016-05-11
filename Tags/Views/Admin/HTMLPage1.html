@@ -1,0 +1,191 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Free Online Cron Maker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" lang="en" content="Free Online Cron Maker">
+    <meta name="robots" content="index, follow">
+    <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="js/style.css">
+    <link rel="stylesheet" type="text/css" href="js/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/icon.css">
+    <script src="../../Scripts/jquery-2.2.3.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../Scripts/jquery.easyui-1.4.3.min.js"></script>
+</head>
+<body>
+
+    <div class="content">
+        <div class="container">
+            <div class="main">
+                <h1>Pick Schedule</h1>
+                <hr>
+
+                <div id="cronContainer">
+                    <div id="cChoice">
+                        <div class="easyui-tabs" style="height:250px">
+                            <div title="Minute" style="padding:10px">
+                                <ul>
+                                    <li>
+                                        <input type="radio" name="rMin" checked="checked" value="*">
+                                        Period From
+                                        <input class="easyui-numberspinner" data-options="min:0,max:60" style="width:80px;" value="0" id="minStart">
+                                        Every
+                                        <input class="easyui-numberspinner" data-options="min:1,max:60" style="width:80px;" value="0" id="minEnd">
+                                        </input>
+                                        Minute(s) Run Once
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="rMin" name="zq" value="c">
+                                        Specify
+                                        <div id="minPanel">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div title="Hour" style="padding:10px">
+                                <ul>
+                                    <li>
+                                        <input type="radio" name="rHour" id="hourId" checked="checked" value="*">
+                                        Every Hour
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="rHour" id="hourId2" value="c">
+                                        Specify
+                                        <div id="hourPanel">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div title="Day" style="padding:10px">
+                                <ul>
+                                    <li>
+                                        <input type="radio" name="rDay" id="dayId" checked="checked" value="*">
+                                        Every Day
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="rDay" id="dayId2" value="c">
+                                        Specify
+                                        <div id="dayPanel">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div title="Month" style="padding:10px">
+                                <ul>
+                                    <li>
+                                        <input type="radio" name="rMon" id="monId" checked="checked" value="?">
+                                        Every Month
+                                    <li>
+                                        <input type="radio" name="rMon" id="monId2" value="c">
+                                        Specify
+                                        <div id="monPanel">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div title="Week" style="padding:10px">
+                                <ul>
+                                    <li>
+                                        <input type="radio" name="rWeek" id="weekId" checked="checked" value="?">
+                                        Every Week
+                                    <li>
+                                        <input type="radio" name="rWeek" id="weekId2" value="c">
+                                        Specify
+                                        <div id="weekPanel">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Cres">
+                        <fieldset>
+                            <legend>
+                                Expression
+                            </legend>
+                            <div>
+                                <table>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            Second
+                                        </td>
+                                        <td>
+                                            Minute
+                                        </td>
+                                        <td>
+                                            Hour
+                                        </td>
+                                        <td>
+                                            Day
+                                        </td>
+                                        <td>
+                                            Month
+                                        </td>
+                                        <td>
+                                            Week
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Expression:
+                                        </td>
+                                        <td>
+                                            <input id="exSec" />
+                                        </td>
+                                        <td>
+                                            <input id="exMin" />
+                                        </td>
+                                        <td>
+                                            <input id="exHour" />
+                                        </td>
+                                        <td>
+                                            <input id="exDay" />
+                                        </td>
+                                        <td>
+                                            <input id="exMon" />
+                                        </td>
+                                        <td>
+                                            <input id="exWeek" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Cron:
+                                        </td>
+                                        <td colspan="5">
+                                            <input id="txtCron" style="width:100%" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div id="Cbuttons">
+                        <input type="button" value="Make Cron" id="btnGen" icon="icon-search" />
+                        <input type="button" value="Read Cron" id="btnFan" icon="icon-search" />
+                    </div>
+                </div>
+                <script src="../../Scripts/cron.js">
+                </script>
+
+            </div>
+
+        </div>
+    </div>
+
+    <style type="text/css">
+        @media screen and (max-width: 980px) {
+            .a2a_floating_style.a2a_vertical_style {
+                display: none;
+            }
+        }
+    </style>
+
+</body>
+</html>

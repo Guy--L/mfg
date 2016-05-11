@@ -11,7 +11,6 @@
         @Html.HiddenFor(m => m.DeletedReviews)
         @Html.HiddenFor(m => m.Cancel)
         @Html.HiddenFor(m => m.ReviewId)
-        @Html.HiddenFor(m => m.EditSchedule)
         @Html.ListBoxFor(m => m.picked, Model.graphs, new { size = 18 })
     </div>
     <div class="col-md-6">
@@ -19,7 +18,11 @@
             <thead>
                 <tr>
                     <th>Review Name</th>
-                    <th>Schedule</th>
+                    <th>
+                        Schedule
+                        <a href="http://htmlminifiers.com/cron-maker.php" target="_blank"><small>Get cron from here</small></a>
+                    </th>
+                    <th>Last Run</th>
                     <th>
                         <button class="btn btn-primary btn-xs" id="undodelete" title="Undo deletions">
                             <i class="fa fa-undo"></i>
@@ -29,18 +32,15 @@
             </thead>
             <tbody>
                 <tr title="Edit Row">
-                    <td rowspan="2">
+                    <td>
 @form.FormGroup().TextBoxFor(m=>m.NewReview).Tooltip("Apply name and schedule to selected graphs for review").Class("input-sm").Label().Class("sr-only")
-                        </td><td>
-                    <div id="cron">
-                    </div>
                     </td>
-                    <td rowspan="2">
+                    <td>
+                        @form.FormGroup().TextBoxFor(m => m.NewSchedule).Tooltip("Raw cron expression").Class("input-sm").Label().Class("sr-only")
+                    </td>
+                    <td>
                         @Html.Bootstrap().SubmitButton().Text("Save").Id("save").Style(ButtonStyle.Success)
                     </td>
-                </tr>
-                <tr>
-                    <td>@form.FormGroup().TextBoxFor(m=>m.NewSchedule).Tooltip("Raw cron expression").Class("input-sm").Label().Class("sr-only")</td>
                 </tr>
                 @Html.DisplayFor(m => m.reviews)
             </tbody>
@@ -51,13 +51,14 @@
 
 @section scripts{
     <script src="~/Scripts/jqCron.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js" type="text/javascript"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
     <script type="text/javascript">
         var editMode = false;
-        var cron;
         var $review = $('#@Html.IdFor(m => m.ReviewId)')
         var $viewBox = $('#@Html.IdFor(m => m.NewReview)')
         var $schedule = $('#@Html.IdFor(m => m.NewSchedule)')
-        var $upschedule = $('#@Html.IdFor(m => m.EditSchedule)')
+        var thub = $.connection.tagHub;
         var charts = [];
         @Html.Raw(Model.snippet)
         var demo1 = $('select[name="picked"]').bootstrapDualListbox({
@@ -69,46 +70,56 @@
         $('#cancel').on('click',function () {
             $('#@Html.IdFor(m=>m.Cancel)').val(true);
         });
-        $('#save').on('click', function () {
-            var s = cron.getCron();
-            $upschedule.val(s);
-        });
         $('.reviewrow').on('click', function (e) {
             var chart = $(this).data('id');
             var sched = $(this).data('schedule');
             demo1.val(charts[chart]);
             demo1.bootstrapDualListbox('refresh', true);
             $viewBox.val($('td.reviewname', $(this)).text());
-            cron.setCron(sched.substr(2).replace(/\?/g, "*"));
-            //$schedule.val(sched.substr(2).replace(/\?/g, "*"));
+            $schedule.val(sched);
             $review.val(chart);
         });
-
+        $('.reviewstart').on('click', function (e) {
+            var id = $(this).closest('tr').data('reviewid');
+            thub.server.startJob(id);
+            $('#job_' + id).removeClass('reviewstart').addClass('reviewstop').removeClass('btn-success').addClass('btn-warning');
+            $('i', '#job_' + id).removeClass('fa-play').addClass('fa-stop');
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        $('.reviewstop').on('click', function (e) {
+            var id = $(this).closest('tr').data('reviewid');
+            thub.server.stopJob(id);
+            $('#job_' + id).removeClass('reviewstop').addClass('reviewstart').removeClass('btn-warning').addClass('btn-success');
+            $('i', '#job_' + id).removeClass('fa-stop').addClass('fa-play');
+            e.preventDefault();
+            e.stopPropagation();
+        });
         $('.reviewdel').on('click', function (e) {
-            var id = $(this).data('id');
-            var graph = $(this).data('reviewid');
+            var id = $(this).closest('tr').data('reviewid');
             if ($.trim($(this).text()) == $viewBox.val())
                 $viewBox.val('');
             $('#review_' + id).remove();
             var $dead = $('#@Html.IdFor(m=>m.DeletedReviews)');
-            $dead.val($dead.val()+","+graph);
+            $dead.val($dead.val() + "," + id);
+            thub.server.deleteJob(id);
+            e.preventDefault();
+            e.stopPropagation();
         });
         demo1.on('change', function () {
              $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
         });
+        thub.client.updateTime = function (id, shorttime) {
+            var $elem = $('td.lastrun', '#review_' + id).html(shorttime);
+        };
         $(function () {
-            cron = $schedule.jqCron({
-                enabled_minute: true,
-                multiple_dom: true,
-                multiple_month: true,
-                multiple_mins: true,
-                multiple_dow: true,
-                multiple_time_hours: true,
-                multiple_time_minutes: true,
-                default_period: 'week',
-                no_reset_button: false,
-                lang: 'en'
-            }).jqCronGetInstance();
+            $.connection.hub.start().done(function () {
+            });
+            $.connection.hub.disconnected(function () {
+                setTimeout(function () {
+                    $.connection.hub.start();
+                }, 1000); // Re-start connection after 1 second
+            });
         });
     </script>
 }

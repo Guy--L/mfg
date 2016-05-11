@@ -43,15 +43,15 @@
                             if (onshow)
                                 window[onshow](dialogRef);
                         },
-                        onshown: function(dialogRef){
-                            if(onshown)
+                        onshown: function (dialogRef) {
+                            if (onshown)
                                 window[onshown](dialogRef);
                         },
-                        onhide: function(dialogRef){
+                        onhide: function (dialogRef) {
                             if (onhide)
                                 window[onhide](dialogRef);
                         },
-                        onhidden: function(dialogRef){
+                        onhidden: function (dialogRef) {
                             if (onhidden)
                                 window[onhidden](dialogRef);
                         },
@@ -229,16 +229,16 @@
                         vals.push(this.value);
                     });
                     if ($.inArray(val.toString(), vals) >= 0) {
-                        toHide.show(isFirstRun ? undefined : speed);
+                        showElem();
                     } else {
-                        toHide.hide(isFirstRun ? undefined : speed);
+                        hideElem();
                     }
                 } else {
                     // handle single checkboxes
                     if ($(this).prop('checked') == val) {
-                        toHide.show(isFirstRun ? undefined : speed);
+                        showElem();
                     } else {
-                        toHide.hide(isFirstRun ? undefined : speed);
+                        hideElem();
                     }
                 }
             });
@@ -247,24 +247,36 @@
                 var inputVal = $(this).val().toString();
                 if (val.toString().indexOf('|') > -1) {
                     if ($.inArray(inputVal, val.split('|')) >= 0) {
-                        toHide.show(isFirstRun ? undefined : speed);
+                        showElem();
                     } else {
-                        toHide.hide(isFirstRun ? undefined : speed);
+                        hideElem();
                     }
                 }
                 else if (inputVal == val.toString()) {
-                    toHide.show(isFirstRun ? undefined : speed);
+                    showElem();
                 } else {
-                    toHide.hide(isFirstRun ? undefined : speed);
+                    hideElem();
                 }
             });
 
             if ($(selector).is(':radio')) {
-                $(selector + ':checked').change();
+                var el = $(selector + ':checked');
+                if (el.length > 0)
+                    el.change();
+                else
+                    hideElem();
             } else {
                 $(selector).change();
             }
             isFirstRun = false;
+
+            function hideElem() {
+                toHide.hide(isFirstRun ? undefined : speed);
+            }
+
+            function showElem() {
+                toHide.show(isFirstRun ? undefined : speed);
+            }
         });
     });
 });

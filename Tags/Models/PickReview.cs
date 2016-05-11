@@ -16,7 +16,6 @@ namespace Tags.Models
         public int ReviewId { get; set; }
         public string NewReview { get; set; }
         public string NewSchedule { get; set; }
-        public string EditSchedule { get; set; }
         public string snippet { get; set; }
 
         public PickReview()
@@ -29,7 +28,7 @@ namespace Tags.Models
             reviews = Review.All();
 
             var r2gs = gs.ToLookup(k => k.ReviewId, v => v.GraphId);
-            var ctags = r2gs.Select(r => "charts.push([" + string.Join(",", r.Select(g => g).ToArray()) + "]);");
+            var ctags = r2gs.Where(k => k.Key != null).Select(r => "charts.push([" + string.Join(",", r.Select(g => g).ToArray()) + "]);");
 
             snippet = string.Join("\n", ctags.ToArray());
         }

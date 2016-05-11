@@ -10,6 +10,8 @@ using System.Windows.Forms.DataVisualization.Charting;
 using cx = System.Windows.Forms.DataVisualization.Charting;
 using System.Drawing;
 using System.Diagnostics;
+using Tags.Hubs;
+using Microsoft.AspNet.SignalR;
 
 namespace Tags.Jobs
 {
@@ -62,23 +64,20 @@ namespace Tags.Jobs
 
         public void Execute(IJobExecutionContext context)
         {
-
             int id = 0;
             if (!int.TryParse(context.JobDetail.Key.Name, out id))
             {
                 return;
             }
-
+            TimeSpan interval;
             var trigger = context.Trigger as ICronTrigger;
+            var next = trigger.GetNextFireTimeUtc();
+            interval = next.Value - DateTime.Now;
+            var ago = DateTime.Now.AddDays(-14);
+            Render(id, ago - interval, ago);
 
-            var last = trigger.GetPreviousFireTimeUtc();
-            if (last == null)
-            {
-                var next = trigger.GetNextFireTimeUtc();
-                
-            }
-            var cron = trigger.CronExpressionString;
-            CronExpression cr = new CronExpression(cron);
+            var hub = GlobalHost.ConnectionManager.GetHubContext<TagHub>();
+            hub.Clients.All.updateTime(id, DateTime.Now.ToString("MM/dd HH:mm"));
         }
 
         /// <summary>

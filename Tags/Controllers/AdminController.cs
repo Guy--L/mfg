@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CronExpressionDescriptor;
+using Microsoft.AspNet.SignalR;
+using Quartz;
+using Tags.Hubs;
 using Tags.Models;
 
 namespace Tags.Controllers
@@ -35,15 +39,32 @@ namespace Tags.Controllers
         public ActionResult PickReview()
         {
             var p = new PickReview(0);
+            var r = TempData["rejectedReview"] as PickReview;
+            if (r != null)
+            {
+                p.NewSchedule = r.NewSchedule;
+                p.NewReview = r.NewReview;
+                p.picked = r.picked;
+            }                
             return View(p);
         }
 
         [HttpPost]
         public ActionResult PickedReview(PickReview p)
         {
-            if (p.NewReview != null && !string.IsNullOrWhiteSpace(p.NewReview) && p.picked != null)
-                Review.Save(p.NewReview, p.EditSchedule, p.picked);
-
+            if (p.NewReview == null || string.IsNullOrWhiteSpace(p.NewReview))
+                Error("No review name provided");
+            else if (p.picked == null || p.picked.Length == 0)
+                Error("No charts/jobs were selected");
+            else if (!CronExpression.IsValidExpression(p.NewSchedule))
+                Error(p.NewSchedule + " is not a valid Cron Expression");
+            else {
+                TagHub.Update(p.ReviewId, p.NewReview, p.NewSchedule);
+                Review.Save(p.NewReview, p.NewSchedule, p.picked);
+                Success(p.NewReview + " has been updated to run " + ExpressionDescriptor.GetDescription(p.NewSchedule));
+                p = null;
+            }
+            TempData["rejectedReview"] = p;
             return RedirectToAction("PickReview", "Admin");
         }
 
