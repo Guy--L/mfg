@@ -8,7 +8,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{c08d64b3-a932-451e-8ebc-e4e8b5f2d4a0}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql120DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql110DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -60,5 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Quartz.sql" />
+    <None Include="Schedule.publish.xml" />
   </ItemGroup>
 </Project>
