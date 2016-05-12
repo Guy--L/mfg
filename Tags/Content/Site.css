@@ -62,3 +62,14 @@ form#zoomxlsform {
 .footer hr {
     margin: 2px 0;
 }
+
+.nav > li > a.info {
+    padding: 0;
+    margin-top: -4px;
+    margin-bottom: -5px;
+}
+
+.nav > li > a.info:hover, .nav > li > a.info:focus {
+    background-color: #101010;
+    color: orange; 
+}

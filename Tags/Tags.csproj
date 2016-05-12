@@ -57,8 +57,9 @@
       <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Common.Logging.EventSource">
-      <HintPath>..\..\Common.Logging.EventSource\src\Common.Logging.EventSource\bin\Debug\Common.Logging.EventSource.dll</HintPath>
+    <Reference Include="Common.Logging.EventSource, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.EventSource.1.2.0\lib\net40\Common.Logging.EventSource.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="CronExpressionDescriptor, Version=1.17.0.0, Culture=neutral, PublicKeyToken=a2ab0e0f73f9b037, processorArchitecture=MSIL">
       <HintPath>..\packages\CronExpressionDescriptor.1.17.0\lib\net45\CronExpressionDescriptor.dll</HintPath>
@@ -74,6 +75,10 @@
     </Reference>
     <Reference Include="Elmah.Mvc, Version=2.1.2.1389, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Elmah.MVC.2.1.2\lib\net40\Elmah.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EventSourceProxy, Version=3.0.0.0, Culture=neutral, PublicKeyToken=77171fed4dfe3d96, processorArchitecture=MSIL">
+      <HintPath>..\packages\EventSourceProxy.3.0.7\lib\EventSourceProxy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

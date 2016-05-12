@@ -1,7 +1,7 @@
 ﻿@model PickTagView
 
 @{
-    ViewBag.Title = "Select Tags on "+Model.Channel+" via "+ViewBag.QuickUser;
+    ViewBag.Title = "Select Tags on " + Model.Channel + " via " + ViewBag.QuickUser;
     List<IHtmlString> buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Chart").HtmlAttributes(new { title = "28 days, no update" }).Id("chart").Style(ButtonStyle.Success),
             Html.Raw(" "),
@@ -10,29 +10,86 @@
             Html.Bootstrap().SubmitButton().Text("Cancel").Id("cancel").Style(ButtonStyle.Danger)
     };
 }
+
+@section actions {
+    <li>
+        <a href="#" class="info" data-toggle="modal" data-target="#myModal">
+            <i class="fa fa-2x fa-info-circle"></i>
+        </a>
+    </li>
+}
+
 <h2>@ViewBag.Title</h2>
 <div class="row-fluid">
-@using (var form = Html.Bootstrap().Begin(new Form("PickedTags", "Home").Id("picktagform")))
-{
-    <div class="col-md-5">
-        @Html.HiddenFor(m => m.DeletedViews)
-        @Html.HiddenFor(m => m.Monitor)
-        @Html.HiddenFor(m => m.Cancel)
-        @Html.HiddenFor(m => m.Channel)
-        @Html.ListBoxFor(m => m.picked, Model.tags, new { size = 18 })
-        <br />
-        @(form.FormGroup().CustomControls(buttons.ToArray()))
-    </div>
-    <div class="col-md-6">
-        @form.FormGroup().TextBoxFor(m=>m.NewView).Tooltip("Record selected tags as a named view")
-    <hr />
-        <div class="row-fluid">
-            @form.FormGroup().CheckBoxFor(m=>m.EditViews).Tooltip("Review tags before charting (vs not)")
-            @Html.Raw(Model.charts)
+    @using (var form = Html.Bootstrap().Begin(new Form("PickedTags", "Home").Id("picktagform")))
+    {
+        <div class="col-md-5">
+            @Html.HiddenFor(m => m.DeletedViews)
+            @Html.HiddenFor(m => m.Monitor)
+            @Html.HiddenFor(m => m.Cancel)
+            @Html.HiddenFor(m => m.Channel)
+            @Html.ListBoxFor(m => m.picked, Model.tags, new { size = 18 })
+            <br />
+            @(form.FormGroup().CustomControls(buttons.ToArray()))
         </div>
-    </div>
-}
+        <div class="col-md-6">
+            @form.FormGroup().TextBoxFor(m => m.NewView).Tooltip("Record selected tags as a named view")
+            <hr />
+            <div class="row-fluid">
+                @form.FormGroup().CheckBoxFor(m => m.EditViews).Tooltip("Review tags before charting (vs not)")
+                @Html.Raw(Model.charts)
+            </div>
+        </div>
+    }
 </div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h2 class="modal-title" id="myModalLabel">Charting Tags and Views</h2>
+            </div>
+            <div class="modal-body">
+                <h4>General Usage</h4>
+                <p>
+                    Pick tags from the left list by clicking on them to put them in the right list and <i>vice versa</i>.<br /><br />
+                    When multiple lines have been selected on the prior screen, common tag names will be grouped together under a bolder <b>heading</b>.
+                    Move the whole group by clicking on the group name <b>heading</b>.<br /><br />
+                    To chart the last 28 days, click the Chart button.
+                    To monitor the last 2 hours, click the Monitor button and it will update every minute.
+                    (The selection of any range of time is planned where data has been saved (around November 2015).)<br /><br />
+                </p>
+                <h4>Creating Views</h4>
+                <p>
+                    To create a view, simply pick the tags for the view <b>and</b> put a title for the view in the New View box <b>then</b> click the Chart button.<br /><br />
+                    Next time this Pick Tags page is visited (not using the back button), the new view will appear as a button.<br /><br />
+                </p>
+                <h4>Using Views</h4>
+                <p>
+                    To chart immediately, just click the new view button.
+                    Views are specific to each person's login.
+                    (Shared views are planned.)<br /><br />
+                </p>
+                <h4>Editing Views</h4>
+                <p>
+                    To see what tags are in a view that has been created, check the Edit Views box.
+                    Now when a view button is clicked, its tags will be shown in the selected list.
+                    The Chart button is available to chart these tags as usual.
+                    A view can be deleted by clicking the red X button to its right.<br /><br />
+                </p>
+                <h4>Missing Tags</h4>
+                <p>
+                    Tags are charted by name.  Care has been taken to name tags similarly across multiple lines and devices.<br />
+                    Some lines may not have the tags listed in a view.  In these cases, the view button will be disabled.<br /><br />
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 @section scripts{
     <script type="text/javascript">
@@ -47,7 +104,7 @@
             preserveSelectionOnMove: true
         });
         $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length > 0));
-        $('#cancel').on('click',function () {
+        $('#cancel').on('click', function () {
             $('#@Html.IdFor(m=>m.Cancel)').val(true);
         });
         $('#monitor').on('click', function () {
@@ -72,7 +129,7 @@
                 $viewBox.val('');
             $('.view' + id).remove();
             var $dead = $('#@Html.IdFor(m=>m.DeletedViews)');
-            $dead.val($dead.val()+","+graph);
+            $dead.val($dead.val() + "," + graph);
         });
         $editBox.on('click', function () {
             var checked = $editBox.is(':checked');
@@ -83,7 +140,7 @@
             editMode = checked;
         });
         demo1.on('change', function () {
-             $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
+            $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
         });
         $(function () {
             $('.chartdel').hide();
