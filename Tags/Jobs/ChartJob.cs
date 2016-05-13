@@ -72,12 +72,17 @@ namespace Tags.Jobs
             TimeSpan interval;
             var trigger = context.Trigger as ICronTrigger;
             var next = trigger.GetNextFireTimeUtc();
-            interval = next.Value - DateTime.Now;
-            var ago = DateTime.Now.AddDays(-14);
+            var ago = DateTime.Now;
+            interval = next.Value - ago;
             Render(id, ago - interval, ago);
 
             var hub = GlobalHost.ConnectionManager.GetHubContext<TagHub>();
-            hub.Clients.All.updateTime(id, DateTime.Now.ToString("MM/dd HH:mm"));
+            hub.Clients.All.updateTime(id, ago.ToString("MM/dd HH:mm"));
+            var r = Review.SingleOrDefault(id);
+            if (r == null)
+                return;
+            r.LastRun = ago;
+            r.Update();
         }
 
         /// <summary>

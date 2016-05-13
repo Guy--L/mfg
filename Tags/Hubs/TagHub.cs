@@ -64,9 +64,9 @@ namespace Tags.Hubs
                     {
                         var simpleTrigger = trigger as ISimpleTrigger;
                         var previousFireTime = trigger.GetPreviousFireTimeUtc();
-                        if (previousFireTime.HasValue && previousFireTime.Value.LocalDateTime > review.lastrun)
+                        if (previousFireTime.HasValue && previousFireTime.Value.LocalDateTime > review.LastRun)
                         {
-                            review.lastrun = previousFireTime.Value.LocalDateTime;
+                            review.LastRun = previousFireTime.Value.LocalDateTime;
                             if (simpleTrigger != null) review.interval = simpleTrigger.RepeatInterval;
                         }
                     }

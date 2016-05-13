@@ -14,7 +14,6 @@ namespace Tags.Models
         public int index { get; set; }
         public TimeSpan interval { get; set; }
         public bool running { get; set; }
-        public DateTime lastrun { get; set; }
         public string descriptor { get; set; }
         public List<Graph> graphs { get; set; }
 

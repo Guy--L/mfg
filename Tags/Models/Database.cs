@@ -104,6 +104,19 @@ namespace Tags.Models
 	}
 	
 
+	[TableName("Keptest")]
+	[PrimaryKey("id")]
+	[ExplicitColumns]
+    public partial class Keptest : tagDB.Record<Keptest>  
+    {		
+		[Column] public int id { get; set; } 		
+		[Column] public string _NAME { get; set; } 		
+		[Column] public int? _NUMERICID { get; set; } 		
+		[Column] public string _VALUE { get; set; } 		
+		[Column] public DateTime? _TIMESTAMP { get; set; } 		
+		[Column] public int? _QUALITY { get; set; } 	
+	}
+
 	[TableName("User")]
 	[PrimaryKey("UserId")]
 	[ExplicitColumns]
@@ -126,19 +139,26 @@ namespace Tags.Models
 		[Column] public int? ReviewId { get; set; } 	
 	}
 
-	[TableName("Plot")]
-	[PrimaryKey("PlotId")]
+	[TableName("UserChart")]
+	[PrimaryKey("UserChartId")]
 	[ExplicitColumns]
-    public partial class Plot : tagDB.Record<Plot>  
+    public partial class UserChart : tagDB.Record<UserChart>  
     {		
-		[Column] public int PlotId { get; set; } 		
-		[Column] public int GraphId { get; set; } 		
+		[Column] public int UserChartId { get; set; } 		
+		[Column] public int UserId { get; set; } 		
+		[Column] public int ChartId { get; set; } 		
+		[Column] public bool Shared { get; set; } 	
+	}
+
+	[TableName("Past")]
+	[PrimaryKey("PastId")]
+	[ExplicitColumns]
+    public partial class Past : tagDB.Record<Past>  
+    {		
+		[Column] public int PastId { get; set; } 		
 		[Column] public int TagId { get; set; } 		
-		[Column] public bool YAxis { get; set; } 		
-		[Column] public string Relabel { get; set; } 		
-		[Column] public int Scale { get; set; } 		
-		[Column] public int MinY { get; set; } 		
-		[Column] public int MaxY { get; set; } 	
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 	
 	}
 
 	[TableName("SubMinute")]
@@ -148,6 +168,17 @@ namespace Tags.Models
 		[Column] public int TagId { get; set; } 		
 		[Column("SubMinute")] public int _SubMinute { get; set; }
 	
+	}
+
+	[TableName("sample")]
+	[ExplicitColumns]
+    public partial class sample : tagDB.Record<sample>  
+    {		
+		[Column] public int AllId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public string Value { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int Quality { get; set; } 	
 	}
 
 	[TableName("HMI")]
@@ -164,15 +195,30 @@ namespace Tags.Models
 		[Column] public DateTime Expires { get; set; } 	
 	}
 
-	[TableName("Past")]
-	[PrimaryKey("PastId", AutoIncrement=false)]
+	[TableName("Plot")]
+	[PrimaryKey("PlotId")]
 	[ExplicitColumns]
-    public partial class Past : tagDB.Record<Past>  
+    public partial class Plot : tagDB.Record<Plot>  
     {		
-		[Column] public int PastId { get; set; } 		
+		[Column] public int PlotId { get; set; } 		
+		[Column] public int GraphId { get; set; } 		
 		[Column] public int TagId { get; set; } 		
-		[Column] public string Value { get; set; } 		
-		[Column] public DateTime Stamp { get; set; } 	
+		[Column] public bool YAxis { get; set; } 		
+		[Column] public string Relabel { get; set; } 		
+		[Column] public int Scale { get; set; } 		
+		[Column] public int MinY { get; set; } 		
+		[Column] public int MaxY { get; set; } 	
+	}
+
+	[TableName("Review")]
+	[PrimaryKey("ReviewId")]
+	[ExplicitColumns]
+    public partial class Review : tagDB.Record<Review>  
+    {		
+		[Column] public int ReviewId { get; set; } 		
+		[Column] public string Name { get; set; } 		
+		[Column] public string Schedule { get; set; } 		
+		[Column] public DateTime? LastRun { get; set; } 	
 	}
 
 	[TableName("Channel")]
@@ -256,16 +302,6 @@ namespace Tags.Models
 		[Column] public bool IsLogged { get; set; } 		
 		[Column] public bool IsArchived { get; set; } 		
 		[Column] public int? RelatedTagId { get; set; } 	
-	}
-
-	[TableName("Review")]
-	[PrimaryKey("ReviewId")]
-	[ExplicitColumns]
-    public partial class Review : tagDB.Record<Review>  
-    {		
-		[Column] public int ReviewId { get; set; } 		
-		[Column] public string Name { get; set; } 		
-		[Column] public string Schedule { get; set; } 	
 	}
 
 	[TableName("TagHistory")]

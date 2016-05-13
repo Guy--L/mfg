@@ -71,6 +71,7 @@
             $('#@Html.IdFor(m=>m.Cancel)').val(true);
         });
         $('.reviewrow').on('click', function (e) {
+            console.log('row clicked');
             var chart = $(this).data('id');
             var sched = $(this).data('schedule');
             demo1.val(charts[chart]);
@@ -79,15 +80,27 @@
             $schedule.val(sched);
             $review.val(chart);
         });
-        $('.reviewstart').on('click', function (e) {
+        $('.reviewctl').on('click', function (e) {
+            console.log('rowctl clicked');
             var id = $(this).closest('tr').data('reviewid');
-            thub.server.startJob(id);
-            $('#job_' + id).removeClass('reviewstart').addClass('reviewstop').removeClass('btn-success').addClass('btn-warning');
-            $('i', '#job_' + id).removeClass('fa-play').addClass('fa-stop');
+            var $icon = $('i', $(this));
+            var running = $icon.hasClass('fa-stop');
+            if (running) {
+                thub.server.stopJob(id);
+                $icon.removeClass('fa-stop').addClass('fa-play');
+                $(this).removeClass('btn-warning').addClass('btn-success');
+            }
+            else {
+                thub.server.startJob(id);
+                $icon.removeClass('fa-play').addClass('fa-stop');
+                $(this).removeClass('btn-success').addClass('btn-warning');
+            }
+            
             e.preventDefault();
             e.stopPropagation();
         });
         $('.reviewstop').on('click', function (e) {
+            console.log('stop clicked');
             var id = $(this).closest('tr').data('reviewid');
             thub.server.stopJob(id);
             $('#job_' + id).removeClass('reviewstop').addClass('reviewstart').removeClass('btn-warning').addClass('btn-success');

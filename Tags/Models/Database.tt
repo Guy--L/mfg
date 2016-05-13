@@ -8,7 +8,7 @@
 	GeneratePocos = true;
 	GenerateCommon = true; 
 	ClassPrefix = "";
-	ClassSuffix = ""; 
+	ClassSuffix = "";
 	TrackModifiedColumns = false; 
 	IncludeViews = true;
 	
