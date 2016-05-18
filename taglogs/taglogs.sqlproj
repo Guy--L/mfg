@@ -102,5 +102,6 @@
     <None Include="Data\SetArchivedTags.sql" />
     <None Include="Data\J2DateTime.sql" />
     <None Include="Data\MapResult2Tag.sql" />
+    <None Include="Data\AddSolutionTags.sql" />
   </ItemGroup>
 </Project>

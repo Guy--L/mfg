@@ -1,4 +1,5 @@
-﻿insert into tag (deviceid, name, [address], datatype, islogged, isarchived)
+﻿
+insert into tag (deviceid, name, [address], datatype, islogged, isarchived)
 select d.deviceid, 'csg_glyc_pct', 'x', 'Float', 0, 1 
 from device d
 where d.name = 'Lab'
