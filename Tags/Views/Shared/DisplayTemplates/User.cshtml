@@ -1,10 +1,10 @@
-﻿@model Tags.Models.Review
+﻿@model Tags.Models.User
 
-<tr data-id="@Model.ReviewId">
-    <td>@Model.Name</td>
-    <td>@Model.Schedule</td>
+<tr data-id="@Model.UserId">
+    <td>@Model.Login</td>
+    <td>@Model.Identity</td>
     <td>
-    <button class='btn btn-danger btn-xs reviewdel view{0}' data-id='{0}' data-reviewid='@Model.ReviewId'>
+    <button class='btn btn-danger btn-xs userdel view{0}' data-id='{0}' data-userid='@Model.UserId' title='delete @Model.Login'>
         <i class='fa fa-remove'></i>
     </button>
     </td>

@@ -46,13 +46,14 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid body-content">
+    <div class="container body-content">
         @Html.Partial("_Alerts")
         @RenderBody()
+        <hr />
+        <footer>
+            &copy; @DateTime.Now.Year - Nitta Casings Inc<div class="pull-right">built @ViewBag.built</div>
+        </footer>
     </div>
-    <footer class="footer">
-        <hr /><div class="pull-left">&copy; @DateTime.Now.Year - Nitta Casings Inc</div><div class="pull-right">built @ViewBag.built</div>
-    </footer>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)

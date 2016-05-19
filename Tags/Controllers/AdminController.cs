@@ -17,6 +17,7 @@ namespace Tags.Controllers
         // GET: Admin
         public ActionResult Index()
         {
+            throw new Exception("This is test Exception");
             return View();
         }
 
@@ -103,6 +104,13 @@ namespace Tags.Controllers
         public ActionResult UserUpdate(User u)
         {
             u.Save();
+            return RedirectToAction("Users");
+        }
+
+        public ActionResult UserDelete(int id)
+        {
+            var ret = Tags.Models.User.Delete(id);
+            Success("Deleted User with return code of " + ret);
             return RedirectToAction("Users");
         }
 

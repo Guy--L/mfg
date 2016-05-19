@@ -40,6 +40,12 @@
         $('#adduser').on('click', function () {
             location.href = '@Url.Action("UserEdit","Admin",null,Request.Url.Scheme)/0';
         });
+        $('.userdel').on('click', function (e) {
+            e.stopPropagation();
+            var id = $(this).data('userid');
+            id = (id != '') ? id : 0;
+            location.href = '@Url.Action("UserDelete","Admin",null,Request.Url.Scheme)/' + id;
+        })
     });
 </script>
 }

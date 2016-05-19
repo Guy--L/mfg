@@ -395,6 +395,7 @@
     <Content Include="Views\Admin\PickReview.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Review.cshtml" />
     <Content Include="Scripts\jquery-2.2.3.min.map" />
+    <Content Include="Views\Admin\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
