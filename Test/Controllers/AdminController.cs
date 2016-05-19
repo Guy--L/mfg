@@ -15,11 +15,8 @@ namespace Test.Controllers
         // GET: Admin
         public ActionResult Index()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                       .SelectMany(t => t.GetTypes())
-                       .Where(t => t.IsClass && t.BaseType != null && t.BaseType.Name.StartsWith("Record") && t.Namespace == "Test.Models").ToList();
-            TempData["Types"] = types;
-            return View(types);
+            throw new Exception("Test Error");
+            return View();
         }
 
         [HttpPost]
