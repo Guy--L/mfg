@@ -218,7 +218,8 @@ namespace Tags.Models
 		[Column] public int ReviewId { get; set; } 		
 		[Column] public string Name { get; set; } 		
 		[Column] public string Schedule { get; set; } 		
-		[Column] public DateTime? LastRun { get; set; } 	
+		[Column] public DateTime? LastRun { get; set; } 		
+		[Column] public string Type { get; set; } 	
 	}
 
 	[TableName("Channel")]

@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Tags from "+ViewData["Channel"];
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_NoFooter.cshtml";
     var list = ViewData["Channel"].ToString().Replace(",", "<br/>");
 }
 
@@ -18,7 +18,7 @@
 }
 }
 <h3>@Html.Raw(list)</h3>
-<div id="ChartContainer"></div>
+<div id="ChartContainer" class="container-fluid"></div>
 
 @section scripts {
     <script type="text/javascript" src='@Url.Content("~/Scripts/flotr2.min.js")'></script>
@@ -27,7 +27,7 @@
     <script type="text/javascript">
         var noReset = false;
         $(function () {
-            $('#ChartContainer').parent().addClass('chart-container');
+            $('#ChartContainer').parent().addClass('chart-container container-fluid');
 
             $('.print').on('click', function () {
                 html2canvas($("#ChartContainer"), {

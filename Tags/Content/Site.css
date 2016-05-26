@@ -74,3 +74,7 @@ form#zoomxlsform {
     background-color: #101010;
     color: orange; 
 }
+
+table tr td .form-group {
+    margin-bottom: 0;
+}

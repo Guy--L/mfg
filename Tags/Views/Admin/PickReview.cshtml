@@ -3,50 +3,54 @@
 @{
     ViewBag.Title = "Select Graphs in Review ";
 }
-<h2>@ViewBag.Title<div id="reviewcur"></div></h2>
-<div class="row-fluid">
-@using (var form = Html.Bootstrap().Begin(new Form("PickedReview", "Admin").Id("pickreviewform")))
-{
-    <div class="col-md-5">
-        @Html.HiddenFor(m => m.DeletedReviews)
-        @Html.HiddenFor(m => m.Cancel)
-        @Html.HiddenFor(m => m.ReviewId)
-        @Html.ListBoxFor(m => m.picked, Model.graphs, new { size = 18 })
+<div class="container-fluid">
+    <div class="row-fluid">
+        <h2>@ViewBag.Title</h2>
     </div>
-    <div class="col-md-6">
-        <table id="reviews" class="table table-striped table-hover table-condensed table-bordered">
-            <thead>
-                <tr>
-                    <th>Review Name</th>
-                    <th>
-                        Schedule
-                        <a href="http://htmlminifiers.com/cron-maker.php" target="_blank"><small>Get cron from here</small></a>
-                    </th>
-                    <th>Last Run</th>
-                    <th>
-                        <button class="btn btn-primary btn-xs" id="undodelete" title="Undo deletions">
-                            <i class="fa fa-undo"></i>
-                        </button>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr title="Edit Row">
-                    <td>
-@form.FormGroup().TextBoxFor(m=>m.NewReview).Tooltip("Apply name and schedule to selected graphs for review").Class("input-sm").Label().Class("sr-only")
-                    </td>
-                    <td>
-                        @form.FormGroup().TextBoxFor(m => m.NewSchedule).Tooltip("Raw cron expression").Class("input-sm").Label().Class("sr-only")
-                    </td>
-                    <td>
-                        @Html.Bootstrap().SubmitButton().Text("Save").Id("save").Style(ButtonStyle.Success)
-                    </td>
-                </tr>
-                @Html.DisplayFor(m => m.reviews)
-            </tbody>
-        </table>
+    <div class="row-fluid">
+        @using (var form = Html.Bootstrap().Begin(new Form("PickedReview", "Admin").Id("pickreviewform")))
+        {
+            <div class="col-md-5">
+                @Html.HiddenFor(m => m.DeletedReviews)
+                @Html.HiddenFor(m => m.Cancel)
+                @Html.HiddenFor(m => m.ReviewId)
+                @Html.ListBoxFor(m => m.picked, Model.graphs, new { size = 18 })
+            </div>
+            <div class="col-md-7">
+                <table id="reviews" class="table table-striped table-hover table-condensed table-bordered">
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <tr title="Edit Row">
+                            <td>
+                                @form.FormGroup().TextBoxFor(m => m.NewReview).Tooltip("Apply name and schedule to selected graphs for review").Class("input-sm").Label().Class("sr-only")
+                            </td>
+                            <td>
+                                @form.FormGroup().TextBoxFor(m => m.NewSchedule).Tooltip("Raw cron expression").Class("input-sm").Label().Class("sr-only")
+                            </td>
+                            <td colspan="2">
+                                @Html.Bootstrap().SubmitButton().Text("Save").Class("btn-xs").Id("save").Style(ButtonStyle.Success)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Review Name</th>
+                            <th>
+                                Schedule
+                                <a href="http://htmlminifiers.com/cron-maker.php" target="_blank"><small>Get cron from here</small></a>
+                            </th>
+                            <th>Last Run</th>
+                            <th>
+                                <button class="btn btn-primary btn-xs" id="undodelete" title="Undo deletions">
+                                    <i class="fa fa-undo"></i>
+                                </button>
+                            </th>
+                        </tr>
+                        @Html.DisplayFor(m => m.reviews)
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
-}
 </div>
 
 @section scripts{
@@ -67,7 +71,7 @@
             preserveSelectionOnMove: true
         });
         $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length > 0));
-        $('#cancel').on('click',function () {
+        $('#cancel').on('click', function () {
             $('#@Html.IdFor(m=>m.Cancel)').val(true);
         });
         $('.reviewrow').on('click', function (e) {
@@ -95,7 +99,7 @@
                 $icon.removeClass('fa-play').addClass('fa-stop');
                 $(this).removeClass('btn-success').addClass('btn-warning');
             }
-            
+
             e.preventDefault();
             e.stopPropagation();
         });
@@ -120,7 +124,7 @@
             e.stopPropagation();
         });
         demo1.on('change', function () {
-             $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
+            $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
         });
         thub.client.updateTime = function (id, shorttime) {
             var $elem = $('td.lastrun', '#review_' + id).html(shorttime);

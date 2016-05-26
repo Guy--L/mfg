@@ -19,28 +19,32 @@
     </li>
 }
 
-<h2>@ViewBag.Title</h2>
-<div class="row-fluid">
-    @using (var form = Html.Bootstrap().Begin(new Form("PickedTags", "Home").Id("picktagform")))
-    {
-        <div class="col-md-5">
-            @Html.HiddenFor(m => m.DeletedViews)
-            @Html.HiddenFor(m => m.Monitor)
-            @Html.HiddenFor(m => m.Cancel)
-            @Html.HiddenFor(m => m.Channel)
-            @Html.ListBoxFor(m => m.picked, Model.tags, new { size = 18 })
-            <br />
-            @(form.FormGroup().CustomControls(buttons.ToArray()))
-        </div>
-        <div class="col-md-6">
-            @form.FormGroup().TextBoxFor(m => m.NewView).Tooltip("Record selected tags as a named view")
-            <hr />
-            <div class="row-fluid">
-                @form.FormGroup().CheckBoxFor(m => m.EditViews).Tooltip("Review tags before charting (vs not)")
-                @Html.Raw(Model.charts)
+<div class="container-fluid">
+    <div class="row-fluid">
+        <h2>@ViewBag.Title</h2>
+    </div>
+    <div class="row-fluid">
+        @using (var form = Html.Bootstrap().Begin(new Form("PickedTags", "Home").Id("picktagform")))
+            {
+            <div class="col-md-5">
+                @Html.HiddenFor(m => m.DeletedViews)
+                @Html.HiddenFor(m => m.Monitor)
+                @Html.HiddenFor(m => m.Cancel)
+                @Html.HiddenFor(m => m.Channel)
+                @Html.ListBoxFor(m => m.picked, Model.tags, new { size = 18 })
+                <br />
+                @(form.FormGroup().CustomControls(buttons.ToArray()))
             </div>
-        </div>
-    }
+                <div class="col-md-6">
+                    @form.FormGroup().TextBoxFor(m => m.NewView).Tooltip("Record selected tags as a named view")
+                    <hr />
+                    <div class="row-fluid">
+                        @form.FormGroup().CheckBoxFor(m => m.EditViews).Tooltip("Review tags before charting (vs not)")
+                        @Html.Raw(Model.charts)
+                    </div>
+                </div>
+        }
+    </div>
 </div>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

@@ -210,6 +210,7 @@
     </Compile>
     <Compile Include="Hubs\TagHub.cs" />
     <Compile Include="Jobs\ChartJob.cs" />
+    <Compile Include="Jobs\MailJob.cs" />
     <Compile Include="Models\ChannelView.cs" />
     <Compile Include="Models\LabDb.cs">
       <DependentUpon>LabDb.tt</DependentUpon>
@@ -396,6 +397,7 @@
     <Content Include="Views\Shared\DisplayTemplates\Review.cshtml" />
     <Content Include="Scripts\jquery-2.2.3.min.map" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Shared\_NoFooter.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

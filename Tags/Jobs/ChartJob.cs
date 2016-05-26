@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Web;
 using Quartz;
 using Tags.Models;
 using System.Web.Configuration;
 using System.Windows.Forms.DataVisualization.Charting;
 using cx = System.Windows.Forms.DataVisualization.Charting;
 using System.Drawing;
-using System.Diagnostics;
 using Tags.Hubs;
 using Microsoft.AspNet.SignalR;
 
@@ -227,17 +225,6 @@ namespace Tags.Jobs
                 lolo.ChartArea = lo.ChartArea = aim.ChartArea = hi.ChartArea = hihi.ChartArea = "Production";
             }
 
-            if ((line == "C3" || line == "B1") && g.GraphName == "layflat")
-            {
-                lims.Select(x => x.Select(y =>
-                {
-                    Debug.WriteLine(y.ToString());
-                    return 1;
-                }).ToList()).ToList();
-                var t = slice.Except(stringValued).First();
-                Debug.WriteLine(t.Name+": "+t.TagId);
-            }
-
             foreach (var tag in slice.Except(stringValued))
             {
                 if (!value.ContainsKey(tag.TagId)) continue;
@@ -256,6 +243,7 @@ namespace Tags.Jobs
             var filename = line + " " + g.GraphName + " " + end.ToString("MMddyy") + ".png";
             if (c.Series.Count == 0)
             {
+//                Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("WARNING!  Current database version ("));
                 Console.WriteLine("no data for " + filename);
                 return;
             }

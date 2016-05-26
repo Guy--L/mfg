@@ -48,7 +48,7 @@ namespace Tags.Hubs
             foreach (var group in jobGroups)
             {
                 var groupMatcher = GroupMatcher<JobKey>.GroupContains(group);
-                var jobKeys = TagHub.sched.GetJobKeys(groupMatcher);
+                var jobKeys = sched.GetJobKeys(groupMatcher);
 
                 var review = reviews.SingleOrDefault(r => r.Name == group);
                 if (review == null)
@@ -57,8 +57,8 @@ namespace Tags.Hubs
                 review.running = true;
                 foreach (var jobKey in jobKeys)
                 {
-                    var detail = TagHub.sched.GetJobDetail(jobKey);
-                    var triggers = TagHub.sched.GetTriggersOfJob(jobKey);
+                    var detail = sched.GetJobDetail(jobKey);
+                    var triggers = sched.GetTriggersOfJob(jobKey);
 
                     foreach (ITrigger trigger in triggers)
                     {
@@ -78,8 +78,19 @@ namespace Tags.Hubs
         {
             var r = Review.Single(reviewId);
 
+            var type = typeof(IJob);
+            var jobtype = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .SingleOrDefault(p => type.IsAssignableFrom(p) && p.FullName.Contains(r.Type));
+
+            if (jobtype == null)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(new NotImplementedException("Could not find implementation for job of type " + r.Type + "Job in StartJob"));
+                return;
+            }
+
             try {
-                IJobDetail job = JobBuilder.Create<ChartJob>()
+                IJobDetail job = JobBuilder.Create(jobtype)
                     .WithIdentity(r.ReviewId.ToString(), r.Name)
                     .Build();
 
@@ -94,7 +105,7 @@ namespace Tags.Hubs
             }
             catch(Exception e)
             {
-                Debug.WriteLine("trigger failed");
+                Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("trying to start job", e));
             }
         }
 
