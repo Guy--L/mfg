@@ -1,10 +1,15 @@
 ﻿@model Tags.Models.Review
 
-<tr data-id="@Model.index" data-reviewid="@Model.ReviewId" data-schedule="@Model.Schedule" class="reviewrow" id='review_@Model.ReviewId'>
+<tr data-id="@Model.index" 
+    data-reviewid="@Model.ReviewId" 
+    data-schedule="@Model.Schedule" 
+    data-path="@Model.Path"
+    data-template="@Model.Template"
+    class="reviewrow" id='review_@Model.ReviewId'>
     <td class="reviewname">@Model.Name</td>
     <td>@Model.descriptor</td>
+    <td class="reviewtype" data-type="@Model.isEmail">@Html.Raw(Model.typeicon)</td>
     <td class="lastrun">@(Model.LastRun.HasValue?Model.LastRun.Value.ToString("MM/dd HH:mm"):"")</td>
-    <td class="reviewtype"></td>
     <td>
         <button class='btn btn-@(Model.running?"warning":"success") btn-xs reviewctl' id="job_@Model.ReviewId"><i class='fa fa-@(Model.running?"stop":"play")'></i></button>
         <button class="btn btn-danger btn-xs reviewdel"><i class="fa fa-remove"></i></button>

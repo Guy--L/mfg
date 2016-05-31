@@ -75,6 +75,8 @@ form#zoomxlsform {
     color: orange; 
 }
 
-table tr td .form-group {
-    margin-bottom: 0;
+table tr td .form-group, 
+table tr td .checkbox 
+{
+    margin: 0;
 }

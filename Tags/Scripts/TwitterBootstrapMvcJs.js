@@ -154,6 +154,7 @@
             var sorter = self.attr('data-sorter');
             var updater = self.attr('data-updater');
             var highlighter = self.attr('data-highlighter');
+            var source = self.attr('data-source');
 
             var typeaheadOptions = {
                 source: function (term, process) {
@@ -165,6 +166,7 @@
                 }
             };
 
+            if (source) typeaheadOptions['source'] = window[source];
             if (items) typeaheadOptions['items'] = items;
             if (minLength) typeaheadOptions['minLength'] = minLength;
             if (matcher) typeaheadOptions['matcher'] = function (item) { window[matcher](item); };

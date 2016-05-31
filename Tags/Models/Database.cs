@@ -150,6 +150,21 @@ namespace Tags.Models
 		[Column] public bool Shared { get; set; } 	
 	}
 
+	[TableName("Plot")]
+	[PrimaryKey("PlotId")]
+	[ExplicitColumns]
+    public partial class Plot : tagDB.Record<Plot>  
+    {		
+		[Column] public int PlotId { get; set; } 		
+		[Column] public int GraphId { get; set; } 		
+		[Column] public int TagId { get; set; } 		
+		[Column] public bool YAxis { get; set; } 		
+		[Column] public string Relabel { get; set; } 		
+		[Column] public int Scale { get; set; } 		
+		[Column] public int MinY { get; set; } 		
+		[Column] public int MaxY { get; set; } 	
+	}
+
 	[TableName("Past")]
 	[PrimaryKey("PastId")]
 	[ExplicitColumns]
@@ -195,21 +210,6 @@ namespace Tags.Models
 		[Column] public DateTime Expires { get; set; } 	
 	}
 
-	[TableName("Plot")]
-	[PrimaryKey("PlotId")]
-	[ExplicitColumns]
-    public partial class Plot : tagDB.Record<Plot>  
-    {		
-		[Column] public int PlotId { get; set; } 		
-		[Column] public int GraphId { get; set; } 		
-		[Column] public int TagId { get; set; } 		
-		[Column] public bool YAxis { get; set; } 		
-		[Column] public string Relabel { get; set; } 		
-		[Column] public int Scale { get; set; } 		
-		[Column] public int MinY { get; set; } 		
-		[Column] public int MaxY { get; set; } 	
-	}
-
 	[TableName("Review")]
 	[PrimaryKey("ReviewId")]
 	[ExplicitColumns]
@@ -219,7 +219,9 @@ namespace Tags.Models
 		[Column] public string Name { get; set; } 		
 		[Column] public string Schedule { get; set; } 		
 		[Column] public DateTime? LastRun { get; set; } 		
-		[Column] public string Type { get; set; } 	
+		[Column] public string Type { get; set; } 		
+		[Column] public string Path { get; set; } 		
+		[Column] public string Template { get; set; } 	
 	}
 
 	[TableName("Channel")]

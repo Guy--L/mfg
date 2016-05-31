@@ -43,8 +43,7 @@ namespace Tags.Controllers
             var r = TempData["rejectedReview"] as PickReview;
             if (r != null)
             {
-                p.NewSchedule = r.NewSchedule;
-                p.NewReview = r.NewReview;
+                p.rv = r.rv;
                 p.picked = r.picked;
             }                
             return View(p);
@@ -53,16 +52,19 @@ namespace Tags.Controllers
         [HttpPost]
         public ActionResult PickedReview(PickReview p)
         {
-            if (p.NewReview == null || string.IsNullOrWhiteSpace(p.NewReview))
+            if (p.rv.Name == null || string.IsNullOrWhiteSpace(p.rv.Name))
                 Error("No review name provided");
             else if (p.picked == null || p.picked.Length == 0)
                 Error("No charts/jobs were selected");
-            else if (!CronExpression.IsValidExpression(p.NewSchedule))
-                Error(p.NewSchedule + " is not a valid Cron Expression");
-            else {
-                TagHub.Update(p.ReviewId, p.NewReview, p.NewSchedule);
-                Review.Save(p.NewReview, p.NewSchedule, p.picked);
-                Success(p.NewReview + " has been updated to run " + ExpressionDescriptor.GetDescription(p.NewSchedule));
+            else if (!CronExpression.IsValidExpression(p.rv.Schedule))
+                Error(p.rv.Schedule + " is not a valid Cron Expression");
+            else if (string.IsNullOrWhiteSpace(p.rv.Template))
+                Error(p.NewEmail ? "Email address not provided" : "File template not provided");
+            else
+            {
+                var r = Review.Save(p.rv, p.NewEmail, p.picked);
+                TagHub.Update(r);
+                Success(p.rv.Name + " has been updated to run " + ExpressionDescriptor.GetDescription(p.rv.Schedule));
                 p = null;
             }
             TempData["rejectedReview"] = p;

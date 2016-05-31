@@ -8,12 +8,10 @@ using System.Web.Configuration;
 using System.Windows.Forms.DataVisualization.Charting;
 using cx = System.Windows.Forms.DataVisualization.Charting;
 using System.Drawing;
-using Tags.Hubs;
-using Microsoft.AspNet.SignalR;
 
 namespace Tags.Jobs
 {
-    public class ChartJob : IJob
+    public class ChartJob : JobBase
     {
         private static string _alldata = @";
             with end1 as (
@@ -60,27 +58,14 @@ namespace Tags.Jobs
         private DateTime start;
         private DateTime end;
 
-        public void Execute(IJobExecutionContext context)
+        public override void ExecuteJob(IJobExecutionContext context)
         {
-            int id = 0;
-            if (!int.TryParse(context.JobDetail.Key.Name, out id))
-            {
-                return;
-            }
             TimeSpan interval;
             var trigger = context.Trigger as ICronTrigger;
             var next = trigger.GetNextFireTimeUtc();
             var ago = DateTime.Now;
             interval = next.Value - ago;
-            Render(id, ago - interval, ago);
-
-            var hub = GlobalHost.ConnectionManager.GetHubContext<TagHub>();
-            hub.Clients.All.updateTime(id, ago.ToString("MM/dd HH:mm"));
-            var r = Review.SingleOrDefault(id);
-            if (r == null)
-                return;
-            r.LastRun = ago;
-            r.Update();
+            Render(jobid, ago - interval, ago);
         }
 
         /// <summary>
@@ -93,7 +78,7 @@ namespace Tags.Jobs
         {
             var path = WebConfigurationManager.AppSettings["graphjoboutdir"];
             var template = WebConfigurationManager.AppSettings["graphjobtemplate"];
-            var root = Path.Combine(path, b.ToString(template));
+            var root = Path.Combine(review.Path, b.ToString(review.Template));
 
             time = new Dictionary<int, List<DateTime>>();   // cache data between graphs
             value = new Dictionary<int, List<object>>();
@@ -188,18 +173,20 @@ namespace Tags.Jobs
             var lims = limits.Where(m => tids.Contains(m.Key));
 
             c.Titles.Add(line + " " + g.GraphName + " (" + start.ToString("MM/dd") + " - " + end.ToString("MM/dd/yy") + ")");
-            c.Titles[0].Font = new Font("Arial", 14, FontStyle.Bold);
+            c.Titles[0].Font = new Font("Arial", 16, FontStyle.Bold);
 
             var a = new ChartArea("Production");
             a.AxisY.MajorGrid.LineColor = Color.LightGray;
             a.AxisY.IsStartedFromZero = false;
+            a.AxisY.LabelStyle.Font = new Font("Arial", 16);
+
             a.AxisX.IsMarginVisible = false;
             a.AxisX.LabelStyle.Enabled = false;
 
             a.AxisX.LabelStyle.Format = "dd/MMM\nhh:mm tt";
             a.AxisX.MajorGrid.LineColor = Color.LightGray;
             a.AxisX.LabelStyle.ForeColor = Color.Black;
-            a.AxisX.LabelStyle.Font = new Font("Arial", 14);
+            a.AxisX.LabelStyle.Font = new Font("Arial", 16);
             a.AxisX.IsLabelAutoFit = true;
             a.AxisX.LabelStyle.Enabled = true;
             c.ChartAreas.Add(a);
@@ -262,7 +249,7 @@ namespace Tags.Jobs
                     var rdg = times[j].ToOADate();
                     t.StripWidth = rdg - t.IntervalOffset;
                     t.Text = values[j-1].ToString();
-                    t.Font = new Font("Arial", 14, FontStyle.Bold);
+                    t.Font = new Font("Arial", 16, FontStyle.Bold);
                     a.AxisX.StripLines.Add(t);
                 }
             }

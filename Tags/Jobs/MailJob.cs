@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using Postal;
 using Quartz;
 
 namespace Tags.Jobs
 {
-    public class MailJob : IJob
+    public class MailJob : JobBase
     {
-        public void Execute(IJobExecutionContext context)
+        public override void ExecuteJob(IJobExecutionContext context)
         {
-
+            dynamic email = new Email("Test");
+            email.To = review.Template;
+            email.Job = context.JobDetail.Key.ToString();
+            email.Time = DateTime.Now.ToShortTimeString();
+            email.Send();
         }
     }
 }

@@ -15,19 +15,19 @@ namespace Tags.Hubs
     {
         public static IScheduler sched;
 
-        public static void Update(int reviewId, string reviewName, string schedule)
+        public static void Update(Review r)
         {
-            var job = new JobKey(reviewId.ToString(), reviewName);
+            var job = new JobKey(r.ReviewId.ToString(), r.Name);
             var triggers = sched.GetTriggersOfJob(job);
 
             var otrigger = triggers.FirstOrDefault() as ICronTrigger;
-            if (otrigger != null && otrigger.CronExpressionString != schedule)
+            if (otrigger != null && otrigger.CronExpressionString != r.Schedule)
             {
                 ITrigger ntrigger = TriggerBuilder.Create()
                     .ForJob(job)
-                    .WithIdentity(reviewId.ToString(), reviewName)
+                    .WithIdentity(r.ReviewId.ToString(), r.Name)
                     .StartNow()
-                    .WithCronSchedule(schedule)
+                    .WithCronSchedule(r.Schedule)
                     .Build();
 
                 sched.RescheduleJob(otrigger.Key, ntrigger);
@@ -51,10 +51,9 @@ namespace Tags.Hubs
                 var jobKeys = sched.GetJobKeys(groupMatcher);
 
                 var review = reviews.SingleOrDefault(r => r.Name == group);
-                if (review == null)
-                    continue;
+                if (review != null)
+                    review.running = true;
 
-                review.running = true;
                 foreach (var jobKey in jobKeys)
                 {
                     var detail = sched.GetJobDetail(jobKey);
@@ -64,6 +63,11 @@ namespace Tags.Hubs
                     {
                         var simpleTrigger = trigger as ISimpleTrigger;
                         var previousFireTime = trigger.GetPreviousFireTimeUtc();
+                        if (review == null)
+                        {
+                            review = new Review() { ReviewId = -int.Parse(jobKey.Name), Name = group, running = true, LastRun = DateTime.MinValue };
+                            reviews.Add(review);
+                        }
                         if (previousFireTime.HasValue && previousFireTime.Value.LocalDateTime > review.LastRun)
                         {
                             review.LastRun = previousFireTime.Value.LocalDateTime;
@@ -79,9 +83,10 @@ namespace Tags.Hubs
             var r = Review.Single(reviewId);
 
             var type = typeof(IJob);
+
             var jobtype = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .SingleOrDefault(p => type.IsAssignableFrom(p) && p.FullName.Contains(r.Type));
+                    .SelectMany(s => s.GetTypes())
+                    .SingleOrDefault(p => type.IsAssignableFrom(p) && p.FullName.Contains(r.Type) && p.FullName.StartsWith("Tags.Jobs"));
 
             if (jobtype == null)
             {
@@ -109,18 +114,19 @@ namespace Tags.Hubs
             }
         }
 
-        public Review StopJob(int reviewId)
+        public Review StopJob(int reviewId, string name)
         {
-            var r = Review.Single(reviewId);
-            var j = new JobKey(reviewId.ToString(), r.Name);
+            var r = Review.SingleOrDefault(reviewId);
+            reviewId = reviewId < 0 ? -reviewId : reviewId;
+            var j = new JobKey(reviewId.ToString(), name);
             sched.DeleteJob(j);
             return r;
         }
 
-        public void DeleteJob(int reviewId)
+        public void DeleteJob(int reviewId, string name)
         {
-            var r = StopJob(reviewId);
-            Review.Delete(r);
+            var r = StopJob(reviewId, name);
+            if (r!=null) Review.Delete(r);
         }
     }
 }

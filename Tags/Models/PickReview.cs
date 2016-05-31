@@ -13,10 +13,11 @@ namespace Tags.Models
         public bool Cancel { get; set; }
         public List<Review> reviews { get; set; }
         public int[] picked { get; set; }
-        public int ReviewId { get; set; }
-        public string NewReview { get; set; }
-        public string NewSchedule { get; set; }
+
+        public Review rv { get; set; }
+
         public string snippet { get; set; }
+        public bool NewEmail { get; set; }
 
         public PickReview()
         { }

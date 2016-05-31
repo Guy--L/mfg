@@ -13,22 +13,30 @@
             <div class="col-md-5">
                 @Html.HiddenFor(m => m.DeletedReviews)
                 @Html.HiddenFor(m => m.Cancel)
-                @Html.HiddenFor(m => m.ReviewId)
+                @Html.HiddenFor(m => m.rv.ReviewId)
                 @Html.ListBoxFor(m => m.picked, Model.graphs, new { size = 18 })
             </div>
             <div class="col-md-7">
-                <table id="reviews" class="table table-striped table-hover table-condensed table-bordered">
+                <div class="row"><h3>Reviews</h3></div>
+                <div class="row">
+                    <table id="reviews" class="table table-striped table-hover table-condensed table-bordered">
                     <thead>
                     </thead>
                     <tbody>
                         <tr title="Edit Row">
                             <td>
-                                @form.FormGroup().TextBoxFor(m => m.NewReview).Tooltip("Apply name and schedule to selected graphs for review").Class("input-sm").Label().Class("sr-only")
+                                @form.FormGroup().TextBoxFor(m => m.rv.Name).Placeholder("New Review Name").Tooltip("Apply name and schedule to selected graphs for review").Class("input-sm").Label().Class("sr-only")
                             </td>
                             <td>
-                                @form.FormGroup().TextBoxFor(m => m.NewSchedule).Tooltip("Raw cron expression").Class("input-sm").Label().Class("sr-only")
+                                @form.FormGroup().TextBoxFor(m => m.rv.Schedule).Placeholder("New Schedule using cron string").Tooltip("Raw cron expression").Class("input-sm").Label().Class("sr-only")
+                                @form.FormGroup().TextBoxFor(m => m.rv.Path).Placeholder("Path to Charts").Class("input-sm").Label().Class("sr-only")
+                                @form.FormGroup().TextBoxFor(m => m.rv.Template).Placeholder("DateTemplate for Charts").Class("input-sm").Label().Class("sr-only")
                             </td>
-                            <td colspan="2">
+                            <td>
+                                @form.FormGroup().CheckBoxFor(m => m.NewEmail).Tooltip("Email (checked) or File (unchecked) delivery").Label().LabelText("")
+                            </td>
+                            <td></td>
+                            <td>
                                 @Html.Bootstrap().SubmitButton().Text("Save").Class("btn-xs").Id("save").Style(ButtonStyle.Success)
                             </td>
                         </tr>
@@ -38,6 +46,7 @@
                                 Schedule
                                 <a href="http://htmlminifiers.com/cron-maker.php" target="_blank"><small>Get cron from here</small></a>
                             </th>
+                            <th><i class="fa fa-truck" title="delivery method"></i></th>
                             <th>Last Run</th>
                             <th>
                                 <button class="btn btn-primary btn-xs" id="undodelete" title="Undo deletions">
@@ -48,6 +57,7 @@
                         @Html.DisplayFor(m => m.reviews)
                     </tbody>
                 </table>
+                </div>
             </div>
         }
     </div>
@@ -59,9 +69,13 @@
     <script src="~/signalr/hubs" type="text/javascript"></script>
     <script type="text/javascript">
         var editMode = false;
-        var $review = $('#@Html.IdFor(m => m.ReviewId)')
-        var $viewBox = $('#@Html.IdFor(m => m.NewReview)')
-        var $schedule = $('#@Html.IdFor(m => m.NewSchedule)')
+        var $review = $('#@Html.IdFor(m => m.rv.ReviewId)');
+        var $viewBox = $('#@Html.IdFor(m => m.rv.Name)');
+        var $schedule = $('#@Html.IdFor(m => m.rv.Schedule)');
+        var $type = $('#@Html.IdFor(m => m.NewEmail)');
+        var $template = $('#@Html.IdFor(m => m.rv.Template)');
+        var $path = $('#@Html.IdFor(m => m.rv.Path)');
+
         var thub = $.connection.tagHub;
         var charts = [];
         @Html.Raw(Model.snippet)
@@ -75,22 +89,28 @@
             $('#@Html.IdFor(m=>m.Cancel)').val(true);
         });
         $('.reviewrow').on('click', function (e) {
-            console.log('row clicked');
             var chart = $(this).data('id');
             var sched = $(this).data('schedule');
+            var path = $(this).data('path');
+            var template = $(this).data('template');
+            var eml = $('.reviewtype', $(this)).data('type');
             demo1.val(charts[chart]);
             demo1.bootstrapDualListbox('refresh', true);
             $viewBox.val($('td.reviewname', $(this)).text());
             $schedule.val(sched);
+            $type.prop('checked', eml=='True'?true:false);
+            $path.val(path);
+            $template.val(template);
             $review.val(chart);
         });
         $('.reviewctl').on('click', function (e) {
-            console.log('rowctl clicked');
-            var id = $(this).closest('tr').data('reviewid');
+            var $row = $(this).closest('tr');
+            var id = $row.data('reviewid');
+            var name = $('td.reviewname', $row).text();
             var $icon = $('i', $(this));
             var running = $icon.hasClass('fa-stop');
             if (running) {
-                thub.server.stopJob(id);
+                thub.server.stopJob(id, name);
                 $icon.removeClass('fa-stop').addClass('fa-play');
                 $(this).removeClass('btn-warning').addClass('btn-success');
             }
@@ -103,23 +123,16 @@
             e.preventDefault();
             e.stopPropagation();
         });
-        $('.reviewstop').on('click', function (e) {
-            console.log('stop clicked');
-            var id = $(this).closest('tr').data('reviewid');
-            thub.server.stopJob(id);
-            $('#job_' + id).removeClass('reviewstop').addClass('reviewstart').removeClass('btn-warning').addClass('btn-success');
-            $('i', '#job_' + id).removeClass('fa-stop').addClass('fa-play');
-            e.preventDefault();
-            e.stopPropagation();
-        });
         $('.reviewdel').on('click', function (e) {
-            var id = $(this).closest('tr').data('reviewid');
+            var $row = $(this).closest('tr');
+            var id = $row.data('reviewid');
+            var name = $('td.reviewname', $row).text();
             if ($.trim($(this).text()) == $viewBox.val())
                 $viewBox.val('');
             $('#review_' + id).remove();
             var $dead = $('#@Html.IdFor(m=>m.DeletedReviews)');
             $dead.val($dead.val() + "," + id);
-            thub.server.deleteJob(id);
+            thub.server.deleteJob(id, name);
             e.preventDefault();
             e.stopPropagation();
         });
@@ -127,6 +140,7 @@
             $viewBox.prop('readonly', ($('#bootstrap-duallistbox-selected-list_picked > option').length == 0));
         });
         thub.client.updateTime = function (id, shorttime) {
+            console.log(id + ' update with ' + shorttime);
             var $elem = $('td.lastrun', '#review_' + id).html(shorttime);
         };
         $(function () {
