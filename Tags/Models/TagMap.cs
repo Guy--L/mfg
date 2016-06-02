@@ -98,7 +98,15 @@ namespace Tags.Models
             var skip = 0;
             while (column <= last.ColumnNumber)
             {
-                string[] plc = ws.Row(1).Cell(column).Value.ToString().Split(',');
+                string plcl = ws.Row(1).Cell(column).Value.ToString();
+
+                if (string.IsNullOrWhiteSpace(plcl))
+                {
+                    column += 2;
+                    continue;
+                }
+
+                string[] plc = plcl.Split(',');
                 string line = plc[0].Trim().Substring(0, 2).ToUpper();
                 string end = textInfo.ToTitleCase(plc[0].Trim().Substring(2));
 
