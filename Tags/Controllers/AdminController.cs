@@ -17,7 +17,6 @@ namespace Tags.Controllers
         // GET: Admin
         public ActionResult Index()
         {
-            throw new Exception("This is test Exception");
             return View();
         }
 

@@ -32,6 +32,11 @@ namespace Tags.Controllers
             return View(pt);
         }
 
+        public ActionResult PickedTags()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
         public ActionResult PickedTags(PickTagView p)
         {
