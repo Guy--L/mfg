@@ -182,10 +182,11 @@ namespace Tags.Models
         private static string[] _states = { "Error", "RequestPending", "RequestComplete" };
         private static string[] _types = { "Boolean", "Long", "Boolean" };
 
-        private static string[] _links = { "Error", "HeartBeat", "Lock", "Unlock" };
+        private static string[] _links = { "Error", "DryHeartBeat", "WetHeartBeat", "Lock", "Unlock" };
         private static string[][] _linkio = {
             new string [] {"{1}.Dry._System._Error", "Locks.HMI.Error.HMI__{0:D2}__Error", "200"},
             new string [] {"{1}.Dry.PLC_timing", "{1}.Dry.MES_timing", "1000"},
+            new string [] {"{1}.Wet.PLC_timing", "{1}.Wet.MES_timing", "1000"},
             new string [] {"{1}.Dry.ScreenLatch", "Locks.HMI.RequestComplete.HMI__{0:D2}__RequestComplete", "100"},
             new string [] {"Locks.HMI.RequestPending.HMI__{0:D2}__RequestPending", "{1}.Dry.ScreenChange", "100"}
         };
