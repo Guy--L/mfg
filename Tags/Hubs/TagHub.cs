@@ -8,12 +8,19 @@ using System.Collections.Generic;
 using Quartz.Impl.Matchers;
 using System.Linq;
 using CronExpressionDescriptor;
+using System.Web;
 
 namespace Tags.Hubs
 {
     public class TagHub : Hub
     {
-        public static IScheduler sched;
+        private static IScheduler sched
+        {
+            get
+            {
+                return MvcApplication.sched;
+            }
+        }
 
         public static void Update(Review r)
         {

@@ -10,18 +10,21 @@ using Tags.Properties;
 using TwitterBootstrapMVC;
 using Quartz;
 using Quartz.Impl;
-using Tags.Hubs;
 using Common.Logging.Configuration;
 using spc = System.Collections.Specialized;
 using System.Configuration;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Tags
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        public static IScheduler sched;
+
         protected void Application_Start()
         {
+            Debug.WriteLine("Application Startup");
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -38,13 +41,13 @@ namespace Tags
             // get a scheduler
             NameValueCollection properties = new NameValueCollection();
             Common.Logging.LogManager.Adapter = new Common.Logging.EventSource.EventSourceLoggerFactoryAdapter(properties);
-            TagHub.sched = schedFact.GetScheduler();
-            TagHub.sched.Start();
+            sched = schedFact.GetScheduler();
+            sched.Start();
         }
 
         protected void Application_Stop()
         {
-            TagHub.sched.Shutdown();
+            sched.Shutdown();
         }
 
         protected void Session_Start(object sender, EventArgs e)
