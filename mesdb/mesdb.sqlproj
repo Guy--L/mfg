@@ -123,6 +123,7 @@
     <Build Include="User.sql" />
     <None Include="Data\LineOperation2Tx.sql" />
     <None Include="Data\LineTxBuild.sql" />
+    <Build Include="Plan.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />

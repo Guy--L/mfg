@@ -9,5 +9,6 @@
     [INPRD]         VARCHAR (6) NOT NULL,
     [stamp]         DATETIME    NULL,
     [LineId]        INT         NOT NULL,
-    [ProductCodeId] INT         NULL
+    [ProductCodeId] INT         NULL, 
+    [RecordId] INT NOT NULL
 );
