@@ -92,6 +92,7 @@
     <Content Include="Models\PetaPoco.Generator.ttinclude" />
     <Content Include="ConnectionStrings.config">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
   </ItemGroup>
