@@ -58,6 +58,15 @@ namespace Tags.Jobs
         private DateTime start;
         private DateTime end;
 
+        public ChartJob()
+        { }
+
+        public ChartJob(int reviewId)
+        {
+            jobid = reviewId;
+            review = Review.SingleOrDefault(jobid);
+        }
+
         public override void ExecuteJob(IJobExecutionContext context)
         {
             TimeSpan interval;
@@ -131,7 +140,9 @@ namespace Tags.Jobs
                     time[a.Key] = a.Select(u => u.Stamp).ToList();
                     value[a.Key] = a.Select(u =>
                     {
-                        var v = Convert.ChangeType(u.Value, tagtype[u.TagId]);
+                        var p = tagtype[u.TagId];
+                        var blank = ((p == typeof(Double) || p == typeof(Int32)) && u.Value == "");
+                        var v = blank?0:Convert.ChangeType(u.Value, p);
                         if (!limited) return v;
                         var prior = envelope.LastOrDefault(m => m.Stamp <= u.Stamp);
                         if (prior == null) return v;
