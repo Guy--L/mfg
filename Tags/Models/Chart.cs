@@ -205,16 +205,16 @@ namespace Tags.Models
             }
 
             // for those tags with limits, filter out values so that lolo-10 < value < hihi+10
-            foreach (var lm in limits)
-            {
-                var limited = scalar[lm.Key].Select(u => {
-                    var prior = lm.LastOrDefault(m => m.Stamp <= u.Stamp);
-                    if (prior == null)
-                        return u;
-                    u.Value = prior.Clip(u.Value);
-                    return u;
-                }).ToList();
-            }
+            //foreach (var lm in limits)
+            //{
+            //    var limited = scalar[lm.Key].Select(u => {
+            //        var prior = lm.LastOrDefault(m => m.Stamp <= u.Stamp);
+            //        if (prior == null)
+            //            return u;
+            //        u.Value = prior.Clip(u.Value);
+            //        return u;
+            //    }).ToList();
+            //}
 
             // create client side data payload:  numeric timeline, specification lines, occupation lines
             var numeric = scalar.Select((s, i) => "d" + i + "=[" + makeSeries(s, min, max) + "]").ToList();             // create javascript for numeric data
