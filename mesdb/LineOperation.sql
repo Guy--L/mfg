@@ -10,5 +10,5 @@
     [stamp]         DATETIME    NULL,
     [LineId]        INT         NOT NULL,
     [ProductCodeId] INT         NULL, 
-    [RecordId] INT NOT NULL
+    [RecordId] BIGINT NULL
 );

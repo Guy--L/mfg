@@ -10,5 +10,6 @@
     [Solution] VARCHAR(10) NULL, 
     [SystemId] INT NULL, 
     [SolutionRecipeId] INT NULL, 
-    [ConversionStatus] CHAR NULL
+    [ConversionStatus] CHAR NULL, 
+    [Comment] VARCHAR(100) NULL
 )

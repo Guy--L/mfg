@@ -36,6 +36,7 @@ namespace ReadPlans.Models
                   ,[SystemId]
                   ,[SolutionRecipeId]
                   ,[ConversionStatus]
+                  ,[Comment]
               FROM [dbo].[Plan]
         ";
 
@@ -67,13 +68,15 @@ namespace ReadPlans.Models
             "saturday",
             "will remain",
             "running",
-            "moved to"
+            "moved to",
+            "(converted on saturday)",
+            "down for pm"
         };
 
         private static Dictionary<string, int> frequency = skip.ToDictionary(s => s, v => 0);
         private static int nullcount = 0;
         private static int mismatches = 0;
-         
+        
         public static int Parse(int lineid, DateTime stamp, ISheet sheet, int column, int startrow)
         {
             int row = startrow;
@@ -84,7 +87,7 @@ namespace ReadPlans.Models
                 comment = sheet.GetRow(row).GetCell(column - 1);
                 cell = sheet.GetRow(row++).GetCell(column);
 
-                if (cell.CellType != CellType.String) return row;
+                if (cell == null || cell.CellType != CellType.String) return row;
                 var value = cell.StringCellValue.Trim();
                 if (skip.Contains(value.ToLower()))
                 {
@@ -98,19 +101,17 @@ namespace ReadPlans.Models
 
                 var plan = new Plan(cell.StringCellValue);
 
-                if (startrow+1 == row)
+                if (startrow + 1 == row)
                 {
                     Console.WriteLine(cell.StringCellValue);
                     if (!plan.IsConsistent(lineid, stamp))
                         Console.WriteLine(lineid + " not consistent on " + stamp.ToStamp());
+                    continue;
                 }
-                else
-                {
-                    plan.LineId = lineid;
-                    plan.Stamp = stamp;
-                    plan.Save();
-                    prior[lineid] = plan;
-                }
+                plan.LineId = lineid;
+                plan.Stamp = stamp;
+                plan.Save();
+                prior[lineid] = plan;
             }
         }
 
@@ -118,8 +119,16 @@ namespace ReadPlans.Models
 
         public Plan(string value)
         {
-            var s = value.Replace('.',',').Split(',');
+            string[] s = value.Replace('.',',').Split(',');
             if (s.Count() > 2) s[1] = s[1] + s[2];              // ignore second comma in plan
+            if (s.Count() < 2)
+            {
+                int n = 3;
+                var r = value.TakeWhile(c => (n -= (c == ' ' ? 1 : 0)) > 0).Count();
+                StringBuilder revalue = new StringBuilder(value);
+                revalue[r] = ',';
+                s = revalue.ToString().Split(',');
+            }
 
             var p = s[0].Split('-');
             var code = p[0].Trim();
@@ -130,12 +139,37 @@ namespace ReadPlans.Models
             Code = code;
             Spec = spec;
 
-            var d = s[1].Replace(")(", ") (").Replace("  ", " ").Trim().Split(' ');
+            var d = s[1].Replace("( ","(").Replace("("," (").Replace("  ", " ").Trim().Split(' ');
 
-            var system = d[1].Substring(d[1].IndexOf('#') + 1).Replace(")", "");
+            int sysi = 1;
+            int coli = 2;
+
+            if (d.Length == 2 && d[0].Trim()[0] == '(')
+            {
+                sysi = 0;
+                coli = 1;
+            }
+            if (d.Length == 4 && d[1] == "(ESM)")
+            {
+                sysi = 2;
+                coli = 3;
+            }
+            if (d[0] == "-")
+            {
+                d[0] = d[1];
+                sysi = 2;
+                coli = 3;
+            }
+            if (d[1] == "")
+            {
+                sysi = 2;
+                coli = 3;
+            }
+
+            var system = d[sysi].Substring(d[sysi].IndexOf('#') + 1).Replace(")", "");
             SystemId = System.all[system];
 
-            var color = d[2].Substring(1, d[2].Length - 2).ToLower().Replace("//", "/");
+            var color = d[coli].Substring(1, d[coli].Length - 2).ToLower().Replace("//", "/");
             int extruder = 0;
             ExtruderId = Extruder.all.TryGetValue(color, out extruder)? product: 0;
 

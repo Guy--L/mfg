@@ -10,7 +10,7 @@
 	ClassPrefix = "";
 	ClassSuffix = ""; 
 	TrackModifiedColumns = false; 
-	IncludeViews = true;
+	IncludeViews = true; 
 
     // Read schema
 	var tables = LoadTables();  
