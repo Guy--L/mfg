@@ -15,7 +15,7 @@ namespace Test.Models
 
         private static Dictionary<string, int> _lines;
 
-        [Column] public string DName { get; set; }
+        [ResultColumn] public string DName { get; set; }
 
         public static Dictionary<string, int> all {
             get

@@ -54,7 +54,7 @@ namespace Test.Controllers
             else
                 Success(results);
 
-            return RedirectToAction("Review", "Home");
+            return RedirectToAction("Index", "Home");
         }
 
         public ActionResult BatchPath()

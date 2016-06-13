@@ -1,5 +1,5 @@
 ﻿declare @year int
-set @year = 2016
+set @year = 2015
 
 use taglogs
 
