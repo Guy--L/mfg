@@ -29,6 +29,30 @@ namespace Test.Controllers
             return View(picko);
         }
 
+        public ActionResult PlanPath()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult DigestPlan(HttpPostedFileBase file)
+        {
+            var path = Path.Combine(Server.MapPath("~/App_Data/Files/"), Path.GetFileName(file.FileName));
+
+            var data = new byte[file.ContentLength];
+            file.InputStream.Read(data, 0, file.ContentLength);
+
+            using (var sw = new FileStream(path, FileMode.Create))
+            {
+                sw.Write(data, 0, data.Length);
+            }
+
+            //var tm = new TagMap();
+            //tm.Import(path);
+
+            return RedirectToAction("Review", "Home");
+        }
+
         public ActionResult BatchPath()
         {
             return View();

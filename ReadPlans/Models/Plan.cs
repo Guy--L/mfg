@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NPOI.SS.UserModel;
 
@@ -25,24 +27,30 @@ namespace ReadPlans.Models
         private static Dictionary<int, Plan> prior = new Dictionary<int, Plan>();
 
         private static string _plan = @"
-            SELECT [PlanId]
-                  ,[Stamp]
-                  ,[LineId]
-                  ,[ProductCodeId]
-                  ,[Code]
-                  ,[Spec]
-                  ,[ExtruderId]
-                  ,[Solution]
-                  ,[SystemId]
-                  ,[SolutionRecipeId]
-                  ,[ConversionStatus]
-                  ,[Comment]
-              FROM [dbo].[Plan]
+            SELECT p.[PlanId]
+                  ,p.[Stamp]
+                  ,p.[LineId]
+                  ,p.[ProductCodeId]
+                  ,p.[Code]
+                  ,p.[Spec]
+                  ,p.[ExtruderId]
+                  ,p.[Solution]
+                  ,p.[SystemId]
+                  ,p.[SolutionRecipeId]
+                  ,p.[ConversionStatus]
+                  ,p.[Comment]
+              FROM [dbo].[Plan] p
         ";
 
         private static string _byline = @" where lineid = {0}";
         private static string _prior = _byline + @" and stamp < '{1}'";
         private static string _byday = _byline + @" and datediff(dd, stamp, '{1}') = 0";
+
+        private static string _recent = _plan + @"
+            left join [dbo].[Plan] q
+            on (p.LineId = q.LineId and p.stamp < q.stamp)
+            where q.LineId is null and p.LineId in ({0})
+        ";
 
         private static string _remove = @"
             delete from [dbo].[Plan]
@@ -76,7 +84,139 @@ namespace ReadPlans.Models
         private static Dictionary<string, int> frequency = skip.ToDictionary(s => s, v => 0);
         private static int nullcount = 0;
         private static int mismatches = 0;
-        
+
+        private int AppendFt(string comment)
+        {
+            var footage = comment.ToLower().IndexOf(" ft");
+            if (footage > 0)
+            {
+                var start = comment.Substring(0, footage).LastIndexOf(' ');
+                var feet = comment.Substring(start + 1, footage - start).Replace(",", "");
+                int len = 0;
+                if (!int.TryParse(feet, out len))
+                {
+                    var tst = 1;
+                }
+                FinishFootage = len;
+            }
+
+            return Append(comment);
+        }
+
+        private int Append(string comment)
+        {
+            var prior = Comment ?? "";
+            prior = prior.Length == 0 ? "" : prior + " ";
+            Comment = prior + comment;
+            Save();
+            return 1;
+        }
+
+        public static void Comments(ISheet sheet, int column, int startrow, List<int> lines)
+        {
+            if (lines.Count == 0)
+                return;
+
+            List<Plan> plans = null;
+            var list = string.Join(",", lines.Select(i => i.ToString()).ToArray());
+            using (labDB d = new labDB())
+            {
+                plans = d.Fetch<Plan>(string.Format(_recent, list));
+            }
+            if (plans.Count == 0)
+                return;
+
+            int row = startrow;
+            ICell cell;
+            IRow r = sheet.GetRow(row);
+            if (r == null)
+                return;
+
+            ICell comment = r.GetCell(column - 1);
+            bool incomment = false;
+
+            List<string> comments = new List<string>();
+            StringBuilder buffer = new StringBuilder();
+
+            while (row < sheet.LastRowNum)
+            {
+                comment = sheet.GetRow(row).GetCell(column - 1);
+                if (comment != null && comment.StringCellValue.Contains("*"))
+                {
+                    startrow = row;
+                    incomment = true;
+                    break;
+                }
+                row++;
+            }
+
+            while (row < sheet.LastRowNum)
+            {
+                comment = sheet.GetRow(row).GetCell(column - 1);
+                cell = sheet.GetRow(row++).GetCell(column);
+
+                if (comment != null && comment.StringCellValue.Contains("*"))
+                {
+                    if (row > startrow + 1)
+                    {
+                        comments.Add(buffer.ToString());
+                        buffer.Clear();
+                    }
+                    incomment = true;
+                }
+
+                if (cell != null && cell.CellType == CellType.String)
+                {
+                    if (incomment) buffer.Append(cell.StringCellValue.Trim() + " ");
+                }
+                else
+                    incomment = false;
+            }
+            if (buffer.Length > 0)
+                comments.Add(buffer.ToString());
+
+            foreach (var cmt in comments)
+            {
+                var parse = cmt;
+                var hyphen = parse.IndexOf("-");
+                int edits = 0;
+                while (hyphen >= 0)
+                {
+                    var line = parse.Substring(hyphen - 1).Split(' ')[0].Replace(":","");
+                    int lineid = 0;
+                    if (!Line.all.TryGetValue(line, out lineid))
+                        break;
+
+                    edits = plans.Where(p => p.LineId == lineid).Select(p => p.AppendFt(cmt)).Sum();
+
+                    parse = parse.Substring(hyphen + line.Length);
+                    hyphen = parse.IndexOf("-");
+                }
+                if (edits > 0) continue;
+
+                var soln = cmt.IndexOf("SS#");
+                if (soln >= 0)
+                {
+                    var solnum = cmt.Substring(soln + 3).Split(' ')[0].Replace(",", "");
+                    if (solnum == "")
+                        solnum = cmt.Substring(soln + 3).Split(' ')[1].Replace(",", "");
+
+                    var system = System.all[solnum];
+
+                    edits = plans.Where(p => p.SystemId == system).Select(p => p.Append(cmt)).Sum();
+
+                    if (edits == 0)
+                    {
+                        Console.WriteLine("-->old system " + cmt);
+                        // need to go back to find lines where system is going down
+                    }
+                    else continue;
+                }
+
+                plans.Select(p => p.Append(cmt)).Sum();
+            }
+        }
+
         public static int Parse(int lineid, DateTime stamp, ISheet sheet, int column, int startrow)
         {
             int row = startrow;

@@ -68,7 +68,10 @@ namespace ReadPlans
 
                         if (lineCell.CellType != CellType.Blank)
                         {
-                            if (lineCell.StringCellValue.Contains('*')) break;
+                            if (lineCell.StringCellValue.Contains('*'))
+                            {
+                                break;
+                            }
 
                             if (Line.all.TryGetValue(lineCell.StringCellValue, out lineid))
                                 lines.Add(lineid);
@@ -95,6 +98,7 @@ namespace ReadPlans
                         lineCell = row.GetCell(weekday * 2);
                     }
                     Plan.Sweep(lines, stamp);
+                    Plan.Comments(sh, weekday * 2 + 1, lineIndex, lines);
                     lines.Clear();
 
                     weekday++;

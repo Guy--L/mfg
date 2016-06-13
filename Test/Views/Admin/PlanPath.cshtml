@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "Upload Planned Schedule Spreadsheet";
+}
+<h2>@ViewBag.Title.</h2>
+<h3>@ViewBag.Message</h3>
+
+<div>
+    @using (Html.BeginForm("DigestPlan", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="File" name="file" id="file" value="Choose File" />
+        <button type="submit">Upload</button>
+    }
+</div>
+

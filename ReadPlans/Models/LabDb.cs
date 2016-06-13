@@ -120,7 +120,8 @@ namespace ReadPlans.Models
 		[Column] public int? SystemId { get; set; } 		
 		[Column] public int? SolutionRecipeId { get; set; } 		
 		[Column] public string ConversionStatus { get; set; } 		
-		[Column] public string Comment { get; set; } 	
+		[Column] public string Comment { get; set; } 		
+		[Column] public int? FinishFootage { get; set; } 	
 	}
 
 	[TableName("ProductCode")]

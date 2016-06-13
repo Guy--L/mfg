@@ -23,7 +23,7 @@
 		,"SolutionRecipe" 
 		,"ProductCode"
 		,"System"
-	};
+	}; 
 
 	foreach (var table in tables)
 		table.Ignore = !included.Contains(table.Name);
