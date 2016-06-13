@@ -32,7 +32,7 @@ namespace ReadPlans
                 foreach (var file in finals)
                 {
                     count++;
-                    GetPlans(Path.Combine(input, "Schedule "+file));
+                    Plan.GetPlans(Path.Combine(input, "Schedule "+file));
                     //Console.Write("\r{0} read, {1} weeks         ", file, count);
                 }
             }
@@ -40,71 +40,5 @@ namespace ReadPlans
             Console.ReadKey();
         }
 
-        static void GetPlans(string xls)
-        {
-            if (!File.Exists(xls)) 
-                xls = xls.Replace("Schedule ", "Sched");
-
-            using (FileStream file = new FileStream(xls, FileMode.Open, FileAccess.Read))
-            {
-                IWorkbook wb = WorkbookFactory.Create(file);
-                ISheet sh = wb.GetSheet("Schedule");
-
-                int weekday = 0;
-                var dateRow = sh.GetRow(3);
-                var dateCell = dateRow.GetCell(weekday * 2 + 1);
-
-                var lines = new List<int>();
-                while (dateCell != null && dateCell.CellType != CellType.Blank)
-                {
-                    DateTime stamp = dateCell.DateCellValue;
-                    
-                    var lineIndex = 5;
-                    var lineCell = sh.GetRow(lineIndex).GetCell(weekday*2);
-
-                    while (lineCell != null)
-                    {
-                        int lineid = 0;
-
-                        if (lineCell.CellType != CellType.Blank)
-                        {
-                            if (lineCell.StringCellValue.Contains('*'))
-                            {
-                                break;
-                            }
-
-                            if (Line.all.TryGetValue(lineCell.StringCellValue, out lineid))
-                                lines.Add(lineid);
-                            else
-                            {
-                                do
-                                {
-                                    lineIndex++;
-                                    dateCell = sh.GetRow(lineIndex).GetCell(weekday * 2 + 1);
-                                    if (dateCell == null) break;
-                                    stamp = dateCell.DateCellValue;
-                                }
-                                while (stamp == null);
-                                lineIndex += 2;
-                                lineCell = sh.GetRow(lineIndex).GetCell(weekday * 2);
-                                continue;
-                            }
-                            Console.Write(lineCell.StringCellValue + " " + stamp.ToStamp() + " ");
-                            lineIndex = Plan.Parse(lineid, stamp, sh, weekday * 2 + 1, lineIndex) + 1;
-                        }
-                        else lineIndex++;
-                        var row = sh.GetRow(lineIndex);
-                        if (row == null) break;
-                        lineCell = row.GetCell(weekday * 2);
-                    }
-                    Plan.Sweep(lines, stamp);
-                    Plan.Comments(sh, weekday * 2 + 1, lineIndex, lines);
-                    lines.Clear();
-
-                    weekday++;
-                    dateCell = dateRow.GetCell(weekday * 2 + 1);
-                }
-            }
-        }
     }
 }

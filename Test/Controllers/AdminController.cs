@@ -47,8 +47,12 @@ namespace Test.Controllers
                 sw.Write(data, 0, data.Length);
             }
 
-            //var tm = new TagMap();
-            //tm.Import(path);
+            var results = Plan.GetPlans(path);
+
+            if (results.Contains("Error"))
+                Error(results);
+            else
+                Success(results);
 
             return RedirectToAction("Review", "Home");
         }

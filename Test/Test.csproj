@@ -239,6 +239,8 @@
     <Compile Include="Models\Limit.cs" />
     <Compile Include="Models\Line.cs" />
     <Compile Include="Models\LineTx.cs" />
+    <Compile Include="Models\Lookups.cs" />
+    <Compile Include="Models\Plan.cs" />
     <Compile Include="Models\SolutionRecipe.cs" />
     <Compile Include="Models\Status.cs" />
     <Compile Include="Models\System.cs" />
@@ -282,6 +284,9 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Files\dummy.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.min.css" />
@@ -678,7 +683,6 @@
     <Content Include="Views\Admin\PlanPath.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Content\Slides\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using NPOI.SS.UserModel;
 
-namespace ReadPlans.Models
+namespace Test.Models
 {
     static class Extensions
     {
-        public static string ToStamp(this DateTime stamp)
+        public static string ToSStamp(this DateTime stamp)
         {
             return stamp.ToString("yyyy-MM-dd");
         }
 
         public static string Before(this DateTime stamp)
         {
-            return stamp.ToStamp() + " 00:00:00";
+            return stamp.ToSStamp() + " 00:00:00";
         }
     }
 
@@ -62,6 +60,7 @@ namespace ReadPlans.Models
         private static string _delete = @"
             delete from [dbo].[Plan]
             where datediff(dd, stamp, '{0}') = 0
+            select @@@rowcount
         ";
 
         private static List<string> skip = new List<string>()
@@ -90,6 +89,8 @@ namespace ReadPlans.Models
         private static Dictionary<string, int> frequency = skip.ToDictionary(s => s, v => 0);
         private static int nullcount = 0;
         private static int mismatches = 0;
+        private static int deleted = 0;
+        private static int added = 0;
 
         private int AppendFt(string comment)
         {
@@ -99,11 +100,10 @@ namespace ReadPlans.Models
                 var start = comment.Substring(0, footage).LastIndexOf(' ');
                 var feet = comment.Substring(start + 1, footage - start).Replace(",", "");
                 int len = 0;
-                if (!int.TryParse(feet, out len))
+                if (int.TryParse(feet, out len))
                 {
-                    var tst = 1;
+                    FinishFootage = len;
                 }
-                FinishFootage = len;
             }
 
             return Append(comment);
@@ -118,7 +118,7 @@ namespace ReadPlans.Models
             return 1;
         }
 
-        public static void GetPlans(string xls)
+        public static string GetPlans(string xls)
         {
             if (!File.Exists(xls))
                 xls = xls.Replace("Schedule ", "Sched");
@@ -164,11 +164,12 @@ namespace ReadPlans.Models
                                     stamp = dateCell.DateCellValue;
                                 }
                                 while (stamp == null);
+                                ClearDate(stamp);
                                 lineIndex += 2;
                                 lineCell = sh.GetRow(lineIndex).GetCell(weekday * 2);
                                 continue;
                             }
-                            Console.Write(lineCell.StringCellValue + " " + stamp.ToStamp() + " ");
+//                            Console.Write(lineCell.StringCellValue + " " + stamp.ToStamp() + " ");
                             lineIndex = Parse(lineid, stamp, sh, weekday * 2 + 1, lineIndex) + 1;
                         }
                         else lineIndex++;
@@ -182,6 +183,7 @@ namespace ReadPlans.Models
                     weekday++;
                     dateCell = dateRow.GetCell(weekday * 2 + 1);
                 }
+                return added + " plans added, " + deleted + " plans deleted";
             }
         }
 
@@ -278,12 +280,7 @@ namespace ReadPlans.Models
 
                     edits = plans.Where(p => p.SystemId == system).Select(p => p.Append(cmt)).Sum();
 
-                    if (edits == 0)
-                    {
-                        Console.WriteLine("-->old system " + cmt);
-                        // need to go back to find lines where system is going down
-                    }
-                    else continue;
+                    if (edits > 0) continue;
                 }
 
                 plans.Select(p => p.Append(cmt)).Sum();
@@ -316,14 +313,15 @@ namespace ReadPlans.Models
 
                 if (startrow + 1 == row)
                 {
-                    Console.WriteLine(cell.StringCellValue);
-                    if (!plan.IsConsistent(lineid, stamp))
-                        Console.WriteLine(lineid + " not consistent on " + stamp.ToStamp());
+                    //Console.WriteLine(cell.StringCellValue);
+                    //if (!plan.IsConsistent(lineid, stamp))
+                    //    Console.WriteLine(lineid + " not consistent on " + stamp.ToStamp());
                     continue;
                 }
                 plan.LineId = lineid;
                 plan.Stamp = stamp;
                 plan.Save();
+                added++;
                 prior[lineid] = plan;
             }
         }
@@ -411,11 +409,11 @@ namespace ReadPlans.Models
 
             if (!same)
             {
-                Console.WriteLine();
+                //Console.WriteLine();
                 if (test == null)
                 {
                     nullcount++;
-                    Console.WriteLine(LineId + " is null");
+                    //Console.WriteLine(LineId + " is null");
                 }
                 else
                 {
@@ -456,7 +454,7 @@ namespace ReadPlans.Models
         {
             using (labDB d = new labDB())
             {
-                d.Execute(string.Format(_delete, stamp.ToStamp()));
+                deleted += d.ExecuteScalar<int>(string.Format(_delete, stamp.ToSStamp()));
             }
         }
 
@@ -474,7 +472,7 @@ namespace ReadPlans.Models
        
             using (labDB d = new labDB())
             {
-                d.Execute(string.Format(_remove, stamp.ToStamp(), list));
+                d.Execute(string.Format(_remove, stamp.ToSStamp(), list));
             }
         }
     }
