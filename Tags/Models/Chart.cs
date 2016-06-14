@@ -221,10 +221,9 @@ namespace Tags.Models
             var specs = limits.Select((m, j) => makeBounds(m, j, min, max)).ToList();                                   // same for the limit lines
 
             // declare and set up javascript variables with data arrays
-            series = (numeric.Any() ? "var " + string.Join(",\n", numeric.ToArray()) + ";\n" : "") + (specs.Any() ? (string.Join("\n", specs.ToArray()) + ";\n") : "") + (timelined.Any() ? "var " : "");
+            series = (numeric.Any() ? "var " + string.Join(",\n", numeric.ToArray()) + ";\n" : "") + (specs.Any() ? (string.Join("\n", specs.ToArray()) + ";\n") : "");
             charts = "";
             axes = @"yaxis: { autoscale: true, autoscaleMargin: .1 },";
-            axes += timelined.Any() ? "y2axis: { autoscale: true, autoscaleMargin: .05, ticks: [" : "";                 // todo ** may want to remove autoscale and set the top margin to (last tag vertical)*5
 
             var q = 1;
             foreach (var tagtlines in timelined)
@@ -234,6 +233,13 @@ namespace Tags.Models
                 if (line.Length > 1)
                     prefix = line[0]+".";
                 var tlines = tagtlines.Value;
+                if (!tlines.Any())
+                    continue;
+                if (q == 1)
+                {
+                    series += "var ";
+                    axes += "y2axis: { autoscale: true, autoscaleMargin: .05, ticks: [";                 // todo ** may want to remove autoscale and set the top margin to (last tag vertical)*5
+                }
                 var curval = current[tagtlines.Key];
                 series += string.Join(",\n", tlines.Keys.Select((label, k) => "v" + (k + q) + "=[" + makeTimeLines(tlines[label], min, max, (k + q), curval == label) + "]").ToArray()) + ",\n";
                 charts += string.Join(",\n", tlines.Keys.Select((label, r) => "{yaxis:2, data:v" + (r + q) + ",points:{show:true},lines:{show:true, lineWidth:5},label:'" + prefix + label + "'}")) + ",";
@@ -243,7 +249,7 @@ namespace Tags.Models
                 q++;                          // put a spacer line between different tags 
             }
 
-            if (timelined.Any())
+            if (timelined.Any() && q > 1)
             {
                 series += " dummy = 0;\n";
                 charts = charts.Substring(0, charts.Length - 1) + "\n";
