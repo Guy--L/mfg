@@ -61,6 +61,7 @@
     <Folder Include="Properties" />
     <Folder Include="Data" />
     <Folder Include="Snapshots" />
+    <Folder Include="Conversion" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="ProductBatch.sql" />
@@ -124,6 +125,7 @@
     <None Include="Data\LineOperation2Tx.sql" />
     <None Include="Data\LineTxBuild.sql" />
     <Build Include="Plan.sql" />
+    <None Include="Conversion\AS400toLineOperation.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />

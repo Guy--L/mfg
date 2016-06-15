@@ -102,10 +102,13 @@ namespace Tags.Jobs
                 var channels = g.Canon();           // get all tags for all lines
                 var tags = Read(g);                 // get data for period and list of tags
 
+                if (tags == null)
+                    return 0;
+
                 channels.Select(line =>
                 {
                     var linedir = Path.Combine(root, line);
-                    var slice = tags.Where(t => t.Channel == line);
+                    var slice = tags.Where(t => t.Channel == line).ToList();
 
                     Render(g, linedir, slice);      // create chart for this line and  
                     return 1;
@@ -126,6 +129,8 @@ namespace Tags.Jobs
             var tagtype = tagsInGraph.ToDictionary(k => k.TagId, v => Tag.types[v.DataType]);
 
             var taglist = string.Join(",", tagsInGraph.Select(i => i.TagId).Except(time.Keys).ToArray());
+            if (taglist.Length == 0)
+                return null;
 
             using (tagDB t = new tagDB())
             {
@@ -174,12 +179,19 @@ namespace Tags.Jobs
         /// <param name="slice">list of graph relevant tags for this device</param>
         public void Render(Graph g, string path, IEnumerable<Tag> slice)
         {
+            if (!slice.Any())
+            {
+                Console.WriteLine("No tags for " + g.GraphName + " " + end.ToString("MMddyy"));
+                return;
+            }
+
             // get data for interval and channel
             // make chart
             var c = new cx.Chart() { Size = new Size(2560, 1440) };
 
             var stringValued = slice.Where(v => v.DataType.ToLower() == "string");
             var line = slice.First().Channel;
+            var filename = line +  " " + g.GraphName + " " + end.ToString("MMddyy") + ".png";
             var tids = slice.Select(s => s.TagId);
             var lims = limits.Where(m => tids.Contains(m.Key));
 
@@ -190,6 +202,12 @@ namespace Tags.Jobs
             a.AxisY.MajorGrid.LineColor = Color.LightGray;
             a.AxisY.IsStartedFromZero = false;
             a.AxisY.LabelStyle.Font = new Font("Arial", 16);
+
+            if (g.MinY != null && g.MinY.HasValue)
+                a.AxisY.Minimum = g.MinY.Value;
+
+            if (g.MaxY != null && g.MaxY.HasValue)
+                a.AxisY.Maximum = g.MaxY.Value;
 
             a.AxisX.IsMarginVisible = false;
             a.AxisX.LabelStyle.Enabled = false;
@@ -238,7 +256,6 @@ namespace Tags.Jobs
                 s.ChartArea = "Production";
             }
 
-            var filename = line + " " + g.GraphName + " " + end.ToString("MMddyy") + ".png";
             if (c.Series.Count == 0)
             {
 //                Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("WARNING!  Current database version ("));

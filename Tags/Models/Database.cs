@@ -136,7 +136,9 @@ namespace Tags.Models
 		[Column] public string GraphName { get; set; } 		
 		[Column] public int? UserId { get; set; } 		
 		[Column] public bool Shared { get; set; } 		
-		[Column] public int? ReviewId { get; set; } 	
+		[Column] public int? ReviewId { get; set; } 		
+		[Column] public double? MinY { get; set; } 		
+		[Column] public double? MaxY { get; set; } 	
 	}
 
 	[TableName("UserChart")]

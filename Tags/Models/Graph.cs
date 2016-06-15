@@ -39,6 +39,8 @@ namespace Tags.Models
             g.UserId,
             g.Shared,
             g.ReviewId,
+            g.MinY,
+            g.MaxY,
             p.PlotId as Plots__PlotId,
             p.GraphId as Plots__GraphId,
             p.TagId as Plots__TagId,

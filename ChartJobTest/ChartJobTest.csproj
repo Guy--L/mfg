@@ -93,6 +93,7 @@
     </None>
     <Content Include="ProductionCxnStrings.config">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="ChartJobTest_TemporaryKey.pfx" />
   </ItemGroup>
