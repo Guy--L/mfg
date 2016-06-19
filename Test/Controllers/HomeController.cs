@@ -255,7 +255,18 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult UploadCasing(HttpPostedFileBase file)
         {
+            if (!ModelState.IsValid || file == null)
+            {
+                Error("No file uploaded");
+                return RedirectToAction("CasingSamples");
+            }
             var load = Models.CasingSamples.ReadExcel(file.InputStream, false);
+
+            if (load == null)
+            {
+                Error("Invalid file uploaded");
+                return RedirectToAction("CasingSamples");
+            }
 
             Success(load.Item1 + " casing sample records loaded for " + load.Item2);
             return RedirectToAction("CasingSamples");

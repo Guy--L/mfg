@@ -169,7 +169,7 @@ input#Tech.tech.form-control {
     text-align: right;
     filter: alpha(opacity=0);
     opacity: 0;
-    outline: none;
+    outline: 1px solid red;
     background: white;
     cursor: inherit;
     display: block;

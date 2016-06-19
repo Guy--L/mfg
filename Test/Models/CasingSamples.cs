@@ -463,6 +463,7 @@ namespace Test.Models
             order by s.scheduled desc
         ";
         public List<CasingSurvey> batches { get; set; }
+        public HttpPostedFileBase file { get; set; }
 
         public CasingSamples()
         {

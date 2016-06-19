@@ -1,4 +1,9 @@
-﻿insert into lineoperation
+﻿declare @recn integer 
+
+set @recn = (select max(recordid) from lineoperation)
+
+insert into lineoperation
+select * from (
 select s.*, 
 	dbo.J2DateTime(inday, intime) as stamp,
 	l.lineid,
@@ -7,6 +12,8 @@ select s.*,
 from devusa.devusa.ncifiles#.indtp700 s
 join unit u on s.inunit = u.Unit
 join line l on l.unitid = u.unitid and s.inline = l.LineNumber
+) g
+where g.recordid > @recn
 
 update n 
 set n.productcodeid = coalesce(
@@ -16,14 +23,14 @@ set n.productcodeid = coalesce(
 	order by stamp desc),0
 )
 from lineoperation n
-where n.INDAY > 23000 and n.productcodeid = 0
+where n.recordid > @recn
 
-update n 
-set n.productcodeid = coalesce(
-	(select top 1 productcodeid
-	from [plan]
-	where stamp <= n.stamp and Code = n.inprd 
-	order by stamp desc),0
-)
-from lineoperation n
-where n.INDAY > 23000 and n.productcodeid = 0
+
+--select * from lineoperation where recordid > 36475 order by stamp
+
+--select m.*
+--from lineoperation m
+--left join lineoperation n on m.lineid = n.lineid and n.stamp > m.stamp
+--where n.lineid is null
+--order by lineid
+

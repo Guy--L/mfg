@@ -5,9 +5,11 @@
         <thead>
             <tr>
                 <th>
-                    @using (Html.BeginForm("UploadCasing", "Home", FormMethod.Post, new { enctype = "multipart/form-data", id = "casingup" }))
+                    @using (var f = Html.Bootstrap().Begin(new Form("UploadCasing", "Home").Type(FormType.Inline).HtmlAttributes(new { enctype = "multipart/form-data" }).Id("casingup")))
                     {
-                        <button id="upload" class="btn btn-xs btn-toolbar" type="submit"><i class="fa fa-cloud-upload"></i>&nbsp;Import *.xls <input id="file" name="file" type="file" /></button>
+                        @Html.Bootstrap().SubmitButton().Text("Import *.xls").PrependIcon("fa fa-cloud-upload").Id("upload").Style(ButtonStyle.Primary).Class("btn-xs")
+                        
+                        @f.FormGroup().FileFor(x => x.file).Id("file").Label().Class("sr-only")
                     }
                 </th>
                 <th colspan="3">
@@ -36,18 +38,23 @@
 
 @section scripts {
     <script type="text/javascript">
-    $(function () {
-        $('#file').change(function () {
-            $('#casingup').submit();
+        function fileready()
+        {
+            if ($(this).val() != '')
+                $('#upload').prop('disabled', false);
+        }
+        $(function () {
+            $('#upload').prop('disabled', true);
+            $('#file').keyup(fileready);
+            $('#file').on('change', fileready);
+            $('#casingsamples tbody').on('click', 'tr', function () {
+                var id = $(this).data('id');
+                id = (id != '' && typeof id !== 'undefined') ? id : -bid;
+                location.href = '@Url.Action("CasingSample", "Home", null, Request.Url.Scheme)/' + id;
+            });
+            $('#addsample').on('click', function () {
+                location.href = '@Url.Action("CasingSample", "Home",null,Request.Url.Scheme)/0' ;
+            });
         });
-        $('#casingsamples tbody').on('click', 'tr', function () {
-            var id = $(this).data('id');
-            id = (id != '' && typeof id !== 'undefined') ? id : -bid;
-            location.href = '@Url.Action("CasingSample", "Home", null, Request.Url.Scheme)/' + id;
-        });
-        $('#addsample').on('click', function () {
-            location.href = '@Url.Action("CasingSample", "Home",null,Request.Url.Scheme)/0' ;
-        });
-    });
     </script>
 }
