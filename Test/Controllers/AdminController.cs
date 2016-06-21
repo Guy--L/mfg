@@ -47,7 +47,7 @@ namespace Test.Controllers
                 sw.Write(data, 0, data.Length);
             }
 
-            var results = Plan.GetPlans(path);
+            var results = Plan.ImportPlans(path);
 
             if (results.Contains("Error"))
                 Error(results);

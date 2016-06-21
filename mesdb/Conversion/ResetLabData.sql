@@ -1,9 +1,10 @@
 ﻿declare @year int
-set @year = 2015
+set @year = 2014
 
 use taglogs
 
-delete from limit where year(stamp) >= @year
+delete from [limit] where year(stamp) >= @year
+DBCC CHECKIDENT ('[limit]', RESEED, 0)
 
 delete a from [all] a
 join tag t on a.tagid = t.tagid

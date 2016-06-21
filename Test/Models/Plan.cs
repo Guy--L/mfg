@@ -21,8 +21,22 @@ namespace Test.Models
         }
     }
 
+    public class Plans
+    {
+        public List<Plan> plans { get; set; }
+
+        public Plans()
+        {
+            plans = Plan.Plans();
+        }
+    }
+
     partial class Plan
     {
+        public string Extruder { get { return Models.Extruder.Colors[ExtruderId]; } }
+        public string System { get { return Models.System.Systems[SystemId.Value]; } }
+        public string SolutionType { get { return SolutionRecipe.Solutions[SolutionRecipeId.Value]; } }
+
         private static Dictionary<int, Plan> prior = new Dictionary<int, Plan>();
 
         private static string _plan = @"
@@ -92,6 +106,11 @@ namespace Test.Models
         private static int deleted = 0;
         private static int added = 0;
 
+        public static List<Plan> Plans()
+        {
+            return Fetch(" order by stamp desc");
+        }
+
         private int AppendFt(string comment)
         {
             var footage = comment.ToLower().IndexOf(" ft");
@@ -118,7 +137,7 @@ namespace Test.Models
             return 1;
         }
 
-        public static string GetPlans(string xls)
+        public static string ImportPlans(string xls)
         {
             if (!File.Exists(xls))
                 xls = xls.Replace("Schedule ", "Sched");
@@ -276,7 +295,7 @@ namespace Test.Models
                     if (solnum == "")
                         solnum = cmt.Substring(soln + 3).Split(' ')[1].Replace(",", "");
 
-                    var system = System.all[solnum];
+                    var system = Models.System.all[solnum];
 
                     edits = plans.Where(p => p.SystemId == system).Select(p => p.Append(cmt)).Sum();
 
@@ -378,11 +397,11 @@ namespace Test.Models
             }
 
             var system = d[sysi].Substring(d[sysi].IndexOf('#') + 1).Replace(")", "");
-            SystemId = System.all[system];
+            SystemId = Models.System.all[system];
 
             var color = d[coli].Substring(1, d[coli].Length - 2).ToLower().Replace("//", "/");
             int extruder = 0;
-            ExtruderId = Extruder.all.TryGetValue(color, out extruder)? product: 0;
+            ExtruderId = Models.Extruder.all.TryGetValue(color, out extruder)? product: 0;
 
             var solution = 0;
             SolutionRecipeId = SolutionRecipe.all.TryGetValue(d[0], out solution) ? solution : 0;

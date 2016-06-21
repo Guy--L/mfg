@@ -4,7 +4,15 @@ set @julian = (select top 1 inday from devusa.devusa.dcnitta.inltp856)
 
 -- insert into lineoperation any recent changes in linestatus
 ; with swipe as (
-	select s.inday, s.inunit, s.inline, s.inshft, s.stcode, s.intime, s.rscode, s.inprd,
+	select distinct s.inday, s.inunit, s.inline, s.inshft, s.stcode, s.intime, 
+		case 
+		when s.stcode = 'U' then 'RP' 
+		when s.rscode = 'D' then 'DN'
+		when rtrim(s.rscode) = '' then 'DN'
+		when s.rscode = 'RM' or s.rscode = 'PF' then 'PM'
+		else s.rscode
+		end as rscode, 
+	s.inprd,
 	dbo.J2DateTime(inday, intime) as stamp,
 	l.lineid,
 	0 as productcodeid,
@@ -16,7 +24,9 @@ set @julian = (select top 1 inday from devusa.devusa.dcnitta.inltp856)
 	where s.inday >= @julian+19999
 )
 insert into lineoperation
-select q.inday, q.inunit, q.inline, q.inshft, q.stcode, q.intime, q.rscode, q.inprd, q.stamp, q.LineId, 
+select distinct q.inday, q.inunit, q.inline, q.inshft, q.stcode, q.intime, 
+q.rscode,
+q.inprd, q.stamp, q.LineId, 
 coalesce(
 	(select top 1 productcodeid
 	from [plan]

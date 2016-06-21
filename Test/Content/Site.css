@@ -262,3 +262,6 @@ input#recode {
 #productspectable div.form-group {
     margin-bottom: 0;
 }
+form#casingup button#upload {
+    margin-right: 7px;
+}

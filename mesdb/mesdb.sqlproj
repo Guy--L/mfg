@@ -124,11 +124,12 @@
     <Build Include="LineUpdateTrigger.sql" />
     <Build Include="User.sql" />
     <None Include="Data\LineOperation2Tx.sql" />
-    <None Include="Data\LineTxBuild.sql" />
     <Build Include="Plan.sql" />
     <None Include="Conversion\AS400toLineOperation.sql" />
-    <Build Include="Conversion\AS400toLineOperationDiff.sql" />
-    <Build Include="Conversion\AS400toLineStatus.sql" />
+    <None Include="Conversion\AS400toLineOperationDiff.sql" />
+    <None Include="Conversion\AS400toLineStatus.sql" />
+    <None Include="Conversion\ResetLabData.sql" />
+    <None Include="Conversion\LineTxBuild.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mesdb.publish.xml" />
@@ -146,11 +147,12 @@
     <None Include="AgentJobs.sql" />
     <None Include="Data\InsertTriggerOnLineOperation.sql" />
     <None Include="Data\SinceNow.sql" />
-    <None Include="Data\ResetLabData.sql" />
     <None Include="Data\Agent15MinuteScript1.sql" />
     <None Include="Data\Agent15MinuteScript2.sql" />
     <None Include="Data\Agent1MinuteScript1.sql" />
     <None Include="Agent\PerMinute.sql" />
+    <None Include="Conversion\LineOperationStats.sql" />
+    <None Include="Conversion\LatestLine.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="mesdb.refactorlog" />
