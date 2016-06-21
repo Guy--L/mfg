@@ -4,8 +4,6 @@
 --declare @statusid int
 --declare @productcodeid int
 --declare @lineid int
-declare @archivecut datetime
-
  update n set rscode = 'RP' from lineoperation n where n.stcode = 'U' and n.rscode != 'RP'		and year(n.stamp) > 2014
  update n set rscode = 'DN' from lineoperation n where n.rscode = 'D'							and year(n.stamp) > 2014
  update n set rscode = 'PM' from lineoperation n where n.rscode in ('PF', 'RM')					and year(n.stamp) > 2014
@@ -17,8 +15,15 @@ declare @archivecut datetime
 
 USE [mesdb]
 GO
+declare @newinsert table (
+	ltxid int,
+	stamp datetime,
+	lineid int,
+	recordid int
+)
 
 insert into linetx
+output inserted.LineTxId, n.stamp, n.lineid, n.recordid into @newinsert
 	select n.lineid, 0 as personid, n.stamp, 
 	(select top 1 comment
 		from [plan]
@@ -37,16 +42,25 @@ insert into linetx
 	as systemid,
 		s.statusid, 
 		n.ProductCodeId
-		from lineoperation n
-		join line l on n.lineid = l.lineid
-		join unit u on u.unitid = l.unitid
-		join [status] s on s.Code = n.rscode
-		where year(n.stamp) > 2014 
+	from lineoperation n
+	join line l on n.lineid = l.lineid
+	join unit u on u.unitid = l.unitid
+	join [status] s on s.Code = n.rscode
+	where year(n.stamp) > 2014 
 
-declare @archivecut datetime
+update n
+set n.recordid = -n.recordid
+from lineoperation n 
+where year(stamp) < 2015
+
+update n
+set n.recordid = i.ltxid
+from lineoperation n
+join @newinsert i on i.lineid = n.lineid and i.stamp = n.stamp and i.recordid = n.recordid
 
 use [taglogs]
 
+declare @archivecut datetime
 select @archivecut = min(stamp) from [all]
 
 insert into [all]
