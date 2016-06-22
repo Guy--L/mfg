@@ -63,11 +63,19 @@ declare @newinsert table (
 	stamp datetime,
 	lineid int,
 	statusid int,
-	productcodeid int
+	productcodeid int,
+	planid int
 )
 
 insert into linetx
-output inserted.LineTxId, inserted.stamp, inserted.lineid, inserted.statusid, inserted.productcodeid into @newinsert
+output inserted.LineTxId, inserted.stamp, inserted.lineid, inserted.statusid, inserted.productcodeid, 
+	(select top 1 comment
+		from [plan]
+		where lineid = inserted.lineid
+		and productcodeid = inserted.ProductCodeId
+		and stamp <= inserted.stamp 
+		order by stamp desc) as planid
+ into @newinsert
 	select n.lineid, 0 as personid, n.stamp, 
 	(select top 1 comment
 		from [plan]
@@ -195,3 +203,13 @@ join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
 join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
 where t.name = 'line_status' and i.stamp < @archivecut
 
+update n
+set n.linetankid = i.linetankid,
+n.systemid = i.systemid,
+n.statusid = i.statusid,
+n.productcodeid = i.productcodeid,
+n.stamp = i.stamp,
+n.personid = i.personid,
+n.conversionid = i.planid
+from line n
+join @newinsert i on i.lineid = n.lineid
