@@ -14,16 +14,16 @@
 -- effective update to the line table.
 
 USE [mesdb]
-GO
+
 declare @newinsert table (
 	ltxid int,
 	stamp datetime,
 	lineid int,
-	recordid int
+	productcodeid int
 )
 
 insert into linetx
-output inserted.LineTxId, n.stamp, n.lineid, n.recordid into @newinsert
+output inserted.LineTxId, inserted.stamp, inserted.lineid, inserted.productcodeid into @newinsert
 	select n.lineid, 0 as personid, n.stamp, 
 	(select top 1 comment
 		from [plan]
@@ -46,17 +46,12 @@ output inserted.LineTxId, n.stamp, n.lineid, n.recordid into @newinsert
 	join line l on n.lineid = l.lineid
 	join unit u on u.unitid = l.unitid
 	join [status] s on s.Code = n.rscode
-	where year(n.stamp) > 2014 
-
-update n
-set n.recordid = -n.recordid
-from lineoperation n 
-where year(stamp) < 2015
+	where year(n.stamp) > 2014
 
 update n
 set n.recordid = i.ltxid
 from lineoperation n
-join @newinsert i on i.lineid = n.lineid and i.stamp = n.stamp and i.recordid = n.recordid
+join @newinsert i on i.lineid = n.lineid and i.stamp = n.stamp and i.productcodeid = n.productcodeid
 
 use [taglogs]
 
