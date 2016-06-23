@@ -9,24 +9,28 @@ namespace Test.Models
 {
     public partial class Deck
     {
-        private static string _full = @"
+        private static string _deck = @"
         SELECT d.[DeckId]
               ,d.[Name]
-              ,s.[SlideId]
-              ,s.[Name]
-              ,s.[FileNameSuffix]
-              ,s.[FileFormat]
-              ,x.[SeriesId]
-              ,x.[Title]
-              ,x.[Field]
-              ,x.[YLabel]
-              ,x.[Legend]
-              ,x.[Height]
-              ,x.[ForeGround]
           FROM [dbo].[Deck] d
-          left join [dbo].[Slide] s on s.DeckId = d.DeckId
-          left join [dbo].[SlideSeries] y on s.SlideId = y.SlideId
-          left join [dbo].[Series] x on x.SeriesId = y.SeriesId
+        ";
+
+        private static string _slides = @"
+           select
+               s.[SlideId] as Slides__SlideId
+              ,s.[Name] as Slides__Name
+              ,s.[FileNameSuffix] as Slides__FileNameSuffix
+              ,s.[FileFormat] as Slides__FileFormat
+              ,x.[SeriesId]       as Series__SeriesId
+              ,x.[Title]          as Series__Title 
+              ,x.[Field]          as Series__Field  
+              ,x.[YLabel]         as Series__YLabel  
+              ,x.[Legend]         as Series__Legend  
+              ,x.[Height]         as Series__Height  
+              ,x.[ForeGround]     as Series__ForeGround  
+            from [dbo].[Slide] s
+            left join [dbo].[SlideSeries] y on s.SlideId = y.SlideId
+            left join [dbo].[Series] x on x.SeriesId = y.SeriesId
         ";
 
         public Size Dimensions { get; set; }
@@ -42,15 +46,15 @@ namespace Test.Models
             Deck d = null;
             using (labDB db = new labDB())
             {
-                show = db.Fetch<Deck, Slide, Series, Deck>(Deck.Link, _full + " where d.[Name] = @0", name);
+                show = db.Fetch<Deck>(_deck + " where d.[Name] = @0", name);
                 d = show.FirstOrDefault();
                 if (d == null)
                     return;
 
                 DeckId = d.DeckId;
+                Name = d.Name;
+                Slides = db.FetchOneToMany<Slide>(s => s.Series, _slides + " where s.[DeckId] = @0", DeckId);
             }
-            Name = d.Name;
-            Slides = d.Slides;
         }
 
         private static Deck lastd = null;

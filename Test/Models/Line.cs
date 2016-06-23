@@ -8,14 +8,14 @@ namespace Test.Models
 {
     public partial class Line
     {
-        public Unit unit { get; set; }
+        [ResultColumn, ComplexMapping] public Unit unit { get; set; }
         [ResultColumn] public string LineName { get; set; }
 
         private static string letters = " ABCDEFGHIJ";  // units start at 1
 
-        public Status status { get; set; }
-        public System system { get; set; }
-        public ProductCode product { get; set; }
+        [ResultColumn, ComplexMapping] public Status status { get; set; }
+        [ResultColumn, ComplexMapping] public System system { get; set; }
+        [ResultColumn, ComplexMapping] public ProductCode product { get; set; }
 
         public string Name
         {
@@ -34,14 +34,14 @@ namespace Test.Models
             ConversionId = c.ConversionId;
         }
 
-        public static Line Map(Line l, System y, ProductCode p)
-        {
-            l.status = Status.state[l.StatusId];
-            l.system = y;
-            l.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
-            l.ProductCodeId = l.product.ProductCodeId;
-            return l;
-        }
+        //public static Line Map(Line l, System y, ProductCode p)
+        //{
+        //    l.status = Status.state[l.StatusId];
+        //    l.system = y;
+        //    l.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
+        //    l.ProductCodeId = l.product.ProductCodeId;
+        //    return l;
+        //}
     }
 
     public class Lines
@@ -68,37 +68,37 @@ namespace Test.Models
                   ,l.[UnitId]
                   ,l.[LineNumber]
                   ,l.[Stamp]
-                  ,i.[StatusId]
-                  ,i.[Code]
-                  ,i.[Icon]
-                  ,i.[Color]
-                  ,s.[SystemId]
-                  ,s.[System]
-                  ,p.[ProductCodeId]
-                  ,p.[ProductCode]
-                  ,p.[ProductSpec]
-                  ,p.[PlastSpec]
-                  ,p.[WetLayflat_Aim]
-                  ,p.[WetLayflat_Min]
-                  ,p.[WetLayflat_Max]
-                  ,p.[Glut_Aim]
-                  ,p.[Glut_Max]
-                  ,p.[Glut_Min]
-                  ,p.[ReelMoist_Aim]
-                  ,p.[ReelMoist_Min]
-                  ,p.[ReelMoist_Max]
-                  ,p.[LF_Aim]
-                  ,p.[LF_Min]
-                  ,p.[LF_Max]
-                  ,p.[LF_LCL]
-                  ,p.[LF_UCL]
-                  ,p.[OilType]
-                  ,p.[Oil_Aim]
-                  ,p.[Oil_Min]
-                  ,p.[Oil_Max]
-                  ,p.[Gly_Aim]
-                  ,p.[Gly_Min]
-                  ,p.[Gly_Max]
+                  ,i.[StatusId]          as status__StatusId
+                  ,i.[Code]              as status__Code
+                  ,i.[Icon]              as status__Icon
+                  ,i.[Color]             as status__Color
+                  ,s.[SystemId]          as system__SystemId   
+                  ,s.[System]            as system__System 
+                  ,p.[ProductCodeId]     as product__ProductCodeId
+                  ,p.[ProductCode]       as product__ProductCode     
+                  ,p.[ProductSpec]       as product__ProductSpec      
+                  ,p.[PlastSpec]         as product__PlastSpec        
+                  ,p.[WetLayflat_Aim]    as product__WetLayflat_Aim   
+                  ,p.[WetLayflat_Min]    as product__WetLayflat_Min   
+                  ,p.[WetLayflat_Max]    as product__WetLayflat_Max   
+                  ,p.[Glut_Aim]          as product__Glut_Aim      
+                  ,p.[Glut_Max]          as product__Glut_Max     
+                  ,p.[Glut_Min]          as product__Glut_Min      
+                  ,p.[ReelMoist_Aim]     as product__ReelMoist_Aim 
+                  ,p.[ReelMoist_Min]     as product__ReelMoist_Min 
+                  ,p.[ReelMoist_Max]     as product__ReelMoist_Max 
+                  ,p.[LF_Aim]            as product__LF_Aim        
+                  ,p.[LF_Min]            as product__LF_Min        
+                  ,p.[LF_Max]            as product__LF_Max        
+                  ,p.[LF_LCL]            as product__LF_LCL        
+                  ,p.[LF_UCL]            as product__LF_UCL        
+                  ,p.[OilType]           as product__OilType       
+                  ,p.[Oil_Aim]           as product__Oil_Aim       
+                  ,p.[Oil_Min]           as product__Oil_Min       
+                  ,p.[Oil_Max]           as product__Oil_Max       
+                  ,p.[Gly_Aim]           as product__Gly_Aim       
+                  ,p.[Gly_Min]           as product__Gly_Min       
+                  ,p.[Gly_Max]           as product__Gly_Max       
               FROM [dbo].[Line] l
               left join [dbo].[Status] i on i.StatusId = l.StatusId
               left join [dbo].[ProductCode] p on p.ProductCodeId = l.ProductCodeId
@@ -109,8 +109,7 @@ namespace Test.Models
         {
             using (var labdb = new labDB())
             {
-                lines = labdb.Fetch<Line, System, ProductCode, Line>(Line.Map,
-                    _lineload + " order by l.LineNumber, l.UnitId");
+                lines = labdb.Fetch<Line>(_lineload + " order by l.LineNumber, l.UnitId");
                 systems = labdb.Fetch<System>(System._active);
             }
         }
@@ -145,7 +144,6 @@ namespace Test.Models
                 products = db.Fetch<ProductCode>(" order by productcode, productspec");
 
                 timeline = LineTx.TimeLine(lineid);
-
                 statuses = db.Fetch<Status>();
             }
             productList = new SelectList(products, "ProductCodeId", "CodeSpec");

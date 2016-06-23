@@ -77,7 +77,7 @@ namespace Test.Models
         {
             using (labDB db = new labDB())
             {
-                _conversions = db.Fetch<LineConversion, ProductCode>(_last2).ToDictionary(k => k.lineid, v => v);
+                _conversions = db.Fetch<LineConversion>(_last2).ToDictionary(k => k.lineid, v => v);
             }
         }
 
@@ -164,7 +164,7 @@ namespace Test.Models
             using (labDB d = new labDB())
             {
                 d.OneTimeCommandTimeout = 2000;
-                lineStatus = d.Fetch<LineStatus, ProductCode>(_all).Select(s => LineConversion.Format(s)).ToList();
+                lineStatus = d.Fetch<LineStatus>(_all).Select(s => LineConversion.Format(s)).ToList();
             }
             
             latestStatus = lineStatus.Max(t => t.Stamp);
@@ -176,7 +176,7 @@ namespace Test.Models
             List<LineStatus> delta = new List<LineStatus>();
             using (labDB d = new labDB())
             {
-                delta = d.Fetch<LineStatus, ProductCode>(_all+" where Stamp > @0", latestStatus).Select(s => LineConversion.Format(s)).ToList();
+                delta = d.Fetch<LineStatus>(_all+" where Stamp > @0", latestStatus).Select(s => LineConversion.Format(s)).ToList();
             }
             if (!delta.Any())
                 return null;

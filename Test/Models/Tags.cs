@@ -68,9 +68,9 @@ namespace Test.Models
 		public class Record<T> where T:new()
 		{
 			public static tagDB repo { get { return tagDB.GetInstance(); } }
-			public bool IsNew() { return repo.IsNew<T>(this); }
+			public bool IsNew() { return repo.IsNew(this); }
 			public object Insert() { return repo.Insert(this); }
-			public void Save() { repo.Save<T>(this); }
+			public void Save() { repo.Save(this); }
 			public int Update() { return repo.Update(this); }
 			public int Update(IEnumerable<string> columns) { return repo.Update(this, columns); }
 			public static int Update(string sql, params object[] args) { return repo.Update<T>(sql, args); }

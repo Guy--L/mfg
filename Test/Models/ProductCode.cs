@@ -12,9 +12,9 @@ namespace Test.Models
 {
     public partial class ProductCode
     {
-        public List<Line> running { get; set; }
+        [ResultColumn] public List<Line> running { get; set; }
         [ResultColumn] public DateTime Scheduled { get; set; }
-        public string LineName { get { return running==null?"":string.Join(",", running.Select(r => r.unit._Unit + r.LineNumber).ToArray()); } }
+        public string LineName { get { return running==null?"":string.Join(",", running.Select(r => r.Name).ToArray()); } }
 
         public static string Pending = @"
         ";
@@ -116,19 +116,17 @@ namespace Test.Models
                   ,p.[Gly_Aim]
                   ,p.[Gly_Min]
                   ,p.[Gly_Max]
-                  ,l.[LineId]
-                  ,l.[Stamp]
-                  ,l.[UnitId]
-                  ,l.[LineNumber]
-                  ,u.[Unit]
-                  ,u.[Unit]+cast(l.[LineNumber] as char) LineName
+                  ,l.[LineId] as running__LineId
+                  ,l.[Stamp] as running__Stamp
+                  ,l.[UnitId] as running__UnitId
+                  ,l.[LineNumber] as running__LineNumber
               from [dbo].[ProductCode] p
               left join [dbo].[Line] l on p.ProductCodeId = l.ProductCodeId
-              left join [dbo].[Unit] u on u.UnitId = l.UnitId
+              left join [dbo].[Unit] u on l.UnitId = u.UnitId
         ";
 
         public static string _all = _get + @"        
-              order by CASE WHEN l.lineid IS NULL THEN 1 ELSE 0 END, l.lineid
+              order by CASE WHEN l.lineid IS NULL THEN 1 ELSE 0 END, l.ProductCodeId
         ";
 
         public static string _pending = _all + @"
@@ -140,7 +138,9 @@ namespace Test.Models
         {
             using (var labdb = new labDB())
             {
-                products = labdb.Fetch<ProductCode, Line, Unit, ProductCode>(new PRelate().Map, _all);
+                products = labdb.FetchOneToMany<ProductCode>(p => p.running, _all);
+                var tst = 1;
+                tst++;
             }
         }
     }
@@ -151,7 +151,6 @@ namespace Test.Models
         public ProductCode p { get; set; }
         public string LineIds { get; set; }
 
-
         public ProductView() { }
         public ProductView(int id)
         {
@@ -161,7 +160,7 @@ namespace Test.Models
             }
             using (var db = new labDB())
             {
-                p = db.Fetch<ProductCode, Line, Unit, ProductCode>(new PRelate().Map, Products._get + " where p.productcodeid = @0", id).SingleOrDefault();
+                p = db.FetchOneToMany<ProductCode>(q => q.running, Products._get + " where p.productcodeid = @0", id).SingleOrDefault();
                 LineIds = p.running == null ? "" : string.Join(",", p.running.Select(i => i.LineId).ToArray());
             }
         }

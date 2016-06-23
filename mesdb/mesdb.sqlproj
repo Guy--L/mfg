@@ -153,6 +153,7 @@
     <None Include="Agent\PerMinute.sql" />
     <None Include="Conversion\LineOperationStats.sql" />
     <None Include="Conversion\LatestLine.sql" />
+    <None Include="Conversion\LineTx2Line.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="mesdb.refactorlog" />

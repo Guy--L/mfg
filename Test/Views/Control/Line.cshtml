@@ -1,6 +1,6 @@
 ﻿@model Test.Models.LineView
 @{
-    ViewBag.Title = "Modify Line " + Model.line.Name;
+    ViewBag.Title = "Line History for " + Model.line.Name;
     Layout = "~/Views/Shared/_Layout2.cshtml";
     List<IHtmlString> buttons = new List<IHtmlString>() {
             Html.Bootstrap().SubmitButton().Text("Save").Id("saveline").Style(ButtonStyle.Success),new HtmlString(" "),
@@ -59,7 +59,7 @@ using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
             </div>
         </div>
 
-        <div class="row">
+        @*<div class="row">
             <div class="col-md-12">
                 <fieldset class="time-context">
                     <legend>
@@ -78,7 +78,7 @@ using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
         </div>
         <div class="row">
             @(form.FormGroup().CustomControls(buttons.ToArray()))
-        </div>
+        </div>*@
     }
 </div>
 @section scripts{

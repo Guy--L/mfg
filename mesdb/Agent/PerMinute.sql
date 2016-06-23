@@ -34,8 +34,8 @@ coalesce(
 	order by stamp desc),0
 ), q.recordid 
 from swipe q
-left join linestatus s on s.inunt = q.inunit and s.inlin = q.inline and s.[status] = q.stcode
-where q.latest = 1 and s.inunt is null
+left join linestatus x on x.inunt = q.inunit and x.inlin = q.inline and x.[status] = q.stcode
+where q.latest = 1 and x.inunt is null
 
 -- Update line status from AS400 to SQL Server
 --  when there is a difference
@@ -63,20 +63,13 @@ declare @newinsert table (
 	stamp datetime,
 	lineid int,
 	statusid int,
-	productcodeid int,
-	planid int
+	productcodeid int
 )
 
 insert into linetx
-output inserted.LineTxId, inserted.stamp, inserted.lineid, inserted.statusid, inserted.productcodeid, 
-	(select top 1 comment
-		from [plan]
-		where lineid = inserted.lineid
-		and productcodeid = inserted.ProductCodeId
-		and stamp <= inserted.stamp 
-		order by stamp desc) as planid
+output inserted.LineTxId, inserted.stamp, inserted.lineid, inserted.statusid, inserted.productcodeid 
  into @newinsert
-	select n.lineid, 0 as personid, n.stamp, 
+	select distinct n.lineid, 0 as personid, n.stamp, 
 	(select top 1 comment
 		from [plan]
 		where lineid = n.lineid
@@ -203,13 +196,21 @@ join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
 join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
 where t.name = 'line_status' and i.stamp < @archivecut
 
+use [mesdb]
+
 update n
-set n.linetankid = i.linetankid,
-n.systemid = i.systemid,
-n.statusid = i.statusid,
+set n.linetankid = t.linetankid,
+n.systemid = t.systemid,
+n.statusid = t.statusid,
 n.productcodeid = i.productcodeid,
 n.stamp = i.stamp,
-n.personid = i.personid,
-n.conversionid = i.planid
+n.personid = t.personid,
+n.conversionid = (select top 1 planid
+		from [plan]
+		where lineid = i.lineid
+		and productcodeid = i.ProductCodeId
+		and stamp <= i.stamp 
+		order by stamp desc)
 from line n
 join @newinsert i on i.lineid = n.lineid
+join linetx t on t.linetxid = i.ltxid

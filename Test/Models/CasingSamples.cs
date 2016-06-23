@@ -690,13 +690,6 @@ namespace Test.Models
                   ,s.[ProcessId]
                   ,s.[SystemId]
                   ,s.[NextScheduled]
-                  ,l.[UnitId]
-				  ,l.[LineNumber]
-                  ,x.[StatusId]
-                  ,x.[Code]
-                  ,x.[Description]
-                  ,x.[Icon]
-                  ,x.[Color]
                   ,r.[ReadingId]
                   ,r.[LineId]
                   ,r.[Stamp]
@@ -724,8 +717,6 @@ namespace Test.Models
                   ,p.[Oil_Max]
               FROM [dbo].[Sample] s
               left join [dbo].[Reading] r on r.SampleId = s.SampleId
-              left join [Line] l on l.LineId = s.LineId
-              left join [Status] x on l.StatusId = x.StatusId
               left join [ProductCode] p on p.ProductCodeId = s.ProductCodeId
         ";
 
@@ -893,11 +884,11 @@ namespace Test.Models
                 {
                     ScheduleTime = CasingSample.NextSlot();
                     var time = ScheduleTime.ToStamp();
-                    sset = d.Fetch<Sample, Status, Reading, ProductCode, CasingSample>(Link, _batch + _bytime, time);
+                    sset = d.Fetch<CasingSample>(_batch + _bytime, time);
                 }
                 else
                 {
-                    sset = d.Fetch<Sample, Status, Reading, ProductCode, CasingSample>(Link, _batch + _bysample, id);
+                    sset = d.Fetch<CasingSample>(_batch + _bysample, id);
                     ScheduleTime = sset.First().Scheduled;
                 }
             }

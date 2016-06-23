@@ -106,12 +106,14 @@ namespace Test.Models
 
                     error = deleted + " deleted old limit records. ";
                     var now = DateTime.Now.ToStamp();
-                    var inserted = db.ExecuteScalar<int>(string.Format(_insertLimits, lineids, replace ? "i.stamp" : "'"+now+"'"));
+                    var query = string.Format(_insertLimits, lineids, replace ? "i.stamp" : "'" + now + "'");
+                    var inserted = db.ExecuteScalar<int>(query);
 
                     return deleted + " deleted old limit records, " + inserted + " inserted new limit records.";
                 }
                 catch (Exception e)
                 {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception(db.LastSQL, e));
                     return "error in UpdateLimits: " + error + e.Message;
                 }
             }
