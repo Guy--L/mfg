@@ -54,6 +54,9 @@ namespace Test.Models
         public string LineName { get; set; }
 
         public bool isPublished { get { return !((Completed ?? DateTime.MaxValue) > DateTime.Now); } }
+
+        public bool _isUpdating; 
+
         public ProductCode _product;
         public ProductCode product
         {
@@ -265,12 +268,10 @@ namespace Test.Models
         {
             if (id != 0)
             {
-                var s = new Sample();
                 using (labDB d = new labDB())
                 {
-                    s = d.SingleById<Sample>(id);
+                    d.SingleInto(this, " where sampleid = @0", id);
                 }
-                this.InjectFrom(s);
                 return;
             }
             Tech = "";
@@ -292,19 +293,20 @@ namespace Test.Models
             var s = new Sample();
             using (labDB d = new labDB())
             {
-                s = d.SingleOrDefault<Sample>(" where scheduled = @0 and lineid = @1 and reelnumber = @2 and footage = @3", time, LineId, ReelNumber, Footage);
+                _isUpdating = false;
+                s = d.SingleOrDefaultInto(this, " where scheduled = @0 and lineid = @1 and reelnumber = @2 and footage = @3", time, LineId, ReelNumber, Footage);
                 if (s != null)
                 {
-                    this.InjectFrom(s);
-                    return true;
+                    _isUpdating = true;
+                    return true;                            // sample already exists
                 }
 
                 var context = d.SingleOrDefault<LineTx>(LineTx.contextByLine(time), LineId);
                 if (context == null)
                 {
-                    return false;
+                    return false;                           // cannot find context
                 }
-                ProductCodeId = context.ProductCodeId;
+                ProductCodeId = context.ProductCodeId;      // apply context
                 SystemId = context.SystemId;
                 return true;
             }
@@ -332,7 +334,7 @@ namespace Test.Models
             //Debug.WriteLine("line: " + line + ", LineId: " + LineId);
             if (!Synchronize())
             {
-                LineId = 0;
+                LineId = 0;         // context not found
                 return;
             }
 
@@ -515,10 +517,9 @@ namespace Test.Models
         //    }
         //    return filecount + " files read, " + samplecount + " samples recorded";
         //}
-        public static Tuple<int?, DateTime?> ReadExcel(Stream file, bool publish)
+        public static Tuple<int?, DateTime?> ReadExcel(Stream file, bool publish, int year)
         {
             var now = DateTime.Now;
-            int year = now.Year;
             int day = now.DayOfYear;
 
             int lastid = 0;
@@ -616,7 +617,7 @@ namespace Test.Models
 
         public static string current = "";
 
-        private static Tuple<int, int> readExcels(string path, string pattern)
+        private static Tuple<int, int> readExcels(string path, string pattern, int year)
         {
             int filecount = 0;
             int samplecount = 0;
@@ -628,10 +629,15 @@ namespace Test.Models
                 using (FileStream file = new FileStream(set, FileMode.Open, FileAccess.Read))
                 {
                     current = set;
+                    if (file.Name.ToLower().Contains("qa"))
+                    {
+                        Debug.WriteLine("skipping " + file.Name);
+                        continue;
+                    }
                     Debug.WriteLine("file: " + file.Name);
                     Debug.Indent();
 
-                    var count = ReadExcel(file, true);
+                    var count = ReadExcel(file, true, year);
                     Debug.Unindent();
                     if (count == null)
                     {
@@ -650,12 +656,12 @@ namespace Test.Models
             int filecount = 0;
             int samplecount = 0;
 
-            var t = readExcels(path, "*.xls");
+            var t = readExcels(path, "*.xls", year);
 
             filecount = t.Item1;
             samplecount = t.Item2;
 
-            t = readExcels(path, "*.xlsx");
+            t = readExcels(path, "*.xlsx", year);
 
             filecount += t.Item1;
             samplecount += t.Item2;
@@ -944,7 +950,7 @@ namespace Test.Models
         // move results from lab database to tags database
         // calculations are performed during the move 
         // 
-        private static string _labresult = @"
+        private static string _insertlabresult = @"
             declare @@insertedtags table
             (
 	            tagid int, 
@@ -955,79 +961,59 @@ namespace Test.Models
 
             select @@archivecut = min(stamp) from [All]
 
-            merge into [All] as target
-            using (
-	            select l.sampleid, r.tagid,
+            insert into [All] 
+			output inserted.tagid, inserted.sampleid into @@insertedtags
+	        select l.sampleid, r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
 	            192 as quality
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_moist_pct' 
+	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	        join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	        join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	        where f.FieldName = 'csg_moist_pct' 
 		            and l.Completed is not null 
 		            and l.sampleid in ({0})	
-	            ) as source (sampleid, tagid, value, stamp, quality)
-            on source.stamp < @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp, quality)
-	            values (tagid, value, stamp, quality)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+					and l.stamp >= @@archivecut
 
-            merge into [All] as target
-            using (
-	            select l.sampleid, r.tagid,
+            insert into [All]
+            output inserted.tagid, inserted.sampleid into @@insertedtags
+	        select l.sampleid, r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
 	            192 as quality
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_glyc_pct' 
-		            and l.Completed is not null 
-		            and l.sampleid in ({0})	
-	            ) as source (sampleid, tagid, value, stamp, quality)
-            on source.stamp < @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp, quality)
-	            values (tagid, value, stamp, quality)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	        join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	        join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	        where f.FieldName = 'csg_glyc_pct' 
+		        and l.Completed is not null 
+		        and l.sampleid in ({0})	
+				and l.stamp >= @@archivecut
 
-            merge into [Past] as target
-            using (
-	            select l.sampleid, r.tagid,
+            insert into [Past]
+            output inserted.tagid, inserted.sampleid into @@insertedtags
+	        select l.sampleid, r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_moist_pct' 
-		            and l.Completed is not null 
-		            and l.sampleid in ({0})	
-	            ) as source (sampleid, tagid, value, stamp)
-            on source.stamp >= @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp)
-	            values (tagid, value, stamp)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	        join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	        join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	        where f.FieldName = 'csg_moist_pct' 
+		        and l.Completed is not null 
+		        and l.sampleid in ({0})	
+				and l.stamp < @@archivecut
 
-            merge into [Past] as target
-            using (
-	            select l.sampleid, r.tagid,
+            insert into [Past]
+			output inserted.tagid, inserted.sampleid into @@insertedtags
+	        select l.sampleid, r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
-	            from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
-	            join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
-	            join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
-	            where f.FieldName = 'csg_glyc_pct' 
-		            and l.Completed is not null 
-		            and l.sampleid in ({0})	
-	            ) as source (sampleid, tagid, value, stamp)
-            on source.stamp >= @@archivecut
-            when not matched then
-	            insert (tagid, value, stamp)
-	            values (tagid, value, stamp)
-            output inserted.tagid, source.sampleid into @@insertedtags;
+	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
+	        join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
+	        join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
+	        where f.FieldName = 'csg_glyc_pct' 
+		        and l.Completed is not null 
+		        and l.sampleid in ({0})	
+				and l.stamp < @@archivecut
 
             update t 
             set t.relatedtagid = i.sampleid 
@@ -1039,8 +1025,10 @@ namespace Test.Models
         {
             var ids = string.Join(",", samples.SelectMany(x => x.Select(y => y.SampleId)).Where(k => k != 0).Distinct().ToArray());
             if (ids.Length == 0)
+            {
+                Debug.WriteLine("no ids");
                 return;
-
+            }
             Debug.WriteLine("sealing ids " + ids);
             using (labDB d = new labDB())
             {
@@ -1048,7 +1036,7 @@ namespace Test.Models
             }
             using (tagDB t = new tagDB())
             {
-                t.Execute(string.Format(_labresult, ids));
+                t.Execute(string.Format(_insertlabresult, ids));
             }
         }
     }

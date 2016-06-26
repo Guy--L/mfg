@@ -122,7 +122,6 @@ namespace Test.Models
                   ,l.[LineNumber] as running__LineNumber
               from [dbo].[ProductCode] p
               left join [dbo].[Line] l on p.ProductCodeId = l.ProductCodeId
-              left join [dbo].[Unit] u on l.UnitId = u.UnitId
         ";
 
         public static string _all = _get + @"        
@@ -139,8 +138,6 @@ namespace Test.Models
             using (var labdb = new labDB())
             {
                 products = labdb.FetchOneToMany<ProductCode>(p => p.running, _all);
-                var tst = 1;
-                tst++;
             }
         }
     }

@@ -16,8 +16,7 @@ set @julian = (select top 1 inday from devusa.devusa.dcnitta.inltp856)
 	dbo.J2DateTime(inday, intime) as stamp,
 	l.lineid,
 	0 as productcodeid,
-	0 as recordid,
-	row_number() over (partition by s.inunit, s.inline order by s.inday desc, s.intime desc) as latest
+	0 as recordid
 	from devusa.devusa.ncifiles#.indtp700 s
 	join unit u on s.inunit = u.Unit
 	join line l on l.unitid = u.unitid and s.inline = l.LineNumber
@@ -34,8 +33,10 @@ coalesce(
 	order by stamp desc),0
 ), q.recordid 
 from swipe q
-left join linestatus x on x.inunt = q.inunit and x.inlin = q.inline and x.[status] = q.stcode
-where q.latest = 1 and x.inunt is null
+left join lineoperation x 
+on x.lineid = q.lineid 
+and x.stamp = q.stamp
+where x.inunit is null
 
 -- Update line status from AS400 to SQL Server
 --  when there is a difference

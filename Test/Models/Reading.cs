@@ -127,10 +127,8 @@ namespace Test.Models
             Reading nr = null;
             using (labDB d = new labDB())
             {
-                nr = d.SingleOrDefault<Reading>(" where sampleid = @0", sampleid);
+                nr = d.SingleOrDefaultInto(nr, " where sampleid = @0", sampleid);
             }
-            if (nr != null)
-                this.InjectFrom(nr);
             ParameterId = parameterid;
             parameter();
         }

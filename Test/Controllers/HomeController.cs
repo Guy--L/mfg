@@ -260,7 +260,7 @@ namespace Test.Controllers
                 Error("No file uploaded");
                 return RedirectToAction("CasingSamples");
             }
-            var load = Models.CasingSamples.ReadExcel(file.InputStream, false);
+            var load = Models.CasingSamples.ReadExcel(file.InputStream, false, DateTime.Now.Year);
 
             if (load == null)
             {
@@ -275,7 +275,7 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult UploadCasings(HttpPostedFileBase file)
         {
-            var load = Models.CasingSamples.ReadExcel(file.InputStream, true);
+            var load = Models.CasingSamples.ReadExcel(file.InputStream, true, DateTime.Now.Year);
 
             return Content(load.Item2.Value.ToString("MM/dd HH:mm") + "\t" + load.Item1);
         }
