@@ -18,7 +18,6 @@ namespace Tags.Models
             from Tag t
             join Device d on d.DeviceId = t.DeviceId
             join Channel c on c.ChannelId = d.ChannelId
-            where t.IsLogged = 1
             order by c.Name
         ";
 
