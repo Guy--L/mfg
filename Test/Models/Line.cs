@@ -9,7 +9,6 @@ namespace Test.Models
     public partial class Line
     {
         [ResultColumn, ComplexMapping] public Unit unit { get; set; }
-        [ResultColumn] public string LineName { get; set; }
 
         private static string letters = " ABCDEFGHIJ";  // units start at 1
 
@@ -33,15 +32,6 @@ namespace Test.Models
             SystemId = c.SystemId;
             ConversionId = c.ConversionId;
         }
-
-        //public static Line Map(Line l, System y, ProductCode p)
-        //{
-        //    l.status = Status.state[l.StatusId];
-        //    l.system = y;
-        //    l.product = p ?? new ProductCode() { _ProductCode = "00?00", ProductCodeId = 0 };
-        //    l.ProductCodeId = l.product.ProductCodeId;
-        //    return l;
-        //}
     }
 
     public class Lines

@@ -24,7 +24,7 @@ namespace Test.Hubs
 
         // following methods support casingsample.cshtml
 
-        void SetSampleTime(DateTime oldTime, DateTime newTime)
+        public void SetSampleTime(DateTime oldTime, DateTime newTime)
         {
             var ol = oldTime.ToString("ddhhmmtt");
             var nw = newTime.ToString("ddhhmmtt");

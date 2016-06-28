@@ -49,26 +49,6 @@ namespace Test.Models
 		            and {0}
                     and l.stamp >= @@archivecut
 
-            ;with avgs as (
-	            select [sys], convert(varchar(64), avg(gly), 0) as value, g.stamp, 192 as quality from (
-		            select a.stamp, convert(float, a.value, 1) as gly, 'Sys'+convert(char(1), l.systemid, 1) as [sys]
-		            from [all] a
-		            join tag t on t.tagid = a.tagid
-		            join mesdb.dbo.[sample] l on l.sampleid = a.quality
-		            where t.name = 'csg_glyc_pct' 
-                        and len(a.value) < 5
-                        and {0}
-	            ) g
-	            group by stamp, [sys]
-            )
-            insert into [All] 
-            select t.TagId, v.value, v.stamp, v.quality
-            from avgs v 
-            join channel c on c.Name = v.[sys]
-            join device d on c.ChannelId = d.ChannelId
-            join tag t on t.DeviceId = d.DeviceId
-            where t.name = 'csg_glyc_pct'
-
             insert into [Past] (tagid, value, stamp)
             select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
@@ -101,14 +81,19 @@ namespace Test.Models
         {
             using (labDB d = new labDB())
             {
+                d.OneTimeCommandTimeout = 20000;
                 var t = d.Execute(string.Format(_complete, DateTime.Now.ToStamp(), yr));
             }
         }
 
         public static void complete(string ids)
         {
+            if (string.IsNullOrWhiteSpace(ids))
+                return;
+
             using (labDB d = new labDB())
             {
+                d.OneTimeCommandTimeout = 20000;
                 var t = d.Execute(string.Format(_completeIds, ids));
             }
         }
@@ -117,6 +102,7 @@ namespace Test.Models
         {
             using (tagDB d = new tagDB())
             {
+                d.OneTimeCommandTimeout = 20000;
                 var query = string.Format(_labresult, _year);
                 query = string.Format(query, DateTime.Now.ToStamp(), yr);
                 var t = d.Execute(query);
@@ -125,8 +111,12 @@ namespace Test.Models
 
         public static void publish(string ids)
         {
+            if (string.IsNullOrWhiteSpace(ids))
+                return;
+
             using (tagDB d = new tagDB())
             {
+                d.OneTimeCommandTimeout = 20000;
                 var query = string.Format(_labresult, _ids);
                 query = string.Format(query, ids);
                 var t = d.Execute(query);

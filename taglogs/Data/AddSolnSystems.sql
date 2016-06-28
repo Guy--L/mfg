@@ -23,7 +23,8 @@ select d.id, 'csg_glyc_pct', 'x', 'Float', 0, 1
 from @newinsert d
 
 insert into [current]
-select t.id, c.name+'.'+d.name+'.'+t.name,  0, dateadd(month, -2, getdate()), 1 
-from @new2insert t 
-join [Device] d on d.DeviceId = t.deviceid
+select n.id, c.name+'.'+d.name+'.'+t.name,  0, dateadd(month, -2, getdate()), 1 
+from @new2insert n 
+join tag t on t.tagid = n.id
+join [Device] d on d.DeviceId = n.deviceid
 join [Channel] c on c.ChannelId = d.ChannelId

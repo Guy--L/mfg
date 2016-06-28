@@ -1,4 +1,5 @@
 ﻿@model Test.Models.Reading
+
 <td class="Wet text-success    " data-scale="@Model.factor[0]">@Html.Bootstrap().TextBoxFor(m => m.r1).Data(new { inputmask = Model.inmsk(0) }).Class("cgly").Label().Class("sr-only")</td>
 <td class="Wet text-success    " data-scale="@Model.factor[1]">@Html.Bootstrap().TextBoxFor(m => m.r2).Data(new { inputmask = Model.inmsk(1) }).Class("cgly cmoist").Label().Class("sr-only")</td>
 <td class="Dry text-warning    " data-scale="@Model.factor[2]">@Html.Bootstrap().TextBoxFor(m => m.r3).Data(new { inputmask = Model.inmsk(2) }).Class("cgly cmoist").Label().Class("sr-only")</td>

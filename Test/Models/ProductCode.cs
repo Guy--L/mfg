@@ -14,7 +14,7 @@ namespace Test.Models
     {
         [ResultColumn] public List<Line> running { get; set; }
         [ResultColumn] public DateTime Scheduled { get; set; }
-        public string LineName { get { return running==null?"":string.Join(",", running.Select(r => r.Name).ToArray()); } }
+        public string LineNames { get { return running==null?"":string.Join(",", running.Select(r => r.Name).ToArray()); } }
 
         public static string Pending = @"
         ";

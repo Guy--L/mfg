@@ -24,7 +24,7 @@ namespace Test.Models
 
         public static string Symbol = Reading.IconML(_type);
 
-        public Reading Gly { get; set; }
+        [ResultColumn, ComplexMapping] public Reading Gly { get; set; }
         public Reading Oil { get; set; }
 
         public int? Delm { get { return Reading1; } set { Reading1 = value; } }
@@ -51,13 +51,12 @@ namespace Test.Models
         public string System { get; set; }
         public string StatIcon { get; set; }
         public string StatColor { get; set; }
-        public string LineName { get; set; }
 
         public bool isPublished { get { return !((Completed ?? DateTime.MaxValue) > DateTime.Now); } }
 
         public bool _isUpdating; 
 
-        public ProductCode _product;
+        [ResultColumn, ComplexMapping] public ProductCode _product;
         public ProductCode product
         {
             get { return _product; }
@@ -110,12 +109,12 @@ namespace Test.Models
                 string speclass = "";
                 if (OutOfControl(MoistPct, _moist, -5)) speclass = "oocontrol";
                 if (OutOfSpec(MoistPct, _moist)) speclass = "oospec";
-                Debug.Write("line " + LineName + " moisture: " + speclass + ". " + MoistPct + " in ");
-                foreach (var d in _moist)
-                {
-                    Debug.Write(d + " < ");
-                }
-                Debug.WriteLine(".");
+                //Debug.Write("line " + LineName + " moisture: " + speclass + ". " + MoistPct + " in ");
+                //foreach (var d in _moist)
+                //{
+                //    Debug.Write(d + " < ");
+                //}
+                //Debug.WriteLine(".");
                 return speclass;
             }
         }
@@ -240,7 +239,9 @@ namespace Test.Models
             return this;
         }
 
-        public CasingSample() { }
+        public CasingSample() {
+            Gly = new Reading(0, _type);
+        }
 
         public CasingSample(LineTx ln)
         {
@@ -248,9 +249,11 @@ namespace Test.Models
             Gly = new Reading(0, _type);
             StatColor = ln.status.Color;
             StatIcon = ln.status.Icon;
-            LineId = ln.LineId;
-            UnitId = ln.UnitId;
-            LineName = ln.Name;
+            Line = new Line()
+            {
+                LineId = ln.LineId,
+                UnitId = ln.UnitId
+            };
         }
 
         public CasingSample(Line ln)
@@ -259,9 +262,11 @@ namespace Test.Models
             Gly = new Reading(0, _type);
             StatColor = ln.status.Color;
             StatIcon = ln.status.Icon;
-            LineId = ln.LineId;
-            UnitId = ln.UnitId;
-            LineName = ln.Name;
+            Line = new Line()
+            {
+                LineId = ln.LineId,
+                UnitId = ln.UnitId
+            };
         }
 
         public CasingSample(int id)
@@ -412,7 +417,7 @@ namespace Test.Models
                 if (MoistStatus.Contains("control")) r.GetCell(5).CellStyle = CasingSamplesView.yellow;
                 else if (MoistStatus.Contains("spec")) r.GetCell(5).CellStyle = CasingSamplesView.red;
             }
-            catch (Exception e) { Debug.WriteLine(Line + "error: " + e.Message + "\nstack: " + e.StackTrace); }
+            catch (Exception e) { Debug.WriteLine(Line.Name + "error: " + e.Message + "\nstack: " + e.StackTrace); }
         }
     }
 
@@ -696,32 +701,36 @@ namespace Test.Models
                   ,s.[ProcessId]
                   ,s.[SystemId]
                   ,s.[NextScheduled]
-                  ,r.[ReadingId]
-                  ,r.[LineId]
-                  ,r.[Stamp]
-                  ,r.[R1]
-                  ,r.[R2]
-                  ,r.[R3]
-                  ,r.[R4]
-                  ,r.[R5]
-                  ,r.[Average]
-                  ,r.[ParameterId]
-                  ,r.[Operator]
-                  ,r.[EditCount]
-                  ,r.[Scheduled]
-                  ,p.[ProductCodeId]
-                  ,p.[ProductCode]
-                  ,p.[ProductSpec]
-                  ,p.[ReelMoist_Min]
-                  ,p.[ReelMoist_Aim]
-                  ,p.[ReelMoist_Max]
-                  ,p.[Gly_Min]
-                  ,p.[Gly_Aim]
-                  ,p.[Gly_Max]
-                  ,p.[Oil_Min]
-                  ,p.[Oil_Aim]
-                  ,p.[Oil_Max]
+                  ,n.[LineNumber]     as Line__LineNumber
+                  ,n.[UnitId]         as Line__UnitId
+                  ,r.[ReadingId]      as Gly__ReadingId     
+                  ,r.[LineId]         as Gly__LineId        
+                  ,r.[Stamp]          as Gly__Stamp         
+                  ,r.[R1]             as Gly__R1            
+                  ,r.[R2]             as Gly__R2                
+                  ,r.[R3]             as Gly__R3            
+                  ,r.[R4]             as Gly__R4            
+                  ,r.[R5]             as Gly__R5            
+                  ,r.[Average]        as Gly__Average
+                  ,r.[ParameterId]    as Gly__ParameterId
+                  ,r.[Operator]       as Gly__Operator    
+                  ,r.[EditCount]      as Gly__EditCount
+                  ,r.[Scheduled]      as Gly__Scheduled     
+                  ,r.[ParameterId]    as Gly__ParameterId
+                  ,p.[ProductCodeId]  as _product__ProductCodeId      
+                  ,p.[ProductCode]    as _product___ProductCode       
+                  ,p.[ProductSpec]    as _product__ProductSpec       
+                  ,p.[ReelMoist_Min]  as _product__ReelMoist_Min          
+                  ,p.[ReelMoist_Aim]  as _product__ReelMoist_Aim          
+                  ,p.[ReelMoist_Max]  as _product__ReelMoist_Max          
+                  ,p.[Gly_Min]        as _product__Gly_Min
+                  ,p.[Gly_Aim]        as _product__Gly_Aim               
+                  ,p.[Gly_Max]        as _product__Gly_Max                   
+                  ,p.[Oil_Min]        as _product__Oil_Min                   
+                  ,p.[Oil_Aim]        as _product__Oil_Aim               
+                  ,p.[Oil_Max]        as _product__Oil_Max               
               FROM [dbo].[Sample] s
+              left join [Line] n on n.LineId = s.LineId
               left join [dbo].[Reading] r on r.SampleId = s.SampleId
               left join [ProductCode] p on p.ProductCodeId = s.ProductCodeId
         ";
@@ -766,27 +775,6 @@ namespace Test.Models
         public int productCode;
 
         public static IEnumerable<CasingSample> blanks;
-
-        private static CasingSample peg = null;
-        private static CasingSample Link(Sample s, Status x, Reading r, ProductCode p)
-        {
-            if (peg == null || peg.SampleId != s.SampleId)
-            {
-                peg = new CasingSample();
-                peg.InjectFrom(s);
-                if (!string.IsNullOrWhiteSpace(s.Tech))
-                    _tech = s.Tech;
-            }
-            if (p == null)
-                p = new ProductCode() { ProductCodeId = 0, _ProductCode = "00?00" };
-            peg.product = p;
-            peg.LineName = s.Line;
-            peg.StatColor = x.Color;
-            peg.StatIcon = x.Icon;
-
-            return peg.Apply(r);
-        }
-
         public static ICellStyle red;
         public static ICellStyle yellow;
 
@@ -899,10 +887,11 @@ namespace Test.Models
                 }
             }
             allCompleted = sset != null && sset.Count() > 0 && !sset.Any(s => (s.Completed ?? DateTime.MaxValue) > DateTime.Now);
+            sset.Where(s => s.Gly != null).Select(s => s.Gly.parameter()).ToList();
 
             if (allCompleted)
             {
-                samples = sset.ToLookup(k => k.UnitId, v => v);
+                samples = sset.ToLookup(k => k.Line.UnitId, v => v);
                 return;
             }
 
@@ -936,7 +925,7 @@ namespace Test.Models
                 }
             }
 
-            samples = complete.ToLookup(k => k.UnitId, v => v);
+            samples = complete.ToLookup(k => k.Line.UnitId, v => v);
         }
 
         private static string _complete = @"
@@ -962,11 +951,11 @@ namespace Test.Models
             select @@archivecut = min(stamp) from [All]
 
             insert into [All] 
-			output inserted.tagid, inserted.sampleid into @@insertedtags
-	        select l.sampleid, r.tagid,
+			output inserted.tagid, inserted.quality into @@insertedtags
+	        select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
-	            192 as quality
+	            l.sampleid as quality
 	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	        join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	        join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
@@ -976,11 +965,11 @@ namespace Test.Models
 					and l.stamp >= @@archivecut
 
             insert into [All]
-            output inserted.tagid, inserted.sampleid into @@insertedtags
-	        select l.sampleid, r.tagid,
+            output inserted.tagid, inserted.quality into @@insertedtags
+	        select r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
-	            192 as quality
+	            l.sampleid as quality
 	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
 	        join mesdb.dbo.[ReadingTag] r on  r.LineId = l.LineId
 	        join mesdb.dbo.[ReadingField] f on r.ReadingFieldId = f.ReadingFieldId 
@@ -990,8 +979,7 @@ namespace Test.Models
 				and l.stamp >= @@archivecut
 
             insert into [Past]
-            output inserted.tagid, inserted.sampleid into @@insertedtags
-	        select l.sampleid, r.tagid,
+	        select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
 	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table
@@ -1003,8 +991,7 @@ namespace Test.Models
 				and l.stamp < @@archivecut
 
             insert into [Past]
-			output inserted.tagid, inserted.sampleid into @@insertedtags
-	        select l.sampleid, r.tagid,
+	        select r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp
 	        from mesdb.dbo.[LabResult] l                                                -- this is a view not a table

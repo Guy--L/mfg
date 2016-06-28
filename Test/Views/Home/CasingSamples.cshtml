@@ -7,8 +7,8 @@
                 <th>
                     @using (var f = Html.Bootstrap().Begin(new Form("UploadCasing", "Home").Type(FormType.Inline).HtmlAttributes(new { enctype = "multipart/form-data" }).Id("casingup")))
                     {
-                        @Html.Bootstrap().SubmitButton().Text("Import *.xls").PrependIcon("fa fa-cloud-upload").Id("upload").Style(ButtonStyle.Primary).Class("btn-xs")
-                        @f.FormGroup().FileFor(x => x.file).Id("file").Label().Class("sr-only")
+                        <div class="col-md-4">@Html.Bootstrap().SubmitButton().Text("Import *.xls").PrependIcon("fa fa-cloud-upload").Id("upload").Style(ButtonStyle.Primary).Class("btn-xs")</div>
+                        <div class="col-md-8">@f.FormGroup().FileFor(x => x.file).Id("file").Label().Class("sr-only")</div>
                     }
                 </th>
                 <th colspan="3">

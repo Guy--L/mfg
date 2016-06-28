@@ -56,6 +56,9 @@ namespace Test.Models
         [ResultColumn] public char Unit { get; set; }
         [ResultColumn] public int LineNumber { get; set; }
         [ResultColumn] public string ProductCode { get; set; }
+
+        [ResultColumn, ComplexMapping] public Parameter Prm {get; set;}
+
         [ResultColumn] public string Name { get; set; }
         [ResultColumn] public int[] Scale { get; set; }
         [ResultColumn] public string[] Mask { get; set; }
@@ -105,9 +108,7 @@ namespace Test.Models
             }
             CasingSamplesView.blanks = Reading.Lines.Values.SelectMany((q, i) => q.Select((w, j) => new CasingSample()
                   {
-                      UnitId = i + 1,
-                      LineId = w,
-                      LineNumber = j + 1,
+                      Line = new Line() { UnitId = i+1, LineId = w, LineNumber = j+1 },
                       Gly = new Reading(0, "CasingSample")
                   }));
         }
@@ -116,7 +117,8 @@ namespace Test.Models
         {
             using (labDB t = new labDB())
             {
-                return t.Fetch<Reading>(_all + " order by [Scheduled] desc");
+                var r = t.Fetch<Reading>(_all + " order by [Scheduled] desc");
+                return r;
             }
         }
 
@@ -152,7 +154,7 @@ namespace Test.Models
             parameter();
         }
 
-        private void parameter()
+        public int parameter()
         {
             var t = Types[ParameterId];
             Name = t.Name;
@@ -161,6 +163,7 @@ namespace Test.Models
             Mask = t.Mask.Split(',');
             Count = t.Count;
             Icon = t.Icon;
+            return Count;
         }
     }
 

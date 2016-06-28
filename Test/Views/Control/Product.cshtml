@@ -35,10 +35,10 @@
                 @form.FormGroup().TextBoxFor(m => m.p._ProductCode).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Code")
                 @form.FormGroup().TextBoxFor(m => m.p.ProductSpec).Readonly(Model.p.ProductCodeId != 0).Label().LabelText("Product Spec")
                 @form.FormGroup().CheckBoxFor(m => m.p.IsActive)
-                @if (!string.IsNullOrWhiteSpace(Model.p.LineName) && !ViewBag.Cloned)
+                @if (!string.IsNullOrWhiteSpace(Model.p.LineNames) && !ViewBag.Cloned)
                 {
                     <div id="retrocheck">
-                    <b>In production on @Model.p.LineName</b>
+                    <b>In production on @Model.p.LineNames</b>
                     @form.FormGroup().CheckBoxFor(m => m.retroActiveSpecs).Label().LabelText("Check   Apply changes to last line update\nUncheck Apply changes now");
                     </div>
                 }

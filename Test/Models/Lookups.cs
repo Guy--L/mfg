@@ -14,6 +14,7 @@ namespace Test.Models
         ";
 
         private static Dictionary<string, int> _lines;
+        private static Dictionary<int, string> _names;
        
         [ResultColumn] public string DName { get; set; }
 
@@ -22,6 +23,15 @@ namespace Test.Models
             {
                 _lines = _lines??Fetch(_lookup).ToDictionary(k => k.DName, v => v.LineId);
                 return _lines;
+            }
+        }
+
+        public static Dictionary<int, string> names
+        {
+            get
+            {
+                _names = _names ?? Fetch(_lookup).ToDictionary(v => v.LineId, k => k.DName);
+                return _names;
             }
         }
     }

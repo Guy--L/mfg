@@ -79,7 +79,7 @@
     <Build Include="UserRole.sql" />
     <Build Include="Group.sql" />
     <Build Include="TagGroup.sql" />
-    <Build Include="CurrentValueTrigger.sql" />
+    <None Include="CurrentValueTrigger.sql" />
     <None Include="Data\SyncChannel2Line.sql" />
     <None Include="Data\AddLabNHMIAsDevice.sql" />
     <None Include="Data\AddLabTags.sql" />
@@ -105,5 +105,6 @@
     <None Include="Data\AddSolutionTags.sql" />
     <None Include="Data\SystemAverage.sql" />
     <None Include="Data\AddSolnSystems.sql" />
+    <None Include="Data\Tags2Current.sql" />
   </ItemGroup>
 </Project>

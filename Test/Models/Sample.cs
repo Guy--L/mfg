@@ -99,16 +99,12 @@ namespace Test.Models
 
         public List<Reading> readings { get; set; }
 
-        [ResultColumn] public string ProductCode { get; set; }
-        [ResultColumn] public string CodeSpec { get; set; }
         [ResultColumn] public int TestCount { get; set; }
-        [ResultColumn] public int LineNumber { get; set; }
-        [ResultColumn] public int UnitId { get; set; }
         [ResultColumn] public float WetTensileMinimum { get; set; }
 
+        [ResultColumn, ComplexMapping] public Line Line;
         public bool Up { get; set; }
 
-        public string Line { get { return Unit.Code(UnitId) + LineNumber; } }
         public string TypeCells
         {
             get

@@ -29,7 +29,7 @@
     data-productcodeid="@pid" 
     class="casingsample @Model.SpecStatus sys-@Model.System">
     <td   class="Sample lineadd text-primary"><i class="fa fa-plus-circle" title="Click on line to add sample"></i></td>
-    <td   class="linecol text-primary">@Model.LineName</td>
+    <td   class="linecol text-primary">@Model.Line.Name</td>
     <td class="Sample product line-@Model.LineId" title='@Model.Tooltip' data-moist='@Model.MoistSpec' data-glyc='@Model.GlySpec'>
         <button class="btn btn-xs btn-@Model.StatColor sys-@Model.SystemId productbtn" data-id="@Model.LineId" @toggle tabindex="-1">
             <i class="fa fa-@Model.StatIcon"></i> @pcd
