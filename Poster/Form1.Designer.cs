@@ -36,6 +36,10 @@
             this.openFiler = new System.Windows.Forms.OpenFileDialog();
             this.button1 = new System.Windows.Forms.Button();
             this.Messages = new System.Windows.Forms.TextBox();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.VersionLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // inputDir
@@ -82,19 +86,46 @@
             // 
             // Messages
             // 
-            this.Messages.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Messages.Location = new System.Drawing.Point(0, 83);
+            this.Messages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.Messages.Location = new System.Drawing.Point(0, 82);
             this.Messages.Multiline = true;
             this.Messages.Name = "Messages";
             this.Messages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Messages.Size = new System.Drawing.Size(346, 158);
+            this.Messages.Size = new System.Drawing.Size(346, 134);
             this.Messages.TabIndex = 4;
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.VersionLabel,
+            this.StatusLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 219);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(346, 22);
+            this.statusStrip1.TabIndex = 5;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // VersionLabel
+            // 
+            this.VersionLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.VersionLabel.Name = "VersionLabel";
+            this.VersionLabel.Size = new System.Drawing.Size(46, 17);
+            this.VersionLabel.Text = "Version";
+            this.VersionLabel.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.VersionLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            // 
+            // StatusLabel
+            // 
+            this.StatusLabel.Name = "StatusLabel";
+            this.StatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.StatusLabel.Text = "Status";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(346, 241);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.Messages);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.Picker);
@@ -104,6 +135,8 @@
             this.Name = "Form1";
             this.Text = "Data Poster";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -118,6 +151,9 @@
         private System.Windows.Forms.OpenFileDialog openFiler;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox Messages;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel VersionLabel;
+        private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
     }
 }
 

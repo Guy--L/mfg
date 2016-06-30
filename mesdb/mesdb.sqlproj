@@ -154,6 +154,7 @@
     <None Include="Conversion\LineOperationStats.sql" />
     <None Include="Conversion\LatestLine.sql" />
     <None Include="Conversion\LineTx2Line.sql" />
+    <None Include="Conversion\RemoveDuplicateSamples.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="mesdb.refactorlog" />

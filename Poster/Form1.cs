@@ -9,6 +9,8 @@ namespace Poster
 {
     public partial class Form1 : Form
     {
+        public static string _version = "";
+
         private string _upto;
         private string _recent;
         private string _next;
@@ -27,6 +29,8 @@ namespace Poster
         public Form1()
         {
             InitializeComponent();
+            VersionLabel.Text = _version;
+            StatusLabel.Text = "";
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -37,11 +41,13 @@ namespace Poster
             next = Next(_recent);
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
             Properties.Settings.Default["uploadfrom"] = indir.Text;
-            Properties.Settings.Default["recent"] = _recent; 
+            Properties.Settings.Default["recent"] = _recent;
             Properties.Settings.Default.Save();
+
+            base.OnFormClosing(e);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -59,31 +65,40 @@ namespace Poster
         private string Next(string recent)
         {
             var parts = Path.GetFileNameWithoutExtension(recent).Split('-');
+            var ext = Path.GetExtension(recent);
             int julian = 1;
             if (parts.Length < 2)                       return recent;
             if (!int.TryParse(parts[0], out julian))    return recent;
             if (parts[1] == "4")
             {
                 julian++;
-                return julian.ToString().PadLeft(3, '0') + "-1";
+                return julian.ToString().PadLeft(3, '0') + "-1" + ext;
             }
             int shift = 1;
             if (!int.TryParse(parts[1], out shift))     return recent;
             if (shift > 3) return recent;
             shift++;
-            return julian.ToString().PadLeft(3, '0') + "-" + shift;
+            return julian.ToString().PadLeft(3, '0') + "-" + shift + ext;
         }
 
         private static StringComparer str = StringComparer.OrdinalIgnoreCase;
-        
+
         async void Upload(string[] files)
         {
             string last = "";
 
             HttpClient client = new HttpClient();
 
-            Messages.AppendLine("File      \tCollected      \tSamples\n");
+            Messages.AppendLine("File      \tCollected      \tSamples");
+            StatusLabel.Text = "uploading " + files.Length + " file" + (files.Length != 1 ? "s": "");
 
+            var oldback = BackColor;
+            BackColor = System.Drawing.Color.LightGoldenrodYellow;
+            this.Enable(false);
+            Messages.Enable(true);
+            statusStrip1.Enable(true);
+
+            var count = 0;
             foreach (var file in files)
             {
                 var request = new MultipartFormDataContent();
@@ -97,16 +112,20 @@ namespace Poster
 
                         var response = await client.PostAsync(_upto, request);
                         response.EnsureSuccessStatusCode();
+                        count++;
+                        StatusLabel.Text = "awaiting server response for " + file + ", " + count + " of " + files.Length + " file" + (files.Length != 1 ? "s" : "");
                         var msg = await response.Content.ReadAsStringAsync();
                         Messages.AppendLine(file + "\t" + msg);
                     }
                 }
                 catch (Exception e)
                 {
-                    Messages.AppendLine(file +": "+ e.Message);
+                    Messages.AppendLine(file +": "+ e.Message + ", while uploading to " + _upto);
                 }
             }
-            Messages.AppendLine("Done.");
+            this.Enable(true);
+            BackColor = oldback;
+            StatusLabel.Text = "uploaded " + count + " file" + (count != 1 ? "s" : "");
 
             _recent = Path.GetFileName(last);
             next = Next(_recent);
@@ -131,6 +150,25 @@ namespace Poster
 
     public static class WinFormsExtensions
     {
+        public static void Enable(this Control con, bool enable)
+        {
+            if (con != null)
+            {
+                foreach (Control c in con.Controls)
+                {
+                    c.Enable(enable);
+                }
+
+                try
+                {
+                    con.Invoke((MethodInvoker)(() => con.Enabled = enable));
+                }
+                catch
+                {
+                }
+            }
+        }
+
         public static void AppendLine(this TextBox source, string value)
         {
             var now = DateTime.Now.ToString("MM/dd HH:mm  ");
