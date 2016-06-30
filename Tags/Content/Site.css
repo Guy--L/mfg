@@ -43,9 +43,12 @@ div#ChartContainer {
 
 /* Set width on the form input elements since they're 100% wide by default */
 input,
-select,
 textarea {
     max-width: 200px;
+}
+
+select {
+    max-width: 300px;
 }
 
 form#zoomxlsform {
@@ -80,3 +83,18 @@ table tr td .checkbox
 {
     margin: 0;
 }
+
+select#bootstrap-duallistbox-nonselected-list_picked {
+    min-width: 100%;
+}
+
+canvas {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
+}   

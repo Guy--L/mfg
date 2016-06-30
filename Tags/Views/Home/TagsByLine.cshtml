@@ -26,7 +26,7 @@
     <div class="row-fluid">
         @using (var form = Html.Bootstrap().Begin(new Form("PickedTags", "Home").Id("picktagform")))
             {
-            <div class="col-md-5">
+            <div class="col-md-7">
                 @Html.HiddenFor(m => m.DeletedViews)
                 @Html.HiddenFor(m => m.Monitor)
                 @Html.HiddenFor(m => m.Cancel)
@@ -35,7 +35,7 @@
                 <br />
                 @(form.FormGroup().CustomControls(buttons.ToArray()))
             </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     @form.FormGroup().TextBoxFor(m => m.NewView).Tooltip("Record selected tags as a named view")
                     <hr />
                     <div class="row-fluid">

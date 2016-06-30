@@ -39,6 +39,7 @@ namespace Poster
             _upto = Properties.Settings.Default["uploadto"].ToString();
             _recent = Properties.Settings.Default["recent"].ToString();
             next = Next(_recent);
+            Messages.AppendLine("File      \tCollected      \tSamples");
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -89,7 +90,6 @@ namespace Poster
 
             HttpClient client = new HttpClient();
 
-            Messages.AppendLine("File      \tCollected      \tSamples");
             StatusLabel.Text = "uploading " + files.Length + " file" + (files.Length != 1 ? "s": "");
 
             var oldback = BackColor;
@@ -113,7 +113,8 @@ namespace Poster
                         var response = await client.PostAsync(_upto, request);
                         response.EnsureSuccessStatusCode();
                         count++;
-                        StatusLabel.Text = "awaiting server response for " + file + ", " + count + " of " + files.Length + " file" + (files.Length != 1 ? "s" : "");
+                        StatusLabel.Text = "awaiting "+_upto+" for " + file + " (" + count + "/" + files.Length + " file" + (files.Length != 1 ? "s)" : ")");
+                        statusStrip1.Refresh();
                         var msg = await response.Content.ReadAsStringAsync();
                         Messages.AppendLine(file + "\t" + msg);
                     }

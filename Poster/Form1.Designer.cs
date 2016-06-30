@@ -37,8 +37,9 @@
             this.button1 = new System.Windows.Forms.Button();
             this.Messages = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.VersionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.VersionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,34 +92,46 @@
             this.Messages.Multiline = true;
             this.Messages.Name = "Messages";
             this.Messages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Messages.Size = new System.Drawing.Size(346, 134);
+            this.Messages.Size = new System.Drawing.Size(346, 139);
             this.Messages.TabIndex = 4;
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.statusStrip1.AutoSize = false;
+            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.VersionLabel,
-            this.StatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 219);
+            this.StatusLabel,
+            this.toolStripStatusLabel1,
+            this.VersionLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 224);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(346, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(346, 18);
+            this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 5;
             this.statusStrip1.Text = "statusStrip1";
-            // 
-            // VersionLabel
-            // 
-            this.VersionLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(46, 17);
-            this.VersionLabel.Text = "Version";
-            this.VersionLabel.TextAlign = System.Drawing.ContentAlignment.BottomRight;
-            this.VersionLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             // 
             // StatusLabel
             // 
             this.StatusLabel.Name = "StatusLabel";
-            this.StatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.StatusLabel.Size = new System.Drawing.Size(39, 13);
             this.StatusLabel.Text = "Status";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(215, 13);
+            this.toolStripStatusLabel1.Spring = true;
+            // 
+            // VersionLabel
+            // 
+            this.VersionLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.VersionLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.VersionLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
+            this.VersionLabel.Name = "VersionLabel";
+            this.VersionLabel.Size = new System.Drawing.Size(46, 13);
+            this.VersionLabel.Text = "Version";
+            this.VersionLabel.TextAlign = System.Drawing.ContentAlignment.BottomRight;
             // 
             // Form1
             // 
@@ -154,6 +167,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel VersionLabel;
         private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
 

@@ -111,7 +111,9 @@
 
             Flotr.EventAdapter.observe(container, 'flotr:select', function (area) {
                 // Draw selected area
-                graph = drawGraph({
+                $('#@Html.IdFor(m => m.zoomA)').val(area.x1);
+                $('#@Html.IdFor(m => m.zoomB)').val(area.x2);
+                f = drawGraph({
                     xaxis: {
                         min: area.x1, max: area.x2, mode: 'time',
                         timeMode: 'local',
@@ -119,13 +121,12 @@
                     },
                     yaxis : { min : area.y1, max : area.y2 }
                 });
-                zoomarea = area;
-                $('#@Html.IdFor(m => m.zoomA)').val(area.x1);
-                $('#@Html.IdFor(m => m.zoomB)').val(area.x2);
             });
 
             // When graph is clicked, draw the graph with default area.
-            Flotr.EventAdapter.observe(container, 'flotr:click', function () { graph = drawGraph(); });
+            Flotr.EventAdapter.observe(container, 'flotr:click', function () {
+                drawGraph();
+            });
             </text>
             }
     });

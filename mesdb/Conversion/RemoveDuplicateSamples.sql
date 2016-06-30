@@ -1,23 +1,5 @@
-﻿select [SampleId]
-      ,[Scheduled]
-      ,[Stamp]
-      ,[LineId]
-      ,[ProductCodeId]
-      ,[Note]
-      ,[Tech]
-      ,[Completed]
-      ,[ReelNumber]
-      ,[Footage]
-      ,[BarCode]
-      ,[ParameterId]
-      ,[Reading1]
-      ,[Reading2]
-      ,[ProcessId]
-      ,[SystemId]
-      ,[NextScheduled]
-      ,[Reading3]
-into uniquesample
- from (
+﻿delete s from sample s
+join (
   select *, row_number() over (
 	partition by 
        [Scheduled]
@@ -39,13 +21,8 @@ into uniquesample
 	order by [Completed] desc
 	) as latest
 	from [sample]
-) t
-where latest = 1
-
-exec sp_rename 'sample', 'oldsample'
-exec sp_rename 'uniquesample', 'sample'
-
-select * into oldreading from Reading
+) t on t.sampleid = s.sampleid
+where t.latest > 1
 
 delete r 
 from Reading r
