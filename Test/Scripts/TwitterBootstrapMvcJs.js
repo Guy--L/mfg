@@ -18,7 +18,7 @@
         });
     }
 
-    $('[rel=tooltip]').tooltip({ container: 'body' });
+    $('[rel=tooltip]').tooltip({ container: 'body', tooltipClass: 'ncitooltip' });
     $('[rel=popover]').popover();
 
     $('.nav-tabs li.disabled a').each(function (index, elem) {

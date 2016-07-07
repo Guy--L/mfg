@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using Test.Models;
 
 namespace Test.Controllers
 {
@@ -49,6 +50,7 @@ namespace Test.Controllers
         public static string built;
         protected bool _timeout;
         protected string _user;
+        public Context _top;
 
         //private static User _user;
         //protected bool _IsAdmin;
@@ -180,9 +182,10 @@ namespace Test.Controllers
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            
+            ViewBag.Context = _top ?? new Context();   
             ViewBag.built = built;
             ViewBag.User = _user = Session.Get<string>("user");
+            _top = Session.Get<Context>("Context");
 
             base.OnActionExecuting(filterContext);
         }

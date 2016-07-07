@@ -22,7 +22,9 @@ namespace Test.App_Start
                 "~/Scripts/jquery.inputmask/jquery.inputmask.js",
                 "~/Scripts/jquery-barcode.js",
                 "~/Scripts/jquery.fittext.js",
-                "~/Scripts/respond.js"));
+                "~/Scripts/respond.js",
+                "~/Scripts/TwitterBootstrapMvcJs.js"
+                ));
 
             BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/base").Include(
                 "~/Content/bootstrap.css",

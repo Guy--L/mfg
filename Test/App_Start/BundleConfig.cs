@@ -19,6 +19,12 @@ namespace Test
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
+            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+                      "~/Scripts/bootstrap.js",
+                      "~/Scripts/respond.js",
+                      "~/Scripts/TwitterBootstrapMvcJs.js"
+                      ));
+
             bundles.Add(new ScriptBundle("~/bundles/dataTables").Include(
                         "~/Scripts/DataTables/jquery.dataTables.js"
                       , "~/Scripts/DataTables/dataTables.bootstrap.js"));

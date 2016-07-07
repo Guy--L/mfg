@@ -39,6 +39,7 @@ namespace Test.Models
     partial class ProductCode
     {
         private static Dictionary<string, int> _products;
+
         public static string spec(string _code, string _spec)
         {
             if (_code.Contains('X'))

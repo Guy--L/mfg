@@ -18,7 +18,7 @@ namespace Test.Hubs
             using (labDB db = new labDB())
             {
                 var systems = db.Fetch<Models.System>(string.Format(Models.System._attime, moment.ToStamp()));
-                Clients.Client(Context.ConnectionId).setSystems(systems.Select(s => new { id = s.SystemId, value = s._System + " " + s.SolutionType }));
+                Clients.Caller.setSystems(systems.Select(s => new { id = s.SystemId, value = s._System + " " + s.SolutionType }));
             }
         }
 

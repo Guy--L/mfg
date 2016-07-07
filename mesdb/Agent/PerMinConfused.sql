@@ -99,25 +99,6 @@ set n.recordid = i.ltxid
 from lineoperation n
 join @newinsert i on i.lineid = n.lineid and i.stamp = n.stamp and i.productcodeid = n.productcodeid
 
-update n
-set n.linetankid = x.linetankid,
-n.systemid = x.systemid,
-n.statusid = i.statusid,
-n.productcodeid = i.productcodeid,
-n.stamp = i.stamp,
-n.personid = x.personid,
-n.conversionid = (select top 1 planid
-		from [plan]
-		where lineid = i.lineid
-		and productcodeid = i.ProductCodeId
-		and stamp <= i.stamp 
-		order by stamp desc)
-from line n
-join @newinsert i on n.lineid = i.lineid
-join linetx x on i.ltxid = x.linetxid
-left join @newinsert j on (i.lineid = j.lineid and j.stamp > i.stamp)
-where j.stamp is null
-
 use [taglogs]
 
 declare @archivecut datetime
@@ -216,3 +197,21 @@ join taglogs.dbo.[Device] d on d.ChannelId = c.ChannelId
 join taglogs.dbo.[Tag] t on t.DeviceId = d.DeviceId
 where t.name = 'line_status' and i.stamp < @archivecut
 
+use [mesdb]
+
+update n
+set n.linetankid = t.linetankid,
+n.systemid = t.systemid,
+n.statusid = t.statusid,
+n.productcodeid = i.productcodeid,
+n.stamp = i.stamp,
+n.personid = t.personid,
+n.conversionid = (select top 1 planid
+		from [plan]
+		where lineid = i.lineid
+		and productcodeid = i.ProductCodeId
+		and stamp <= i.stamp 
+		order by stamp desc)
+from line n
+join @newinsert i on i.lineid = n.lineid
+join linetx t on t.linetxid = i.ltxid

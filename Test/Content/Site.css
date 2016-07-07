@@ -265,3 +265,16 @@ input#recode {
 form#casingup button#upload {
     margin-right: 7px;
 }
+
+#contextform div input {
+    margin: 8px 8px 10px;
+    padding: 1px;
+    line-height: 20px;
+    height: 20px;
+    width: 100px;
+}
+
+#contextform .context-tooltip {
+    background-color: orangered;
+    text-align:left;
+}

@@ -39,6 +39,10 @@
                         <li>@Html.ActionLink("About", "About", "Home")</li>
                         <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                     </ul>*@
+                <p class="nav navbar-text navbar-right"><i class="fa fa-user"></i> &nbsp;@ViewBag.User</p>
+                <p class="nav navbar-text navbar-right">
+                    @Html.Partial("_Context", (Test.Models.Context)ViewBag.Context)
+                </p>
                 <ul class="nav navbar-nav pull-right">
                     @RenderSection("actions", required: false)
                     @*<li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
@@ -63,6 +67,11 @@
     @Scripts.Render("~/bundles/dataTables")
 
     @RenderSection("scripts", required: false)
-
+    <script type="text/javascript">
+        var pcodepattern = /^(1[3-9]|2\d|3[0-2])[ABCDEGHJPRTX]\d\dR?/;
+        $(function () {
+            console.log(/^(1[3-9]$|2\d$|3[0-2])[ABCDEGHJPRTX]\d\dR?/.test('14G38R'));
+        });
+    </script>
 </body>
 </html>

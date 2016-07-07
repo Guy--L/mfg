@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Test.Models.Context
+
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -29,3 +31,6 @@
         <p><a class="btn btn-default" href="@Url.Action("Conversions", "Control", null, Request.Url.Scheme)"><i class="fa fa-5x fa-random"></i></a></p>
     </div>
 </div>
+
+@section scripts{
+}

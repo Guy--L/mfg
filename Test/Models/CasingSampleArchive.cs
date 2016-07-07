@@ -20,10 +20,19 @@ namespace Test.Models
         // 
         private static string _labresult = @"
             declare @@archivecut datetime
+            
+            declare @@values table (
+                allid int,
+                sampleid int,
+                stamp datetime,
+                value varchar(64),
+                name varchar(64)
+            )
 
             select @@archivecut = min(stamp) from [All]
 
             insert into [All] (tagid, value, stamp, quality)
+            output inserted.allid, inserted.quality, inserted.stamp, inserted.value, 'csg_moist_pct' into @@values
 	        select r.tagid,
 	            cast(round((1 - l.r3 / l.r1) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
@@ -37,6 +46,7 @@ namespace Test.Models
                     and l.stamp >= @@archivecut
 
             insert into [All] (tagid, value, stamp, quality)
+            output inserted.allid, inserted.quality, inserted.stamp, inserted.value, 'csg_glyc_pct' into @@values
             select r.tagid,
                 cast(round((l.r4 / l.r5 / 2.0 / ( l.r3 / l.r1 * l.r2 / 1000.0 * (1 - l.OilPct / 1000.0 ))) * 100.0, 1) as varchar(64)) as value,
 	            l.stamp,
@@ -72,6 +82,40 @@ namespace Test.Models
 		            and l.Completed is not null 
 		            and {0}
                     and l.stamp < @@archivecut
+
+            ;with avgs as (
+	            select [sys], convert(varchar(64), avg(gly), 0) as value, g.stamp, 192 as quality from (
+		            select a.stamp, convert(float, a.value, 1) as gly, 'Sys'+convert(char(1), s.systemid, 1) as [sys]
+		            from @@values a
+		            join mesdb.dbo.[sample] s on s.sampleid = a.sampleid
+		            where a.name = 'csg_glyc_pct' and len(a.value) < 5
+	            ) g
+	            group by stamp, [sys]
+            )
+            insert into [All] 
+            select t.TagId, v.value, v.stamp, v.quality
+            from avgs v 
+            join channel c on c.Name = v.[sys]
+            join device d on c.ChannelId = d.ChannelId
+            join tag t on t.DeviceId = d.DeviceId
+            where t.name = 'csg_glyc_pct'
+
+            ;with avgs as (
+	            select [sys], convert(varchar(64), avg(gly), 0) as value, g.stamp, 192 as quality from (
+		            select a.stamp, convert(float, a.value, 1) as gly, 'Sys'+convert(char(1), s.systemid, 1) as [sys]
+		            from @@values a
+		            join mesdb.dbo.[sample] s on s.sampleid = a.sampleid
+		            where a.name = 'csg_moist_pct' and len(a.value) < 5
+	            ) g
+	            group by stamp, [sys]
+            )
+            insert into [All] 
+            select t.TagId, v.value, v.stamp, v.quality
+            from avgs v 
+            join channel c on c.Name = v.[sys]
+            join device d on c.ChannelId = d.ChannelId
+            join tag t on t.DeviceId = d.DeviceId
+            where t.name = 'csg_moist_pct'
         ";
 
         public static string _year = @" l.stamp <= '{0}' and year(l.stamp) = {1} ";
@@ -102,10 +146,16 @@ namespace Test.Models
         {
             using (tagDB d = new tagDB())
             {
-                d.OneTimeCommandTimeout = 20000;
-                var query = string.Format(_labresult, _year);
-                query = string.Format(query, DateTime.Now.ToStamp(), yr);
-                var t = d.Execute(query);
+                try { 
+                    d.OneTimeCommandTimeout = 20000;
+                    var query = string.Format(_labresult, _year);
+                    query = string.Format(query, DateTime.Now.ToStamp(), yr);
+                    var t = d.Execute(query);
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception(d.LastSQL, e));
+                }
             }
         }
 
@@ -116,10 +166,16 @@ namespace Test.Models
 
             using (tagDB d = new tagDB())
             {
-                d.OneTimeCommandTimeout = 20000;
-                var query = string.Format(_labresult, _ids);
-                query = string.Format(query, ids);
-                var t = d.Execute(query);
+                try { 
+                    d.OneTimeCommandTimeout = 20000;
+                    var query = string.Format(_labresult, _ids);
+                    query = string.Format(query, ids);
+                    var t = d.Execute(query);
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception(d.LastSQL, e));
+                }
             }
         }
     }

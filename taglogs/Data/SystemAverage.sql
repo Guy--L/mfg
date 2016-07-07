@@ -4,7 +4,7 @@
 		from [all] a
 		join tag t on t.tagid = a.tagid
 		join mesdb.dbo.[sample] s on s.sampleid = a.quality
-		where t.name = 'csg_glyc_pct' and len(a.value) < 5
+		where t.name = 'csg_glyc_pct' and len(a.value) < 5 and a.stamp > '2016-06-30 01:00:00.000'
 	) g
 	group by stamp, [sys]
 )

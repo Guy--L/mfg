@@ -78,7 +78,11 @@ namespace Test.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            var top = Session["Context"] as Context;
+            if (top == null)
+                top = new Context();
+
+            return View(top);
         }
 
         public ActionResult SolutionBatches()
