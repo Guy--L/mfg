@@ -3,6 +3,9 @@
     var producttip = new Tooltip("<p>filter on code<br /><i>eg.</i> 13G39R I272<br />spec code optional</p>").Placement("bottom").Html(true);
     var lottip = new Tooltip("<p>filter on lot<br /><i>eg.</i> B5353C2003<br />5-2015<br />353-julian day<br />C2-line<br />003-reel</p>").Placement("bottom").Html(true);
 }
+@Html.HiddenFor(m => m.ConnectionId)
+@Html.HiddenFor(m => m.ProductCodeId)
+@Html.HiddenFor(m => m.SampleId)
 @using (var form = Html.Bootstrap().Begin(new Form().Id("contextform").Type(FormType.Inline).Class("navbar-form navbar-right")))
 {
     <i class='fa fa-gift text-info' id='producticon' title='click to clear filter'></i>

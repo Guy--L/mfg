@@ -17,8 +17,8 @@
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
+    <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode />
     <ApplicationInsightsResourceId>/subscriptions/d04a8da7-67c9-4dfb-94c7-8830da216992/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/Test</ApplicationInsightsResourceId>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -237,6 +237,7 @@
     <Compile Include="Controllers\DeleteFileAttribute.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Hubs\ContextHub.cs" />
+    <Compile Include="Models\Casings.cs" />
     <Compile Include="Models\CasingSampleArchive.cs" />
     <Compile Include="Models\Conversion.cs" />
     <Compile Include="Models\Extruder.cs" />
@@ -254,7 +255,6 @@
     </Compile>
     <Compile Include="Hubs\LineHub.cs" />
     <Compile Include="Models\CasingSamples.cs" />
-    <Compile Include="Models\CasingTest.cs" />
     <Compile Include="Models\Database.cs">
       <DependentUpon>Database.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -630,7 +630,6 @@
     <Content Include="Views\Shared\_Layout2.cshtml" />
     <Content Include="Views\Home\SolutionChart.cshtml" />
     <Content Include="Views\Shared\_Alerts.cshtml" />
-    <Content Include="Views\Home\CasingTests.cshtml" />
     <Content Include="Views\Home\CTest.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CasingTest.cshtml" />
     <Content Include="Views\Emails\Web.config" />
@@ -654,8 +653,8 @@
     <Content Include="Views\Shared\DisplayTemplates\Reading.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SampleType.cshtml" />
     <Content Include="Views\Home\CasingSamples.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\CasingSurvey.cshtml" />
-    <Content Include="Views\Home\CasingSample.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CasingBatch.cshtml" />
+    <Content Include="Views\Home\CasingSampleView.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CasingSamplesView.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CasingSample.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Reading.cshtml" />
@@ -687,6 +686,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Admin\PlanPath.cshtml" />
     <Content Include="Views\Shared\_Context.cshtml" />
+    <Content Include="Views\Home\CasingSample.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Slides\" />

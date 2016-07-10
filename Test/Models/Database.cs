@@ -920,247 +920,6 @@ namespace Test.Models
 	
 	}
 
-	[TableName("Sample")]
-	[PrimaryKey("SampleId")]
-	[ExplicitColumns]
-    public partial class Sample : labDB.Record<Sample>  
-    {        [Column] 		public int SampleId 
-		{ 
-			get
-			{
-				return _SampleId;
-			}
-			set
-			{
-				_SampleId = value;
-				MarkColumnModified("SampleId");
-			}
-		}
-		int _SampleId;
-        [Column] 		public DateTime Scheduled 
-		{ 
-			get
-			{
-				return _Scheduled;
-			}
-			set
-			{
-				_Scheduled = value;
-				MarkColumnModified("Scheduled");
-			}
-		}
-		DateTime _Scheduled;
-        [Column] 		public DateTime Stamp 
-		{ 
-			get
-			{
-				return _Stamp;
-			}
-			set
-			{
-				_Stamp = value;
-				MarkColumnModified("Stamp");
-			}
-		}
-		DateTime _Stamp;
-        [Column] 		public int LineId 
-		{ 
-			get
-			{
-				return _LineId;
-			}
-			set
-			{
-				_LineId = value;
-				MarkColumnModified("LineId");
-			}
-		}
-		int _LineId;
-        [Column] 		public int ProductCodeId 
-		{ 
-			get
-			{
-				return _ProductCodeId;
-			}
-			set
-			{
-				_ProductCodeId = value;
-				MarkColumnModified("ProductCodeId");
-			}
-		}
-		int _ProductCodeId;
-        [Column] 		public string Note 
-		{ 
-			get
-			{
-				return _Note;
-			}
-			set
-			{
-				_Note = value;
-				MarkColumnModified("Note");
-			}
-		}
-		string _Note;
-        [Column] 		public string Tech 
-		{ 
-			get
-			{
-				return _Tech;
-			}
-			set
-			{
-				_Tech = value;
-				MarkColumnModified("Tech");
-			}
-		}
-		string _Tech;
-        [Column] 		public DateTime? Completed 
-		{ 
-			get
-			{
-				return _Completed;
-			}
-			set
-			{
-				_Completed = value;
-				MarkColumnModified("Completed");
-			}
-		}
-		DateTime? _Completed;
-        [Column] 		public int ReelNumber 
-		{ 
-			get
-			{
-				return _ReelNumber;
-			}
-			set
-			{
-				_ReelNumber = value;
-				MarkColumnModified("ReelNumber");
-			}
-		}
-		int _ReelNumber;
-        [Column] 		public int? Footage 
-		{ 
-			get
-			{
-				return _Footage;
-			}
-			set
-			{
-				_Footage = value;
-				MarkColumnModified("Footage");
-			}
-		}
-		int? _Footage;
-        [Column] 		public int? BarCode 
-		{ 
-			get
-			{
-				return _BarCode;
-			}
-			set
-			{
-				_BarCode = value;
-				MarkColumnModified("BarCode");
-			}
-		}
-		int? _BarCode;
-        [Column] 		public int? ParameterId 
-		{ 
-			get
-			{
-				return _ParameterId;
-			}
-			set
-			{
-				_ParameterId = value;
-				MarkColumnModified("ParameterId");
-			}
-		}
-		int? _ParameterId;
-        [Column] 		public int? Reading1 
-		{ 
-			get
-			{
-				return _Reading1;
-			}
-			set
-			{
-				_Reading1 = value;
-				MarkColumnModified("Reading1");
-			}
-		}
-		int? _Reading1;
-        [Column] 		public int? Reading2 
-		{ 
-			get
-			{
-				return _Reading2;
-			}
-			set
-			{
-				_Reading2 = value;
-				MarkColumnModified("Reading2");
-			}
-		}
-		int? _Reading2;
-        [Column] 		public int? ProcessId 
-		{ 
-			get
-			{
-				return _ProcessId;
-			}
-			set
-			{
-				_ProcessId = value;
-				MarkColumnModified("ProcessId");
-			}
-		}
-		int? _ProcessId;
-        [Column] 		public int? SystemId 
-		{ 
-			get
-			{
-				return _SystemId;
-			}
-			set
-			{
-				_SystemId = value;
-				MarkColumnModified("SystemId");
-			}
-		}
-		int? _SystemId;
-        [Column] 		public DateTime? NextScheduled 
-		{ 
-			get
-			{
-				return _NextScheduled;
-			}
-			set
-			{
-				_NextScheduled = value;
-				MarkColumnModified("NextScheduled");
-			}
-		}
-		DateTime? _NextScheduled;
-        [Column] 		public int? Reading3 
-		{ 
-			get
-			{
-				return _Reading3;
-			}
-			set
-			{
-				_Reading3 = value;
-				MarkColumnModified("Reading3");
-			}
-		}
-		int? _Reading3;
-	
-	}
-
 	[TableName("ProductCode")]
 	[PrimaryKey("ProductCodeId")]
 	[ExplicitColumns]
@@ -2152,126 +1911,48 @@ namespace Test.Models
 	
 	}
 
-	[TableName("LineOperation")]
+	[TableName("Sample")]
 	[ExplicitColumns]
-    public partial class LineOperation : labDB.Record<LineOperation>  
-    {        [Column] 		public decimal INDAY 
+    public partial class Sample : labDB.Record<Sample>  
+    {        [Column] 		public int SampleId 
 		{ 
 			get
 			{
-				return _INDAY;
+				return _SampleId;
 			}
 			set
 			{
-				_INDAY = value;
-				MarkColumnModified("INDAY");
+				_SampleId = value;
+				MarkColumnModified("SampleId");
 			}
 		}
-		decimal _INDAY;
-        [Column] 		public string INUNIT 
+		int _SampleId;
+        [Column] 		public DateTime Scheduled 
 		{ 
 			get
 			{
-				return _INUNIT;
+				return _Scheduled;
 			}
 			set
 			{
-				_INUNIT = value;
-				MarkColumnModified("INUNIT");
+				_Scheduled = value;
+				MarkColumnModified("Scheduled");
 			}
 		}
-		string _INUNIT;
-        [Column] 		public decimal INLINE 
+		DateTime _Scheduled;
+        [Column] 		public DateTime Stamp 
 		{ 
 			get
 			{
-				return _INLINE;
+				return _Stamp;
 			}
 			set
 			{
-				_INLINE = value;
-				MarkColumnModified("INLINE");
+				_Stamp = value;
+				MarkColumnModified("Stamp");
 			}
 		}
-		decimal _INLINE;
-        [Column] 		public decimal INSHFT 
-		{ 
-			get
-			{
-				return _INSHFT;
-			}
-			set
-			{
-				_INSHFT = value;
-				MarkColumnModified("INSHFT");
-			}
-		}
-		decimal _INSHFT;
-        [Column] 		public string STCODE 
-		{ 
-			get
-			{
-				return _STCODE;
-			}
-			set
-			{
-				_STCODE = value;
-				MarkColumnModified("STCODE");
-			}
-		}
-		string _STCODE;
-        [Column] 		public decimal INTIME 
-		{ 
-			get
-			{
-				return _INTIME;
-			}
-			set
-			{
-				_INTIME = value;
-				MarkColumnModified("INTIME");
-			}
-		}
-		decimal _INTIME;
-        [Column] 		public string RSCODE 
-		{ 
-			get
-			{
-				return _RSCODE;
-			}
-			set
-			{
-				_RSCODE = value;
-				MarkColumnModified("RSCODE");
-			}
-		}
-		string _RSCODE;
-        [Column] 		public string INPRD 
-		{ 
-			get
-			{
-				return _INPRD;
-			}
-			set
-			{
-				_INPRD = value;
-				MarkColumnModified("INPRD");
-			}
-		}
-		string _INPRD;
-        [Column] 		public DateTime? stamp 
-		{ 
-			get
-			{
-				return _stamp;
-			}
-			set
-			{
-				_stamp = value;
-				MarkColumnModified("stamp");
-			}
-		}
-		DateTime? _stamp;
+		DateTime _Stamp;
         [Column] 		public int LineId 
 		{ 
 			get
@@ -2285,7 +1966,7 @@ namespace Test.Models
 			}
 		}
 		int _LineId;
-        [Column] 		public int? ProductCodeId 
+        [Column] 		public int ProductCodeId 
 		{ 
 			get
 			{
@@ -2297,20 +1978,176 @@ namespace Test.Models
 				MarkColumnModified("ProductCodeId");
 			}
 		}
-		int? _ProductCodeId;
-        [Column] 		public long? RecordId 
+		int _ProductCodeId;
+        [Column] 		public string Note 
 		{ 
 			get
 			{
-				return _RecordId;
+				return _Note;
 			}
 			set
 			{
-				_RecordId = value;
-				MarkColumnModified("RecordId");
+				_Note = value;
+				MarkColumnModified("Note");
 			}
 		}
-		long? _RecordId;
+		string _Note;
+        [Column] 		public string Tech 
+		{ 
+			get
+			{
+				return _Tech;
+			}
+			set
+			{
+				_Tech = value;
+				MarkColumnModified("Tech");
+			}
+		}
+		string _Tech;
+        [Column] 		public DateTime? Completed 
+		{ 
+			get
+			{
+				return _Completed;
+			}
+			set
+			{
+				_Completed = value;
+				MarkColumnModified("Completed");
+			}
+		}
+		DateTime? _Completed;
+        [Column] 		public int ReelNumber 
+		{ 
+			get
+			{
+				return _ReelNumber;
+			}
+			set
+			{
+				_ReelNumber = value;
+				MarkColumnModified("ReelNumber");
+			}
+		}
+		int _ReelNumber;
+        [Column] 		public int? Footage 
+		{ 
+			get
+			{
+				return _Footage;
+			}
+			set
+			{
+				_Footage = value;
+				MarkColumnModified("Footage");
+			}
+		}
+		int? _Footage;
+        [Column] 		public int? BarCode 
+		{ 
+			get
+			{
+				return _BarCode;
+			}
+			set
+			{
+				_BarCode = value;
+				MarkColumnModified("BarCode");
+			}
+		}
+		int? _BarCode;
+        [Column] 		public int? ParameterId 
+		{ 
+			get
+			{
+				return _ParameterId;
+			}
+			set
+			{
+				_ParameterId = value;
+				MarkColumnModified("ParameterId");
+			}
+		}
+		int? _ParameterId;
+        [Column] 		public int? Reading1 
+		{ 
+			get
+			{
+				return _Reading1;
+			}
+			set
+			{
+				_Reading1 = value;
+				MarkColumnModified("Reading1");
+			}
+		}
+		int? _Reading1;
+        [Column] 		public int? Reading2 
+		{ 
+			get
+			{
+				return _Reading2;
+			}
+			set
+			{
+				_Reading2 = value;
+				MarkColumnModified("Reading2");
+			}
+		}
+		int? _Reading2;
+        [Column] 		public int? ProcessId 
+		{ 
+			get
+			{
+				return _ProcessId;
+			}
+			set
+			{
+				_ProcessId = value;
+				MarkColumnModified("ProcessId");
+			}
+		}
+		int? _ProcessId;
+        [Column] 		public int? SystemId 
+		{ 
+			get
+			{
+				return _SystemId;
+			}
+			set
+			{
+				_SystemId = value;
+				MarkColumnModified("SystemId");
+			}
+		}
+		int? _SystemId;
+        [Column] 		public DateTime? NextScheduled 
+		{ 
+			get
+			{
+				return _NextScheduled;
+			}
+			set
+			{
+				_NextScheduled = value;
+				MarkColumnModified("NextScheduled");
+			}
+		}
+		DateTime? _NextScheduled;
+        [Column] 		public int? Reading3 
+		{ 
+			get
+			{
+				return _Reading3;
+			}
+			set
+			{
+				_Reading3 = value;
+				MarkColumnModified("Reading3");
+			}
+		}
+		int? _Reading3;
 	
 	}
 
@@ -2500,241 +2337,6 @@ namespace Test.Models
 			}
 		}
 		int _SampleId;
-	
-	}
-
-	[TableName("CasingGroup")]
-	[PrimaryKey("CasingGroupId")]
-	[ExplicitColumns]
-    public partial class CasingGroup : labDB.Record<CasingGroup>  
-    {        [Column] 		public int CasingGroupId 
-		{ 
-			get
-			{
-				return _CasingGroupId;
-			}
-			set
-			{
-				_CasingGroupId = value;
-				MarkColumnModified("CasingGroupId");
-			}
-		}
-		int _CasingGroupId;
-        [Column] 		public DateTime DateTime 
-		{ 
-			get
-			{
-				return _DateTime;
-			}
-			set
-			{
-				_DateTime = value;
-				MarkColumnModified("DateTime");
-			}
-		}
-		DateTime _DateTime;
-	
-	}
-
-	[TableName("CasingTest")]
-	[PrimaryKey("CasingTestId")]
-	[ExplicitColumns]
-    public partial class CasingTest : labDB.Record<CasingTest>  
-    {        [Column] 		public int CasingTestId 
-		{ 
-			get
-			{
-				return _CasingTestId;
-			}
-			set
-			{
-				_CasingTestId = value;
-				MarkColumnModified("CasingTestId");
-			}
-		}
-		int _CasingTestId;
-        [Column] 		public int LineId 
-		{ 
-			get
-			{
-				return _LineId;
-			}
-			set
-			{
-				_LineId = value;
-				MarkColumnModified("LineId");
-			}
-		}
-		int _LineId;
-        [Column] 		public int SystemId 
-		{ 
-			get
-			{
-				return _SystemId;
-			}
-			set
-			{
-				_SystemId = value;
-				MarkColumnModified("SystemId");
-			}
-		}
-		int _SystemId;
-        [Column] 		public int? Reel 
-		{ 
-			get
-			{
-				return _Reel;
-			}
-			set
-			{
-				_Reel = value;
-				MarkColumnModified("Reel");
-			}
-		}
-		int? _Reel;
-        [Column] 		public decimal? Delm 
-		{ 
-			get
-			{
-				return _Delm;
-			}
-			set
-			{
-				_Delm = value;
-				MarkColumnModified("Delm");
-			}
-		}
-		decimal? _Delm;
-        [Column] 		public decimal? WetWt 
-		{ 
-			get
-			{
-				return _WetWt;
-			}
-			set
-			{
-				_WetWt = value;
-				MarkColumnModified("WetWt");
-			}
-		}
-		decimal? _WetWt;
-        [Column] 		public decimal? DryWt 
-		{ 
-			get
-			{
-				return _DryWt;
-			}
-			set
-			{
-				_DryWt = value;
-				MarkColumnModified("DryWt");
-			}
-		}
-		decimal? _DryWt;
-        [Column] 		public decimal? GlyWetWt 
-		{ 
-			get
-			{
-				return _GlyWetWt;
-			}
-			set
-			{
-				_GlyWetWt = value;
-				MarkColumnModified("GlyWetWt");
-			}
-		}
-		decimal? _GlyWetWt;
-        [Column] 		public decimal? GlyArea 
-		{ 
-			get
-			{
-				return _GlyArea;
-			}
-			set
-			{
-				_GlyArea = value;
-				MarkColumnModified("GlyArea");
-			}
-		}
-		decimal? _GlyArea;
-        [Column] 		public decimal? GlySTD 
-		{ 
-			get
-			{
-				return _GlySTD;
-			}
-			set
-			{
-				_GlySTD = value;
-				MarkColumnModified("GlySTD");
-			}
-		}
-		decimal? _GlySTD;
-        [Column] 		public decimal? OilArea 
-		{ 
-			get
-			{
-				return _OilArea;
-			}
-			set
-			{
-				_OilArea = value;
-				MarkColumnModified("OilArea");
-			}
-		}
-		decimal? _OilArea;
-        [Column] 		public decimal? Oil 
-		{ 
-			get
-			{
-				return _Oil;
-			}
-			set
-			{
-				_Oil = value;
-				MarkColumnModified("Oil");
-			}
-		}
-		decimal? _Oil;
-        [Column] 		public DateTime DateTime 
-		{ 
-			get
-			{
-				return _DateTime;
-			}
-			set
-			{
-				_DateTime = value;
-				MarkColumnModified("DateTime");
-			}
-		}
-		DateTime _DateTime;
-        [Column] 		public int? CasingGroupId 
-		{ 
-			get
-			{
-				return _CasingGroupId;
-			}
-			set
-			{
-				_CasingGroupId = value;
-				MarkColumnModified("CasingGroupId");
-			}
-		}
-		int? _CasingGroupId;
-        [Column] 		public int? Feet 
-		{ 
-			get
-			{
-				return _Feet;
-			}
-			set
-			{
-				_Feet = value;
-				MarkColumnModified("Feet");
-			}
-		}
-		int? _Feet;
 	
 	}
 

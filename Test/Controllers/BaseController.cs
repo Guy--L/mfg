@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using Test.Models;
+using Microsoft.AspNet.SignalR;
+using Test.Hubs;
 
 namespace Test.Controllers
 {
@@ -182,10 +184,14 @@ namespace Test.Controllers
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            ViewBag.Context = _top ?? new Context();   
             ViewBag.built = built;
             ViewBag.User = _user = Session.Get<string>("user");
             _top = Session.Get<Context>("Context");
+            if (_top == null) { 
+                if (ContextHub.contexts.TryGetValue(_user, out _top))
+                    Session.Set<Context>("Context", _top);
+            }
+            ViewBag.Context = _top ?? new Context();   
 
             base.OnActionExecuting(filterContext);
         }

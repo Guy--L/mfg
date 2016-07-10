@@ -175,31 +175,6 @@ namespace Test.Controllers
             return RedirectToAction("SolutionTests", new { id = tv.t.SolutionBatchId });
         }
 
-        public ActionResult CasingTests(int id)
-        {
-            CasingTests c = new CasingTests(id);
-            return View(c);
-        }
-
-        public ActionResult CTestNew()
-        {
-            CasingTestView c = new CasingTestView();
-            return View(c);
-        }
-
-        public ActionResult CTest(int id)
-        {
-            CasingTestView c = new CasingTestView(id);
-            return View(c);
-        }
-
-        [HttpPost]
-        public ActionResult SaveCTest(CasingTestView cv)
-        {
-            cv.Save();
-            return RedirectToAction("CasingTests");
-        }
-
         public ActionResult Units()
         {
             using (labDB db = new labDB())
@@ -222,6 +197,12 @@ namespace Test.Controllers
             return View();
         }
 
+        public ActionResult CasingSample(int id)
+        {
+            CasingSample s = new CasingSample(id, true);
+            return View(s);
+        }
+
         public ActionResult CasingSamples()
         {
             CasingSamples s = new CasingSamples();
@@ -229,7 +210,7 @@ namespace Test.Controllers
             return View(s);
         }
 
-        public ActionResult CasingSample(int id)
+        public ActionResult CasingSampleView(int id)
         {
             CasingSamplesView s = new CasingSamplesView(id);
             TempData["CasingSampleView"] = s;

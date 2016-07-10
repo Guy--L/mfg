@@ -98,7 +98,6 @@
     <Build Include="QualityEvent.sql" />
     <Build Include="Reason.sql" />
     <Build Include="RecipeReading.sql" />
-    <Build Include="CasingTest.sql" />
     <Build Include="OilSTD.sql" />
     <Build Include="CasingGroup.sql" />
     <Build Include="Series.sql" />

@@ -229,7 +229,7 @@ namespace Test.Models
         {
             List<SelectListItem> _list = list.ToList();
             _list.Insert(0, new SelectListItem() { Value = "0", Text = "" });
-            return new SelectList((IEnumerable<SelectListItem>)_list, "Value", "Text");
+            return new SelectList(_list, "Value", "Text");
         }
     }
 }

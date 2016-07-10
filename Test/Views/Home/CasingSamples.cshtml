@@ -49,10 +49,10 @@
             $('#casingsamples tbody').on('click', 'tr', function () {
                 var id = $(this).data('id');
                 id = (id != '' && typeof id !== 'undefined') ? id : -bid;
-                location.href = '@Url.Action("CasingSample", "Home", null, Request.Url.Scheme)/' + id;
+                location.href = '@Url.Action("CasingSampleView", "Home", null, Request.Url.Scheme)/' + id;
             });
             $('#addsample').on('click', function () {
-                location.href = '@Url.Action("CasingSample", "Home",null,Request.Url.Scheme)/0' ;
+                location.href = '@Url.Action("CasingSampleView", "Home",null,Request.Url.Scheme)/0' ;
             });
         });
     </script>

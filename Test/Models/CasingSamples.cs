@@ -269,6 +269,23 @@ namespace Test.Models
             };
         }
 
+        public CasingSample(int id, bool deep)
+        {
+            if (id != 0)
+            {
+                using (labDB d = new labDB())
+                {
+                    d.SingleInto(this, CasingSamplesView._batch + " where s.sampleid = @0", id);
+                }
+                return;
+            }
+            Tech = "";
+            Note = "";
+            ProductCodeId = 0;
+            Stamp = DateTime.Now;
+            ParameterId = _type;
+        }
+
         public CasingSample(int id)
         {
             if (id != 0)
@@ -421,7 +438,7 @@ namespace Test.Models
         }
     }
 
-    public class CasingSurvey
+    public class CasingBatch
     {
         public DateTime scheduled { get; set; }
         public string julianshift
@@ -440,7 +457,7 @@ namespace Test.Models
         public int gly { get; set; }
         public bool complete { get; set; }
 
-        public CasingSurvey() { }
+        public CasingBatch() { }
     }
 
     public class CasingSamples
@@ -469,7 +486,7 @@ namespace Test.Models
             group by s.scheduled
             order by s.scheduled desc
         ";
-        public List<CasingSurvey> batches { get; set; }
+        public List<CasingBatch> batches { get; set; }
         public HttpPostedFileBase file { get; set; }
 
         public CasingSamples()
@@ -477,7 +494,7 @@ namespace Test.Models
             using (labDB d = new labDB())
             {
                 d.OneTimeCommandTimeout = 120;
-                batches = d.Fetch<CasingSurvey>(_all);
+                batches = d.Fetch<CasingBatch>(_all);
             }
         }
 
@@ -683,7 +700,7 @@ namespace Test.Models
             update [sample] set productcodeid = {0} where sampleid = {1}
         ";
 
-        private static string _batch = @"
+        public static string _batch = @"
             SELECT s.[SampleId]
                   ,s.[Scheduled]
                   ,s.[Stamp]
@@ -728,7 +745,12 @@ namespace Test.Models
                   ,p.[Gly_Max]        as _product__Gly_Max                   
                   ,p.[Oil_Min]        as _product__Oil_Min                   
                   ,p.[Oil_Aim]        as _product__Oil_Aim               
-                  ,p.[Oil_Max]        as _product__Oil_Max               
+                  ,p.[Oil_Max]        as _product__Oil_Max  
+                  ,p.[LF_Min]         as _product__LF_Min                   
+                  ,p.[LF_Aim]         as _product__LF_Aim               
+                  ,p.[LF_Max]         as _product__LF_Max  
+                  ,p.[LF_UCL]         as _product__LF_UCL                   
+                  ,p.[LF_LCL]         as _product__LF_LCL               
               FROM [dbo].[Sample] s
               left join [Line] n on n.LineId = s.LineId
               left join [dbo].[Reading] r on r.SampleId = s.SampleId

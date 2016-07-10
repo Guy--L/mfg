@@ -267,11 +267,13 @@ form#casingup button#upload {
 }
 
 #contextform div input {
-    margin: 8px 8px 10px;
+    margin: 6px 8px 6px 3px;
     padding: 1px;
-    line-height: 20px;
-    height: 20px;
-    width: 100px;
+    line-height: 22px;
+    height: 22px;
+    width: 120px;
+    font-size: larger;
+    font-weight: bold;
 }
 
 #contextform .context-tooltip {

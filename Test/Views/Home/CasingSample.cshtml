@@ -1,500 +1,85 @@
-﻿@model Test.Models.CasingSamplesView
+﻿@model Test.Models.CasingSample
 
+@{
+    ViewBag.Title = "Casing Result";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+    List<IHtmlString> buttons = new List<IHtmlString>() {
+            Html.Raw(" "),
+        };
+}
 <div class="container">
     <div class="row">
-        <div class="col-md-12 text-primary">@Html.Raw(Model.Symbol) Casing Samples from <b>@Model.ScheduleTime.ToString("dd-MMM-yy hh:mm tt") (@Model.JulianShift)</b></div>
+        <div class="col-xs-12 text-primary"><h3>Casing Lab Result</h3> for @Model.Line.Name with @Model.product.FullCode</div>
     </div>
-    <hr />
-    <div class="row form-inline">
-        <div class="col-md-1 tare-attached text-danger">
-            @if (!Model.allCompleted)
-            {
-            <i class="fa fa-2x fa-balance-scale faa-flash animated"></i>
-            }
-        </div>
-        <div class="col-md-2 col-md-offset-1 text-primary">Technician&nbsp;@Html.Bootstrap().TextBoxFor(m => m.Tech).Class("tech").Label().Class("sr-only")</div>
-        <div class="col-md-5 text-primary">
-            Step&nbsp;
-            <div class="btn-group step">
-                <button type="button" class="btn btn-primary Sample">Sample</button>
-                <button type="button" class="btn btn-success Wet">Wet</button>
-                <button type="button" class="btn btn-warning Dry">Dry</button>
-                <button type="button" class="btn btn-danger Glycerin">Glycerin</button>
-                <button type="button" class="btn btn-info Oil">Oil</button>
+        <div class="row">
+            <div class="col-xs-6">
+                @Model.Stamp.ToString()
             </div>
-        </div>
-        <div class="col-md-3">
-            <button id="download" class="btn btn-toolbar"><i class="fa fa-cloud-download"></i> Export x.@(Model.JulianShift.Replace(' ', '-')).xls</button>&nbsp;
-            @if (!Model.allCompleted)
-            {
-                <button id="publish" class="btn btn-toolbar"><i class="fa fa-share-alt"></i> Publish</button>
-            }
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        @foreach (var d in Model.samples)
-        {
-            <div class="panel col-md-3">
-                <table class="table table-condensed table-no-border casingsample">
+            <div class="col-xs-6">
+                <h2>@Model.product.FullCode</h2>
+                <table class="table table-responsive table-condensed" id="productspectable">
                     <thead>
-                        <tr class="casingsample">
-                            <th style="width:0px;" class="Status"></th>
-                            <th style="width:15px;" class="Sample text-primary" title="Click on line to add sample"></th>
-                            <th style="width:35px;" class="linecol"><i class="fa fa-map-marker text-primary"></i></th>
-                            <th style="width:150px;" class="Sample text-primary">Product</th>
-                            <th style="width:15px;" class="Sample text-primary">Reel</th>
-                            <th style="width:160px;" class="Sample text-primary">Feet</th>
-                            <th style="width:50px;" class="Sample text-primary">Del</th>
-                            <th style="width:70px;" class="Sample text-primary">Rot</th>
-                            <th style="width:70px;" class="Sample text-primary">Note</th>
-                            <th style="width:70px;" class="Wet text-success serialio">Wt4Oven</th>
-                            <th style="width:70px;" class="Wet text-success serialio">Wt4Gly</th>
-                            <th style="width:70px;" class="Dry text-warning serialio">WtDry</th>
-                            <th style="width:70px;" class="Glycerin text-danger">Area</th>
-                            <th style="width:70px;" class="Glycerin text-danger">STD</th>
-                            <th style="width:70px;" class="Dry text-warning">Moisture%</th>
-                            <th style="width:70px;" class="Glycerin text-danger">Glycerin%</th>
-                            <th style="width:70px;" class="Oil text-info">OilPct</th>
+                        <tr>
+                            <th>Parameter</th><th>Actual</th>
+                            <th style="text-align: left;">Min</th>
+                            <th style="text-align: left;" title="Low Control Limit">Low</th>
+                            <th style="text-align: left;">Aim</th>
+                            <th style="text-align: left;" title="High Control Limit">High</th>
+                            <th style="text-align: left;">Max</th>
                         </tr>
                     </thead>
-                    @Html.DisplayFor(m => m.samples[d.Key])
+                    <tbody>
+                        <tr class="@Model.MoistStatus">
+                            <td><b>Reel Moisture</b></td>
+                            <td class="actual">@Model.MoistPct.Value.ToString("N2")</td>
+                            <td>@Model.product.ReelMoist_Min</td><td></td>
+                            <td>@Model.product.ReelMoist_Aim</td><td></td>
+                            <td>@Model.product.ReelMoist_Max</td>
+                        </tr>
+                        <tr class="@Model.GlyStatus">
+                            <td><b>Glycerin</b></td>
+                            <td class="actual">@Model.GlyPct.Value.ToString("N2")</td>
+                            <td>@Model.product.Gly_Min</td><td></td>
+                            <td>@Model.product.Gly_Aim</td><td></td>
+                            <td>@Model.product.Gly_Max</td>
+                        </tr>
+                        <tr>
+                            <td><b>Oil</b></td>
+                            <td></td>
+                            <td>@Model.product.Oil_Min</td><td></td>
+                            <td>@Model.product.Oil_Aim</td><td></td>
+                            <td>@Model.product.Oil_Max</td>
+                        </tr>
+                        <tr>
+                            <td><b>Layflat</b></td>
+                            <td></td>
+                            <td>@Model.product.LF_Min</td>
+                            <td>@Model.product.LF_LCL</td>
+                            <td>@Model.product.LF_Aim</td>
+                            <td>@Model.product.LF_UCL</td>
+                            <td>@Model.product.LF_Max</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
-        }
-    </div>
-</div>
-<div class="modal fade" id="NoteModal" tabindex="-1"
-     role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">
-                        &times;
-                    </span><span class="sr-only">
-                        Close
-                    </span>
-                </button>
-                <h4 class="modal-title" id="NoteLabel">
-                    Note
-                </h4>
-            </div>
-            <div class="modal-body">
-                @Html.Bootstrap().TextBox("note").Id("note").Class("popup")
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="savenote" class="btn btn-primary" data-id="">Save</button>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                @Html.Bootstrap().Button().Text("Previous").Id("previous").Style(ButtonStyle.Success)
+                &nbsp;&nbsp;
+                @Html.Bootstrap().Button().Text("Next").Id("next").Style(ButtonStyle.Primary)
             </div>
         </div>
-    </div>
 </div>
-@if (!Model.allCompleted)
-{
-    @Html.HiddenFor(m => m.productCode)
-    <div class="modal fade" id="CodeModal" tabindex="-1"
-         role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">
-                            &times;
-                        </span><span class="sr-only">
-                            Close
-                        </span>
-                    </button>
-                    <h4 class="modal-title" id="CodeLabel">
-                        Product Code for Line
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    @Html.Bootstrap().DropDownListFor(m => m.productCode, Model.products).Id("recode").Class("popup")
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" id="savecode" class="btn btn-primary" data-id="">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
 @section scripts{
-    <script src="~/Scripts/jquery.signalR-2.2.0.min.js" type="text/javascript"></script>
-    <script src="~/signalr/hubs" type="text/javascript"></script>
     <script type="text/javascript">
-        var schedulestamp = new Date(Date.parse('@Model.ScheduleTime.ToLocalTime()'));
-        $('#download').on('click', function (e) {
-            location.href = '@Url.Action("ExportCasingSample", "Home", null, Request.Url.Scheme)';
-        });
-        $('#publish').on('click', function (e) {
-            var id = 0;
-            $('tr.casingsample[data-id]').each(function () {
-                id = $(this).data('id');
-                if (id > 0) return false;
-            });
-            if (typeof id === 'undefined')
-                return;
-            location.href = '@Url.Action("LabCasingResults", "Home", null, Request.Url.Scheme)/' + id;
-        });
         $(function () {
-            masker();
-            $(":input").not('#note').not('#recode').on('focus', function () {
-                $(this).inputmask();
-            });
-            $('#Tech').inputmask('AA');
-            $('input.cmoist').on('change', moisture);
-            $('input.cgly').on('change', glycerin);
-            $('#Tech').focus();
-            $('#publish').prop('disabled', $('tr[data-id!="0"]').length == 0);
-
-            @if (!Model.allCompleted)
-        {
-            <text>
-            var connection2 = $.hubConnection();
-            var portHubProxy = connection2.createHubProxy('portHub');
-            portHubProxy.on('updateField', function (msg) {
-                if (msg.substr(0, 2) == 'I4') {
-                    portHubProxy.invoke('Request', 0);
-                }
-                $(document.activeElement).val(msg.substr(msg.length - 9, 6).trim());
-                if ($(document.activeElement).val().length > 1) next();
-            });
-            connection2.url = "http://localhost:8080/signalr";
-            connection2.start().done(function () {
-                portHubProxy.invoke('Add', 'MT USB CDC Serial Port', 'S');
-                $("div.tare-attached").removeClass("danger").addClass("success");
-            }).fail(function (error) {
-                $("div.tare-attached i").remove();
-                $("div.tare-attached").removeClass("danger").append('<span class="fa-stack fa-lg"><i class="fa fa-balance-scale fa-stack-1x"></i><i class="fa fa-ban fa-stack-2x text-danger" title="Please verify that the Porter program is running then refresh this page to connect to instrument after it has started."></i></span>');
-            });
-            $('body .serialio').keyup(function (e) {
-                if (e.keyCode == 32) {
-                    portHubProxy.invoke('Request', 0);
-                }
-            });
-            </text>
-        }
-
-            var lhub = $.connection.lineHub;
-            lhub.client.reflectField = function (pageid, sid, rid, value) {
-                var $elem = $('#' + pageid).closest('tr');
-                $elem.data('id', sid);
-                if (sid > 0) $('#publish').prop('disabled', false);
-                var tst = $elem.data('id');
-                $elem.data('readingid', rid);
-                var scale = +$(this).data('scale');
-                if (scale == null || isNaN(scale)) scale = 1;
-                $elem.val(value * 1.0 / scale * 1.0)
-            };
-            lhub.client.reflectNote = function (pageid, sid, rid, value) {
-                var $elem = $('#' + pageid);
-                var $row = $elem.closest('tr');
-                $row.data('id', sid);
-
-                $elem.val(value);
-                $elem.siblings('i.noter').removeClass('fa-file-o').removeClass('fa-file-text').addClass(value === '' ? 'fa-file-o' : 'fa-file-text');
-                $elem.parent().attr('title', value);
-            };
-            $.connection.hub.start().done(function () {
-                lhub.server.setSampleTime(schedulestamp, schedulestamp);
-                $('input').not('.popup').on('change', updater);
-            });
-            $.connection.hub.disconnected(function () {
-                setTimeout(function () {
-                    $.connection.hub.start();
-                }, 1000); // Re-start connection after 1 second
-            });
-            function next() {
-                var elem = $(document.activeElement);
-                var inputs = elem.closest("div.container").eq(0).find(":input:visible");
-                if (inputs.length == 0)
-                    return;
-                var idx = (inputs.index(elem) + 1) % inputs.length;
-                while (typeof inputs[idx].select !== "function") {
-                    idx = (idx + 1) % inputs.length;
-                }
-                inputs[idx].focus();
-                inputs[idx].select();
-            }
-            function masker() {
-                //show = (typeof $(this) === 'undefined' || typeof $(this).html() === 'undefined') ? 'Sample' : $(this).html();
-                show = $(this).is('button') ?$(this).html():'Sample';
-                $('button.btn').css('text-decoration', 'none');
-                $('button.' + show).css('text-decoration', 'underline');
-                var text = ($('button.' + show).attr('class').split(' ')[1]).replace('btn', 'text');
-                $('th,td').show();
-                $('th,td').not('.linecol,.' + show).hide();
-                var $marker = $('i.fa-map-marker');
-                var newclass = $marker.attr('class').replace(/\btext.*\b/g, text);
-                $marker.attr('class', newclass);
-            }
-            function cloner() {
-                var $rw = $(this).closest('tr');
-                var $clone = $rw.clone();
-                $clone.find(':text').val('');
-                $clone.find('i.fa-plus-circle').removeClass('fa-plus-circle').addClass('fa-minus-circle').on('click', remover);
-                $clone.data('id', 0);
-                $clone.data('readingid', 0);
-                $clone.find('input').not('.popup').on('change', updater);
-                $rw.after($clone);
-            }
-            function remover() {
-                var $rw = $(this).closest('tr');
-                $rw.remove();
-            }
-            function infinite(d) {
-                return (typeof d == 'undefined' || d == '' || d == 0);
-            }
-            function showstatus() {
-                row.removeClass('oocontrol').removeClass('oospec').addClass(status);
-            }
-            function restatus(actual, spec, margin) {
-                var cellstatus = '';
-                var spect = spec.attr('title');
-
-                if (typeof actual == 'undefined' || actual == 0 || actual == '' || typeof spect == 'undefined') {
-                    console.log(spec.element + '!');
-                }
-                else {
-
-                    var lohi = spect.split('<');
-                    var low, high;
-
-                    if (margin < 0) { low = parseFloat(lohi[0]); high = parseFloat(lohi[2]); }
-                    else { low = high = parseFloat(lohi[1]); }
-
-                    if (actual < parseFloat(lohi[0]) || parseFloat(lohi[2]) < actual)
-                        cellstatus = 'oospec';
-                    else if ((actual < low - (margin / 10.0) || high + (margin / 10.0) < actual))
-                        cellstatus = 'oocontrol';
-                }
-                spec.removeClass('oocontrol').removeClass('oospec').addClass(cellstatus);
-                var row = spec.closest('tr');
-                row.children('td.labresult').each(function () {
-                    if ($(this).hasClass('oospec')) cellstatus = 'oospec';
-                });
-                spec.closest('tr').removeClass('oocontrol').removeClass('oospec').addClass(cellstatus);
-            }
-            // var moistpct = (1 - r3 / r1) * 100;
-            function moisture() {
-                calcmoisture($(this));
-            }
-            function calcmoisture(elem) {
-                var id = elem.attr('id');
-                var row = elem.closest('tr');
-                var $moist = $('.MoistPct', row);
-                var left = id.substr(0, id.length - 2);   // id is null sometimes!!!
-                var denom = $('#' + left + 'r1').val();
-                if (infinite(denom)) {
-                    $moist.val('');
-                    return;
-                }
-                var result = 100 * (1 - $('#' + left + 'r3').val() / denom);
-                var value = Math.round(parseFloat(result * 10.0)) / 10.0;                      // use round not tofixed
-                console.log('not: ' + result + ', round: ' + value);
-
-                restatus(value, $moist, -5.0);
-                $moist.text(value);
-            }
-            function glycerin() {
-                calcglycerin($(this));
-            }
-            // =(((area/std)*0.5)/(drywt*(1-Oil)))
-            // var glypct = (r4/r5/2 / ( r3 / r1 * r2 / 1000 * (1 - OilPct / 100)) * 100;
-            function calcglycerin(elem) {
-                var id = elem.attr('id');
-                var row = elem.closest('tr');
-                var left = id.substr(0, id.length - 2);
-                var $glyc = row.children('.GlyPct');
-                var d5 = $('#' + left + 'r5').val();
-                var d1 = $('#' + left + 'r1').val();
-                var d2 = $('#' + left + 'r2').val();
-                var d3 = $('#' + left + 'r3').val();
-                if (infinite(d1) || infinite(d2) || infinite(d3) || infinite(d5)) {
-                    $glyc.val('');
-                    return;
-                }
-                var oil = $('#' + left.substr(0, left.length - 4) + 'OilPct').val();
-                if (typeof oil == 'undefined' || oil === '')
-                    oil = 0;
-                var num = ($('#' + left + 'r4').val()) / d5 / 2;
-                var den = (d3 / d1 * d2 * (1 - oil / 1000.0));
-                var value = Math.round(parseFloat(1000 * num / den)) / 10.0;
-                console.log('not: ' + parseFloat(100 * num / den) + ', round: ' + value);
-
-                restatus(value, $glyc, 10.0);
-                $glyc.text(value);
-            }
-            function updater() {
-                if ($(this).attr('readonly') == -1)         // ugly
-                    return;
-
-                var $row = $(this).closest('tr');
-
-                $row.find('i.fa-minus-circle').removeClass('fa-minus-circle').addClass('fa-plus-circle').on('click', cloner);
-                var elem = $(this).attr('id');
-                var sid = $row.data('id');
-                var lid = $row.data('lineid');
-                var rid = $row.data('readingid');
-                var pid = $row.data('productcodeid');
-
-                var scale = +$(this).closest('td').data('scale');
-                if (scale == null || isNaN(scale)) scale = 1;
-                var ival = ($(this).val() === '') ? null : Math.floor(+$(this).val() * scale);
-                lhub.server.updateCasingSample(sid, rid, schedulestamp, lid, elem, ival, $('#Tech').val(), pid);
-            }
-            function noter() {
-                var elemid = $('#savenote').data('id');
-                var $row = $('#' + elemid).closest('tr');
-                var sid = $row.data('id');
-                var lid = $row.data('lineid');
-                var rid = $row.data('readingid');
-                var val = $('input#note').val();
-                var pid = $row.data('productcodeid');
-
-                lhub.server.updateCasingSample(sid, rid, schedulestamp, lid, elemid, val, $('#Tech').val(), pid);
-                $('#NoteModal').modal('toggle');
-                $('input#note').val('');
-            }
-            function coder() {
-                var $row = $('tr.recoding');
-                if ($row.length == 0) {
-                    $('#CodeModal').modal('toggle');
-                    $('input#recode').val('');
-                    return;
-                }
-                $row.removeClass('recoding');
-                var sid = $row.data('id');
-                var lid = $row.data('lineid');
-                var rid = $row.data('readingid');
-                var val = $('#recode').val();
-                $row.data('productcodeid', val);
-
-                var txt = $('#recode option:selected').text();
-                var parsed = txt.split('\t');
-                var reparsed = parsed[0].trim().split(' ');
-
-                console.log('reparsed: ' + reparsed);
-
-                var $prd = $('button.productbtn', $row);
-                $prd.html('');
-                $prd.append(reparsed[0]);
-
-                var spec = (reparsed[1] == 'I') ? (reparsed[1] + reparsed[2]) : reparsed[1];
-                $prd.attr('title', spec);
-
-                var mspec = parsed[2];
-                var gspec = parsed[3];
-                var mpct = $('.MoistPct', $row);
-                var gpct = $('.GlyPct', $row);
-
-                mpct.attr('title', mspec);
-                gpct.attr('title', gspec);
-
-                calcmoisture($('input.cmoist', $row));
-                calcglycerin($('input.cgly', $row));
-
-                $('input.reel', $row).trigger('change');
-                $('#CodeModal').modal('toggle');
-                $('input#recode').val('');
-            }
-            $('td i.fa-plus-circle').on('click', cloner);
-            $('.step>button').on('click', masker);
-            $('input').not('#note').on("keypress", function (e) {
-                /* ENTER PRESSED*/
-                if (e.keyCode == 13) {
-                    /* FOCUS ELEMENT */
-                    next();
-                    return false;
-                }
-            });
-            @if (!Model.allCompleted)
-        {
-            <text>
-            $('button.productbtn').on('click', function () {
-                var id = $(this).closest('tr').data('lineid');
-                location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
-            });
-            </text>
-        }
-            $('button.sampled').on('click', function () {
-                var $other = $(this).siblings().eq(0);
-                var up = $other.hasClass('lineup');
-                $(this).parent().removeClass('lineup').removeClass('linedown').addClass(up ? 'lineup' : 'linedown');
-                $(this).parent().attr('title', $other.attr('title'));
-                $(this).hide();
-                $other.show();
-                var gspec = $other.data('glyc');
-                var mspec = $other.data('moist');
-                var row = $other.closest('tr');
-                var mpct = $('.MoistPct', row);
-                var gpct = $('.GlyPct', row);
-                mpct.attr('title', mspec);
-                gpct.attr('title', gspec);
-                calcmoisture($('input.cmoist', row));
-                calcglycerin($('input.cgly', row));
-
-                row.data('productcodeid', $other.data('pid'));
-
-                $('input.reel', row).trigger('change');
-            });
-            $('#savenote').on('click', noter);
-            $('#savecode').on('click', coder);
-            $('input#note').on('keypress', function (e) {
-                /* ENTER PRESSED*/
-                if (e.keyCode == 13) {
-                    /* FOCUS ELEMENT */
-                    noter();
-                    return false;
-                }
-            });
-            $('input#note').on('keyup', function (e) {
-                /* ENTER PRESSED*/
-                if (e.keyCode == 27) {
-                    /* FOCUS ELEMENT */
-                    $('#NoteModal').modal('toggle');
-                    return false;
-                }
-            });
-            $('#NoteModal').on('show.bs.modal', function (event) {
-                var alnk = $(event.relatedTarget); // Button that triggered the modal
-                var $elem = alnk.children('input[type="hidden"]');
-                var note = $elem.val();
-                var $row = alnk.closest('tr');
-                var button = $('#savenote');
-                button.data('id', $elem.attr('id'));
-                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-                var modal = $(this);
-                modal.find('.modal-title').text('Note for ' + $('td.linecol', $row).text());
-                modal.find('.modal-body input').val(note);
-            });
-            $('#CodeModal').on('show.bs.modal', function (event) {
-                var modal = $(this);
-                var alnk = $(event.relatedTarget); // Button that triggered the modal
-                var $row = alnk.closest('tr');
-                var pid = $row.data('productcodeid');
-                var button = $('#savecode');
-                $('#recode').val(pid);
-                var sid = $row.data('id');
-                if (sid == "") {
-                    $('#CodeModal').modal('toggle');
-                    modal.find('.modal-title').text('Please enter sample data before changing product on line');
-                    return;
-                }
-                $row.addClass('recoding');
-                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-                modal.find('.modal-title').text('Product Code for ' + $('td.linecol', $row).text());
-            });
-            $('#NoteModal').on('shown.bs.modal', function () {
-                $('input#note').focus();
-            });
-            $('#CodeModal').on('shown.bs.modal', function () {
-                $('input#recode').focus();
+            @*$('#@Html.IdFor(m=>m.c.Scheduled)').datetimepicker({
+                timepicker: false
+            });*@
+            $('#cancel').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("Products", "Control", null, Request.Url.Scheme)';
             });
         });
     </script>

@@ -66,11 +66,49 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/dataTables")
 
+    <script src="~/signalr/hubs" type="text/javascript"></script>
     @RenderSection("scripts", required: false)
     <script type="text/javascript">
-        var pcodepattern = /^(1[3-9]|2\d|3[0-2])[ABCDEGHJPRTX]\d\dR?/;
+        var pcodepattern = /^(1[3-9]|2\d|3[0-2])[ABCDEGHJPRTX]\d\dR?( (I ?|\d)\d{3})?$/i;
+        var lotpattern = /^(F|B)?\d[0-3]\d[0-6][ABCD][1-8]00[0-6]$/i;
+        
         $(function () {
-            console.log(/^(1[3-9]$|2\d$|3[0-2])[ABCDEGHJPRTX]\d\dR?/.test('14G38R'));
+            var xhub = $.connection.contextHub;
+            xhub.client.context = function (ctx) {
+                var lot = $('input#LotNum');
+                var prd = $('input#Product');
+                prd.val(ctx.Product);
+                $('input#ConnectionId').val(ctx.ConnectionId);
+                $('input#ProductCodeId').val(ctx.ProductCodeId);
+                $('input#SampleId').val(ctx.SampleId);
+                console.log('Cxn ' + ctx.ConnectionId + ': ' + ctx.ProductCodeId);
+                var back = (ctx.ProductCodeId == 0) ? 'pink' : '#CBFFC0';
+                $('input#Product').css('background-color', back);
+                if (lot.val().trim().length > 0) {
+                    back = (ctx.SampleId == 0) ? 'pink' : '#CBFFC0';
+                    lot.css('background-color', back);
+                }
+            };
+            $.connection.hub.start();
+            $.connection.hub.disconnected(function () {
+                setTimeout(function () {
+                    $.connection.hub.start();
+                }, 1000); // Re-start connection after 1 second
+            });
+            $('input#Product').on('change', function (e) {
+                if (!pcodepattern.test($(this).val()))
+                    $(this).css('background-color', 'pink');
+                else
+                    xhub.server.byProduct($(this).val());
+            });
+            $('input#LotNum').on('change', function (e) {
+                if (!lotpattern.test($(this).val())) {
+                    $(this).css('background-color', 'pink');
+                    console.log('not matched');
+                }
+                else
+                    xhub.server.byLotNum($(this).val());
+            });
         });
     </script>
 </body>
