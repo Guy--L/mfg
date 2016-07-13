@@ -187,11 +187,12 @@ namespace Test.Controllers
             ViewBag.built = built;
             ViewBag.User = _user = Session.Get<string>("user");
             _top = Session.Get<Context>("Context");
-            if (_top == null) { 
+            if (_top == null) {
                 if (ContextHub.contexts.TryGetValue(_user, out _top))
                     Session.Set<Context>("Context", _top);
+                _top = _top??new Context();
             }
-            ViewBag.Context = _top ?? new Context();   
+            ViewBag.Context = _top;   
 
             base.OnActionExecuting(filterContext);
         }

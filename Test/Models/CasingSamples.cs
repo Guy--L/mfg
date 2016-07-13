@@ -25,6 +25,7 @@ namespace Test.Models
         public static string Symbol = Reading.IconML(_type);
 
         [ResultColumn, ComplexMapping] public Reading Gly { get; set; }
+
         public Reading Oil { get; set; }
 
         public int? Delm { get { return Reading1; } set { Reading1 = value; } }
@@ -269,13 +270,63 @@ namespace Test.Models
             };
         }
 
-        public CasingSample(int id, bool deep)
+        private string _previous = @";
+            declare @@sid int
+
+            select @@sid = @0
+
+            select top 1 @@sid = s.sampleid 
+            from [sample] s
+            left join [sample] t 
+            on t.productcodeid = s.productcodeid 
+            and t.lineid = s.lineid
+            and t.stamp > s.stamp
+            where t.sampleid = @0
+            order by s.stamp desc
+        ";
+
+        private string _next = @";
+            declare @@sid int
+
+            select @@sid = @0
+
+            select top 1 @@sid = s.sampleid 
+            from [sample] s
+            left join [sample] t 
+            on t.productcodeid = s.productcodeid 
+            and t.lineid = s.lineid
+            and t.stamp < s.stamp
+            where t.sampleid = @0
+            order by s.stamp
+        ";
+
+        public string LotNum
+        {
+            get
+            {
+                return "B" + (Stamp.Year % 10).ToString() + Stamp.DayOfYear.ToString("000") + Line.Name + ReelNumber.ToString("000");
+            }
+        }
+
+        public CasingSample(int id, int direction)
         {
             if (id != 0)
             {
                 using (labDB d = new labDB())
                 {
-                    d.SingleInto(this, CasingSamplesView._batch + " where s.sampleid = @0", id);
+                    try
+                    {
+                        if (direction == 0)
+                            d.SingleInto(this, CasingSamplesView._batch + " where s.sampleid = @0", id);
+                        else if (direction > 0)
+                            d.SingleInto(this, _next + CasingSamplesView._batch + " where s.sampleid = @@sid", id);
+                        else
+                            d.SingleInto(this, _previous + CasingSamplesView._batch + " where s.sampleid = @@sid", id);
+                    }
+                    catch (Exception e)
+                    {
+                        var tst = e;
+                    }
                 }
                 return;
             }

@@ -24,6 +24,10 @@ namespace Test.Hubs
                 var split = product.Split(' ');
                 code = split[0];
                 spec = split[1];
+                if (split.Length == 3 && spec == "I")
+                    spec = "I " + split[2];
+                else if (split[1][0] == 'I' && split.Length == 2)
+                    spec = "I " + split[1].Substring(1);
             }
             Context ctx = new Context(code, spec);
             ctx.ConnectionId = Context.ConnectionId;

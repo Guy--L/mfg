@@ -303,6 +303,8 @@
     <Content Include="Content\DataTables\css\autoFill.jqueryui.min.css" />
     <Content Include="Content\DataTables\css\buttons.bootstrap.css" />
     <Content Include="Content\DataTables\css\buttons.bootstrap.min.css" />
+    <Content Include="Content\DataTables\css\buttons.bootstrap4.css" />
+    <Content Include="Content\DataTables\css\buttons.bootstrap4.min.css" />
     <Content Include="Content\DataTables\css\buttons.dataTables.css" />
     <Content Include="Content\DataTables\css\buttons.dataTables.min.css" />
     <Content Include="Content\DataTables\css\buttons.foundation.css" />
@@ -319,10 +321,18 @@
     <Content Include="Content\DataTables\css\colReorder.jqueryui.min.css" />
     <Content Include="Content\DataTables\css\dataTables.bootstrap.css" />
     <Content Include="Content\DataTables\css\dataTables.bootstrap.min.css" />
+    <Content Include="Content\DataTables\css\dataTables.bootstrap4.css" />
+    <Content Include="Content\DataTables\css\dataTables.bootstrap4.min.css" />
     <Content Include="Content\DataTables\css\dataTables.foundation.css" />
     <Content Include="Content\DataTables\css\dataTables.foundation.min.css" />
     <Content Include="Content\DataTables\css\dataTables.jqueryui.css" />
     <Content Include="Content\DataTables\css\dataTables.jqueryui.min.css" />
+    <Content Include="Content\DataTables\css\dataTables.material.css" />
+    <Content Include="Content\DataTables\css\dataTables.material.min.css" />
+    <Content Include="Content\DataTables\css\dataTables.semanticui.css" />
+    <Content Include="Content\DataTables\css\dataTables.semanticui.min.css" />
+    <Content Include="Content\DataTables\css\dataTables.uikit.css" />
+    <Content Include="Content\DataTables\css\dataTables.uikit.min.css" />
     <Content Include="Content\DataTables\css\fixedColumns.bootstrap.css" />
     <Content Include="Content\DataTables\css\fixedColumns.bootstrap.min.css" />
     <Content Include="Content\DataTables\css\fixedColumns.dataTables.css" />
@@ -490,6 +500,8 @@
     <Content Include="Scripts\DataTables\autoFill.jqueryui.min.js" />
     <Content Include="Scripts\DataTables\buttons.bootstrap.js" />
     <Content Include="Scripts\DataTables\buttons.bootstrap.min.js" />
+    <Content Include="Scripts\DataTables\buttons.bootstrap4.js" />
+    <Content Include="Scripts\DataTables\buttons.bootstrap4.min.js" />
     <Content Include="Scripts\DataTables\buttons.colVis.js" />
     <Content Include="Scripts\DataTables\buttons.colVis.min.js" />
     <Content Include="Scripts\DataTables\buttons.flash.js" />
@@ -506,6 +518,8 @@
     <Content Include="Scripts\DataTables\dataTables.autoFill.min.js" />
     <Content Include="Scripts\DataTables\dataTables.bootstrap.js" />
     <Content Include="Scripts\DataTables\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\DataTables\dataTables.bootstrap4.js" />
+    <Content Include="Scripts\DataTables\dataTables.bootstrap4.min.js" />
     <Content Include="Scripts\DataTables\dataTables.buttons.js" />
     <Content Include="Scripts\DataTables\dataTables.buttons.min.js" />
     <Content Include="Scripts\DataTables\dataTables.colReorder.js" />
@@ -520,6 +534,8 @@
     <Content Include="Scripts\DataTables\dataTables.jqueryui.min.js" />
     <Content Include="Scripts\DataTables\dataTables.keyTable.js" />
     <Content Include="Scripts\DataTables\dataTables.keyTable.min.js" />
+    <Content Include="Scripts\DataTables\dataTables.material.js" />
+    <Content Include="Scripts\DataTables\dataTables.material.min.js" />
     <Content Include="Scripts\DataTables\dataTables.responsive.js" />
     <Content Include="Scripts\DataTables\dataTables.responsive.min.js" />
     <Content Include="Scripts\DataTables\dataTables.rowReorder.js" />
@@ -528,6 +544,10 @@
     <Content Include="Scripts\DataTables\dataTables.scroller.min.js" />
     <Content Include="Scripts\DataTables\dataTables.select.js" />
     <Content Include="Scripts\DataTables\dataTables.select.min.js" />
+    <Content Include="Scripts\DataTables\dataTables.semanticui.js" />
+    <Content Include="Scripts\DataTables\dataTables.semanticui.min.js" />
+    <Content Include="Scripts\DataTables\dataTables.uikit.js" />
+    <Content Include="Scripts\DataTables\dataTables.uikit.min.js" />
     <Content Include="Scripts\DataTables\jquery.dataTables.js" />
     <Content Include="Scripts\DataTables\jquery.dataTables.min.js" />
     <Content Include="Scripts\DataTables\responsive.bootstrap.js" />
@@ -631,7 +651,7 @@
     <Content Include="Views\Home\SolutionChart.cshtml" />
     <Content Include="Views\Shared\_Alerts.cshtml" />
     <Content Include="Views\Home\CTest.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\CasingTest.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\CasingView.cshtml" />
     <Content Include="Views\Emails\Web.config" />
     <Content Include="Views\Emails\_ViewStart.cshtml" />
     <Content Include="Views\Home\CasingGroups.cshtml" />
@@ -687,6 +707,7 @@
     <Content Include="Views\Admin\PlanPath.cshtml" />
     <Content Include="Views\Shared\_Context.cshtml" />
     <Content Include="Views\Home\CasingSample.cshtml" />
+    <Content Include="Views\Home\Casings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Slides\" />

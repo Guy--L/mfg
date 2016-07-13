@@ -39,10 +39,10 @@
                         <li>@Html.ActionLink("About", "About", "Home")</li>
                         <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                     </ul>*@
-                <p class="nav navbar-text navbar-right"><i class="fa fa-user"></i> &nbsp;@ViewBag.User</p>
-                <p class="nav navbar-text navbar-right">
+                <div class="nav navbar-text navbar-right"><i class="fa fa-user"></i> &nbsp;@ViewBag.User</div>
+                <div class="nav navbar-text navbar-right">
                     @Html.Partial("_Context", (Test.Models.Context)ViewBag.Context)
-                </p>
+                </div>
                 <ul class="nav navbar-nav pull-right">
                     @RenderSection("actions", required: false)
                     @*<li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
@@ -75,15 +75,15 @@
         $(function () {
             var xhub = $.connection.contextHub;
             xhub.client.context = function (ctx) {
-                var lot = $('input#LotNum');
-                var prd = $('input#Product');
+                var lot = $('input#Context_LotNum');
+                var prd = $('input#Context_Product');
                 prd.val(ctx.Product);
-                $('input#ConnectionId').val(ctx.ConnectionId);
-                $('input#ProductCodeId').val(ctx.ProductCodeId);
-                $('input#SampleId').val(ctx.SampleId);
+                $('input#Context_ConnectionId').val(ctx.ConnectionId);
+                $('input#Context_ProductCodeId').val(ctx.ProductCodeId);
+                $('input#Context_SampleId').val(ctx.SampleId);
                 console.log('Cxn ' + ctx.ConnectionId + ': ' + ctx.ProductCodeId);
                 var back = (ctx.ProductCodeId == 0) ? 'pink' : '#CBFFC0';
-                $('input#Product').css('background-color', back);
+                $('input#Context_Product').css('background-color', back);
                 if (lot.val().trim().length > 0) {
                     back = (ctx.SampleId == 0) ? 'pink' : '#CBFFC0';
                     lot.css('background-color', back);
@@ -95,13 +95,13 @@
                     $.connection.hub.start();
                 }, 1000); // Re-start connection after 1 second
             });
-            $('input#Product').on('change', function (e) {
-                if (!pcodepattern.test($(this).val()))
+            $('input#Context_Product').on('change', function (e) {
+                if (!pcodepattern.test($(this).val())) 
                     $(this).css('background-color', 'pink');
                 else
                     xhub.server.byProduct($(this).val());
             });
-            $('input#LotNum').on('change', function (e) {
+            $('input#Context_LotNum').on('change', function (e) {
                 if (!lotpattern.test($(this).val())) {
                     $(this).css('background-color', 'pink');
                     console.log('not matched');

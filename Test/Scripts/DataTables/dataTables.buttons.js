@@ -1,4 +1,4 @@
-/*! Buttons for DataTables 1.1.0
+/*! Buttons for DataTables 1.1.2
  * ©2015 SpryMedia Ltd - datatables.net/license
  */
 
@@ -100,6 +100,7 @@ $.extend( Buttons.prototype, {
 	action: function ( idx, action )
 	{
 		var button = this._indexToButton( idx ).conf;
+		var dt = this.s.dt;
 
 		if ( action === undefined ) {
 			return button.action;
@@ -111,17 +112,21 @@ $.extend( Buttons.prototype, {
 	},
 
 	/**
-	 * Add an active class to the button to make to look active
+	 * Add an active class to the button to make to look active or get current
+	 * active state.
 	 * @param  {int|string} Button index
-	 * @param  {boolean} [flag=true] Enable / disable flag
-	 * @return {Buttons} Self for chaining
+	 * @param  {boolean} [flag] Enable / disable flag
+	 * @return {Buttons} Self for chaining or boolean for getter
 	 */
 	active: function ( idx, flag ) {
 		var button = this._indexToButton( idx );
-		button.node.toggleClass(
-			this.c.dom.button.active,
-			flag === undefined ? true : flag
-		);
+		var klass = this.c.dom.button.active;
+
+		if ( flag === undefined ) {
+			return button.node.hasClass( klass );
+		}
+
+		button.node.toggleClass( klass, flag === undefined ? true : flag );
 
 		return this;
 	},
@@ -463,6 +468,7 @@ $.extend( Buttons.prototype, {
 	_buildButtons: function ( buttons, container, collectionCounter )
 	{
 		var dt = this.s.dt;
+		var buttonCounter = 0;
 
 		if ( ! container ) {
 			container = this.dom.container;
@@ -517,7 +523,7 @@ $.extend( Buttons.prototype, {
 				conf._collection = $('<'+collectionDom.tag+'/>')
 					.addClass( collectionDom.className );
 
-				this._buildButtons( conf.buttons, conf._collection, i );
+				this._buildButtons( conf.buttons, conf._collection, buttonCounter );
 			}
 
 			// init call is made here, rather than buildButton as it needs to
@@ -525,6 +531,8 @@ $.extend( Buttons.prototype, {
 			if ( conf.init ) {
 				conf.init.call( dt.button( buttonNode ), dt, buttonNode, conf );
 			}
+
+			buttonCounter++;
 		}
 	},
 
@@ -562,6 +570,14 @@ $.extend( Buttons.prototype, {
 			return false;
 		}
 
+		var action = function ( e, dt, button, config ) {
+			config.action.call( dt.button( button ), e, dt, button, config );
+
+			$(dt.table().node()).triggerHandler( 'buttons-action.dt', [
+				dt.button( button ), dt, button, config 
+			] );
+		};
+
 		var button = $('<'+buttonDom.tag+'/>')
 			.addClass( buttonDom.className )
 			.attr( 'tabindex', this.s.dt.settings()[0].iTabIndex )
@@ -570,7 +586,7 @@ $.extend( Buttons.prototype, {
 				e.preventDefault();
 
 				if ( ! button.hasClass( buttonDom.disabled ) && config.action ) {
-					config.action.call( dt.button( button ), e, dt, button, config );
+					action( e, dt, button, config );
 				}
 
 				button.blur();
@@ -578,7 +594,7 @@ $.extend( Buttons.prototype, {
 			.on( 'keyup.dtb', function (e) {
 				if ( e.keyCode === 13 ) {
 					if ( ! button.hasClass( buttonDom.disabled ) && config.action ) {
-						config.action.call( dt.button( button ), e, dt, button, config );
+						action( e, dt, button, config );
 					}
 				}
 			} );
@@ -612,7 +628,7 @@ $.extend( Buttons.prototype, {
 
 		var buttonContainer = this.c.dom.buttonContainer;
 		var inserter;
-		if ( buttonContainer ) {
+		if ( buttonContainer && buttonContainer.tag ) {
 			inserter = $('<'+buttonContainer.tag+'/>')
 				.addClass( buttonContainer.className )
 				.append( button );
@@ -955,7 +971,7 @@ Buttons.buttonSelector = function ( insts, selector )
 			if ( v !== null ) {
 				buttons.push( {
 					node: v.node[0],
-					name: v.name
+					name: v.conf.name
 				} );
 			}
 		} );
@@ -965,7 +981,7 @@ Buttons.buttonSelector = function ( insts, selector )
 				if ( w !== null ) {
 					buttons.push( {
 						node: w.node[0],
-						name: w.name
+						name: w.conf.name
 					} );
 				}
 			} );
@@ -1098,7 +1114,7 @@ Buttons.defaults = {
  * @type {string}
  * @static
  */
-Buttons.version = '1.1.0';
+Buttons.version = '1.1.2';
 
 
 $.extend( _dtButtons, {
@@ -1180,13 +1196,21 @@ $.extend( _dtButtons, {
 						Buttons.background( false, config.backgroundClassName, config.fade );
 
 						$('body').off( 'click.dtb-collection' );
+						dt.off( 'buttons-action.b-internal' );
 					}
 				} );
 			}, 10 );
+
+			if ( config.autoClose ) {
+				dt.on( 'buttons-action.b-internal', function () {
+					$('div.dt-button-background').click();
+				} );
+			}
 		},
 		background: true,
 		collectionLayout: '',
 		backgroundClassName: 'dt-button-background',
+		autoClose: false,
 		fade: 400
 	},
 	copy: function ( dt, conf ) {
@@ -1239,6 +1263,7 @@ $.extend( _dtButtons, {
 			extend: 'collection',
 			text: text,
 			className: 'buttons-page-length',
+			autoClose: true,
 			buttons: $.map( vals, function ( val, i ) {
 				return {
 					text: lang[i],
@@ -1311,7 +1336,13 @@ DataTable.Api.register( 'button()', function ( group, selector ) {
 } );
 
 // Active buttons
-DataTable.Api.register( ['buttons().active()', 'button().active()'], function ( flag ) {
+DataTable.Api.registerPlural( 'buttons().active()', 'button().active()', function ( flag ) {
+	if ( flag === undefined ) {
+		return this.map( function ( set ) {
+			 return set.inst.active( set.idx );
+		} );
+	}
+
 	return this.each( function ( set ) {
 		set.inst.active( set.idx, flag );
 	} );

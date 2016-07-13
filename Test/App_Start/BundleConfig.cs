@@ -27,15 +27,19 @@ namespace Test
 
             bundles.Add(new ScriptBundle("~/bundles/dataTables").Include(
                         "~/Scripts/DataTables/jquery.dataTables.js"
-                      , "~/Scripts/DataTables/dataTables.bootstrap.js"));
+                      , "~/Scripts/DataTables/dataTables.bootstrap.js"
+                      , "~/Scripts/DataTables/dataTables.responsive.js"
+                      , "~/Scripts/DataTables/dataTables.fixedHeader.js"
+                      ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/datepicker.css",
                       "~/Content/jquery.datetimepicker.css",
                       "~/Content/site.css",
-                      "~/Content/DataTables-1.10.2/css/jquery.dataTables.css",
-                      "~/Content/DataTables-1.10.2/css/dataTables.bootstrap.css",
+                      "~/Content/DataTables/css/dataTables.bootstrap.css",
+                      "~/Content/DataTables/css/responsive.bootstrap.css",
+                      "~/Content/DataTables/css/fixedHeader.bootstrap.css",
                       "~/Content/font-awesome.css",
                       "~/Content/font-awesome-animation.css"
                       ));

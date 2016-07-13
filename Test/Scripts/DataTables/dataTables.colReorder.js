@@ -1,11 +1,11 @@
-/*! ColReorder 1.3.0
+/*! ColReorder 1.3.1
  * ©2010-2015 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     ColReorder
  * @description Provide the ability to reorder columns in a DataTable
- * @version     1.3.0
+ * @version     1.3.1
  * @file        dataTables.colReorder.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -128,7 +128,7 @@ function fnDomSwitch( nParent, iFrom, iTo )
  */
 $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo, drop )
 {
-	var i, iLen, j, jLen, iCols=oSettings.aoColumns.length, nTrs, oCol;
+	var i, iLen, j, jLen, jen, iCols=oSettings.aoColumns.length, nTrs, oCol;
 	var attrMap = function ( obj, prop, mapping ) {
 		if ( ! obj[ prop ] || typeof obj[ prop ] === 'function' ) {
 			return;
@@ -218,9 +218,6 @@ $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo, drop )
 
 		if ( typeof oCol.mData == 'number' ) {
 			oCol.mData = aiInvertMapping[ oCol.mData ];
-
-			// regenerate the get / set functions
-			oSettings.oApi._fnColumnOptions( oSettings, i, {} );
 		}
 		else if ( $.isPlainObject( oCol.mData ) ) {
 			// HTML5 data sourced
@@ -228,12 +225,8 @@ $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo, drop )
 			attrMap( oCol.mData, 'filter', aiInvertMapping );
 			attrMap( oCol.mData, 'sort',   aiInvertMapping );
 			attrMap( oCol.mData, 'type',   aiInvertMapping );
-
-			// regenerate the get / set functions
-			oSettings.oApi._fnColumnOptions( oSettings, i, {} );
 		}
 	}
-
 
 	/*
 	 * Move the DOM elements
@@ -287,6 +280,11 @@ $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo, drop )
 	/* Columns */
 	fnArraySwitch( oSettings.aoColumns, iFrom, iTo );
 
+	// regenerate the get / set functions
+	for ( i=0, iLen=iCols ; i<iLen ; i++ ) {
+		oSettings.oApi._fnColumnOptions( oSettings, i, {} );
+	}
+
 	/* Search columns */
 	fnArraySwitch( oSettings.aoPreSearchCols, iFrom, iTo );
 
@@ -294,9 +292,18 @@ $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo, drop )
 	for ( i=0, iLen=oSettings.aoData.length ; i<iLen ; i++ )
 	{
 		var data = oSettings.aoData[i];
+		var cells = data.anCells;
 
-		if ( data.anCells ) {
-			fnArraySwitch( data.anCells, iFrom, iTo );
+		if ( cells ) {
+			fnArraySwitch( cells, iFrom, iTo );
+
+			// Longer term, should this be moved into the DataTables' invalidate
+			// methods?
+			for ( j=0, jen=cells.length ; j<jen ; j++ ) {
+				if ( cells[j] && cells[j]._DT_CellIndex ) {
+					cells[j]._DT_CellIndex.column = j;
+				}
+			}
 		}
 
 		// For DOM sourced data, the invalidate will reread the cell into
@@ -1064,7 +1071,7 @@ $.extend( ColReorder.prototype, {
 				iToPoint++;
 			}
 
-			if ( aoColumns[i].bVisible )
+			if ( aoColumns[i].bVisible && aoColumns[i].nTh.style.display !=='none' )
 			{
 				total += $(aoColumns[i].nTh).outerWidth();
 
@@ -1232,7 +1239,7 @@ ColReorder.defaults = {
  *  @type      String
  *  @default   As code
  */
-ColReorder.version = "1.3.0";
+ColReorder.version = "1.3.1";
 
 
 

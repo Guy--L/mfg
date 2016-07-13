@@ -3,24 +3,24 @@
 @{
     ViewBag.Title = "Casing Result";
     Layout = "~/Views/Shared/_Layout2.cshtml";
-    List<IHtmlString> buttons = new List<IHtmlString>() {
-            Html.Raw(" "),
-        };
+    var tip = new Tooltip("click to set context").Placement("bottom");
 }
 <div class="container">
     <div class="row">
-        <div class="col-xs-12 text-primary"><h3>Casing Lab Result</h3> for @Model.Line.Name with @Model.product.FullCode</div>
+        <div class="col-xs-12 text-primary"><h3>Lab Result on @Model.Line.Name at @Model.Stamp.ToString()</h3></div>
     </div>
         <div class="row">
             <div class="col-xs-6">
-                @Model.Stamp.ToString()
-            </div>
-            <div class="col-xs-6">
-                <h2>@Model.product.FullCode</h2>
+                @Html.HiddenFor(m => m.SampleId)
+                @Html.HiddenFor(m => m.ProductCodeId)
+                <h2 class="detailctx">
+                    @Html.Bootstrap().Button().Text(@Model.product.FullCode.ToString()).PrependIcon(new Icon("fa fa-gift text-info")).Class("ctx").Data(new { target = "Context_Product", id = "Context_ProductCodeId" }).Tooltip(tip)
+                    @Html.Bootstrap().Button().Text(@Model.LotNum.ToString()).PrependIcon(new Icon("fa fa-barcode text-info")).Class("ctx").Data(new { target = "Context_LotNum", id = "Context_SampleId" }).Tooltip(tip)
+                </h2>
                 <table class="table table-responsive table-condensed" id="productspectable">
                     <thead>
                         <tr>
-                            <th>Parameter</th><th>Actual</th>
+                            <th>Parameter</th><th class="text-primary">Actual</th>
                             <th style="text-align: left;">Min</th>
                             <th style="text-align: left;" title="Low Control Limit">Low</th>
                             <th style="text-align: left;">Aim</th>
@@ -31,14 +31,14 @@
                     <tbody>
                         <tr class="@Model.MoistStatus">
                             <td><b>Reel Moisture</b></td>
-                            <td class="actual">@Model.MoistPct.Value.ToString("N2")</td>
+                            <td class="text-primary"><strong>@Model.MoistPct.Value.ToString("N2")</strong></td>
                             <td>@Model.product.ReelMoist_Min</td><td></td>
                             <td>@Model.product.ReelMoist_Aim</td><td></td>
                             <td>@Model.product.ReelMoist_Max</td>
                         </tr>
                         <tr class="@Model.GlyStatus">
                             <td><b>Glycerin</b></td>
-                            <td class="actual">@Model.GlyPct.Value.ToString("N2")</td>
+                            <td class="text-primary"><strong>@Model.GlyPct.Value.ToString("N2")</strong></td>
                             <td>@Model.product.Gly_Min</td><td></td>
                             <td>@Model.product.Gly_Aim</td><td></td>
                             <td>@Model.product.Gly_Max</td>
@@ -65,21 +65,33 @@
         </div>
         <div class="row">
             <div class="col-xs-12">
-                @Html.Bootstrap().Button().Text("Previous").Id("previous").Style(ButtonStyle.Success)
+                @Html.Bootstrap().Button().Text("Previous").PrependIcon(new Icon("fa fa-caret-left")).Id("previous").Style(ButtonStyle.Success)
                 &nbsp;&nbsp;
-                @Html.Bootstrap().Button().Text("Next").Id("next").Style(ButtonStyle.Primary)
+                @Html.Bootstrap().Button().Text("Next").AppendIcon(new Icon("fa fa-caret-right")).Id("next").Style(ButtonStyle.Primary)
             </div>
         </div>
 </div>
 @section scripts{
     <script type="text/javascript">
         $(function () {
+            var $id = $('#@Html.IdFor(m=>m.SampleId)');
             @*$('#@Html.IdFor(m=>m.c.Scheduled)').datetimepicker({
                 timepicker: false
             });*@
-            $('#cancel').on('click', function (e) {
+            $('#previous').on('click', function (e) {
                 e.preventDefault();
-                location.href = '@Url.Action("Products", "Control", null, Request.Url.Scheme)';
+                location.href = '@Url.Action("PreviousCasingSample", "Home", null, Request.Url.Scheme)/' + $id.val();
+            });
+            $('#next').on('click', function (e) {
+                e.preventDefault();
+                location.href = '@Url.Action("NextCasingSample", "Home", null, Request.Url.Scheme)/' + $id.val();
+            });
+            $('button.ctx').on('click', function (e) {
+                var target = $(this).data('target');
+                var id = $(this).data('id');
+                var src = id.split('_')[1];
+                $('input#' + id).val($(src).val());
+                $('input#' + target).val($(this).text().trim());
             });
         });
     </script>

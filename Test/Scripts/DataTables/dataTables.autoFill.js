@@ -1,11 +1,11 @@
-/*! AutoFill 2.1.0
+/*! AutoFill 2.1.1
  * ©2008-2015 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     AutoFill
  * @description Add Excel like click and drag auto-fill options to DataTables
- * @version     2.1.0
+ * @version     2.1.1
  * @file        dataTables.autoFill.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -192,6 +192,7 @@ $.extend( AutoFill.prototype, {
 		var idx = dt.cell( node ).index();
 		var handle = this.dom.handle;
 		var handleDim = this.s.handle;
+		var dtScroll = $('div.dataTables_scrollBody', this.s.dt.table().container() );
 
 		if ( ! idx || dt.columns( this.c.columns ).indexes().indexOf( idx.column ) === -1 ) {
 			this._detach();
@@ -215,8 +216,8 @@ $.extend( AutoFill.prototype, {
 		this.dom.attachedTo = node;
 		handle
 			.css( {
-				top: offset.top + node.offsetHeight - handleDim.height,
-				left: offset.left + node.offsetWidth - handleDim.width
+				top: offset.top + node.offsetHeight - handleDim.height + dtScroll.scrollTop(),
+				left: offset.left + node.offsetWidth - handleDim.width + dtScroll.scrollLeft()
 			} )
 			.appendTo( this.dom.offsetParent );
 	},
@@ -620,9 +621,11 @@ $.extend( AutoFill.prototype, {
 		}
 
 		// Build a matrix representation of the selected rows
-		var rows     = this._range( start.row, end.row );
-		var columns  = this._range( start.column, end.column );
-		var selected = [];
+		var rows       = this._range( start.row, end.row );
+		var columns    = this._range( start.column, end.column );
+		var selected   = [];
+		var dtSettings = dt.settings()[0];
+		var dtColumns  = dtSettings.aoColumns;
 
 		// Can't use Array.prototype.map as IE8 doesn't support it
 		// Can't use $.map as jQuery flattens 2D arrays
@@ -631,17 +634,29 @@ $.extend( AutoFill.prototype, {
 			selected.push(
 				$.map( columns, function (column) {
 					var cell = dt.cell( ':eq('+rows[rowIdx]+')', column+':visible', {page:'current'} );
+					var data = cell.data();
+					var cellIndex = cell.index();
+					var editField = dtColumns[ cellIndex.column ].editField;
+
+					if ( editField !== undefined ) {
+						data = dtSettings.oApi._fnGetObjectDataFn( editField )( dt.row( cellIndex.row ).data() );
+					}
 
 					return {
 						cell:  cell,
-						data:  cell.data(),
-						index: cell.index()
+						data:  data,
+						label: cell.data(),
+						index: cellIndex
 					};
 				} )
 			);
 		}
 
 		this._actionSelector( selected );
+		
+		// Stop shiftScroll
+		clearInterval( this.s.scrollInterval );
+		this.s.scrollInterval = null;
 	},
 
 
@@ -842,7 +857,7 @@ $.extend( AutoFill.prototype, {
 AutoFill.actions = {
 	increment: {
 		available: function ( dt, cells ) {
-			return $.isNumeric( cells[0][0].data );
+			return $.isNumeric( cells[0][0].label );
 		},
 
 		option: function ( dt, cells ) {
@@ -872,7 +887,7 @@ AutoFill.actions = {
 		},
 
 		option: function ( dt, cells ) {
-			return dt.i18n('autoFill.fill', 'Fill all cells with <i>'+cells[0][0].data+'</i>' );
+			return dt.i18n('autoFill.fill', 'Fill all cells with <i>'+cells[0][0].label+'</i>' );
 		},
 
 		execute: function ( dt, cells, node ) {
@@ -947,7 +962,7 @@ AutoFill.actions = {
  * @static
  * @type      String
  */
-AutoFill.version = '2.1.0';
+AutoFill.version = '2.1.1';
 
 
 /**

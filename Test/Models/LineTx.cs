@@ -9,6 +9,39 @@ namespace Test.Models
     {
         private static string letters = " ABCDEFGHIJ";  // units start at 1
 
+        private static string _byProductTime = @"
+            ;with cut as (
+	            select lineid, stamp, productcodeid, statusid, endstamp from (
+		            select distinct lineid, stamp, productcodeid, statusid, 
+			            lead(stamp, 1, getdate()) over (partition by lineid order by stamp) as endstamp
+		            from linetx
+	            ) a
+	            where a.stamp < @0
+            )
+            select
+                 n.[LineTxId]
+                ,n.[LineId]
+                ,n.[PersonId]
+                ,n.[Stamp]
+                ,n.[EndStamp]
+                ,n.[Comment]
+                ,n.[LineTankId]
+                ,n.[UnitId]
+                ,n.[LineNumber]
+                ,n.[SystemId]
+                ,n.[StatusId]
+                ,n.[ProductCodeId]
+                ,x.[SampleId]       samples__SampleId
+            from cut n
+            left join cut m on n.lineid = m.lineid and m.stamp > n.stamp
+            join line l on l.lineid = n.lineid
+            join unit u on u.unitid = l.unitid
+            join productcode p on p.ProductCodeId = n.ProductCodeId
+            join [status] s on s.StatusId = n.StatusId
+            left join [Sample] x on x.lineid = n.lineid and x.stamp >= n.stamp and x.stamp <= n.endstamp
+            where m.stamp is null and s.Code = 'RP' and n.productcodeid = @1
+        ";
+
         private static string _byLine = @"
             select {0}
                 c.[LineTxId]
@@ -51,6 +84,10 @@ namespace Test.Models
         [ResultColumn, ComplexMapping] public System system { get; set; }
         [ResultColumn, ComplexMapping] public ProductCode product { get; set; }
         [ResultColumn, ComplexMapping] public Conversion conversion { get; set; }
+
+        [ResultColumn] public DateTime EndStamp { get; set; }
+
+        [ResultColumn] public CasingSample samples { get; set; }
 
         //public static LineTx Map(LineTx l, System y, ProductCode p, Conversion c)
         //{

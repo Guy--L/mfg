@@ -197,16 +197,41 @@ namespace Test.Controllers
             return View();
         }
 
+        public ActionResult Casings()
+        {
+            Casings s = new Casings(_top.ProductCodeId);
+            return View(s);
+        }
+
         public ActionResult CasingSample(int id)
         {
-            CasingSample s = new CasingSample(id, true);
-            return View(s);
+            CasingSample s = TempData["Casing"] as CasingSample;
+            return View(s??(new CasingSample(id, 0)));
+        }
+
+        public ActionResult PreviousCasingSample(int id)
+        {
+            CasingSample s = new CasingSample(id, -1);
+            TempData["Casing"] = s;
+            return RedirectToAction("CasingSample", new { @id = s.SampleId });
+        }
+
+        public ActionResult NextCasingSample(int id)
+        {
+            CasingSample s = new CasingSample(id, 1);
+            TempData["Casing"] = s;
+            return RedirectToAction("CasingSample", new { @id = s.SampleId });
         }
 
         public ActionResult CasingSamples()
         {
-            CasingSamples s = new CasingSamples();
+            if (_top.SampleId != 0)
+                return RedirectToAction("CasingSample", new { @id = _top.SampleId });
 
+            if (_top.ProductCodeId != 0)
+                return RedirectToAction("Casings", new { @id = _top.ProductCodeId });
+
+            CasingSamples s = new CasingSamples();
             return View(s);
         }
 

@@ -266,8 +266,13 @@ form#casingup button#upload {
     margin-right: 7px;
 }
 
+#contextform {
+    padding: 0;
+    margin: 0;
+}
+
 #contextform div input {
-    margin: 6px 8px 6px 3px;
+    margin: -2px 8px 0px 3px;
     padding: 1px;
     line-height: 22px;
     height: 22px;
@@ -276,7 +281,15 @@ form#casingup button#upload {
     font-weight: bold;
 }
 
+#contextform i {
+    cursor: pointer;
+}
+
 #contextform .context-tooltip {
     background-color: orangered;
     text-align:left;
+}
+
+h2.detailctx i {
+    cursor: pointer;
 }
