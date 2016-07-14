@@ -13,7 +13,7 @@ namespace Test.Hubs
     {
         public static ConcurrentDictionary<string, Context> contexts = new ConcurrentDictionary<string, Context>();
 
-        public void ByProduct(string product)
+        public Context ByProduct(string product)
         {
             string code = product.Trim().ToUpper();
             string spec = null;
@@ -33,16 +33,48 @@ namespace Test.Hubs
             ctx.ConnectionId = Context.ConnectionId;
 
             contexts.AddOrUpdate(Context.User.Identity.Name, ctx, (k, v) => ctx);
-            Clients.Caller.Context(ctx);
+            return ctx;
         }
 
-        public void ByLotNum(string lotnum)
+        public Context ByLotNum(string lotnum)
         {
             Context ctx = new Context(lotnum.Trim().ToUpper());
             ctx.ConnectionId = Context.ConnectionId;
 
             contexts.AddOrUpdate(Context.User.Identity.Name, ctx, (k, v) => ctx);
-            Clients.Caller.Context(ctx);
+            return ctx;
+        }
+
+        public Context Clear()
+        {
+            Context ctx;
+            contexts.TryRemove(Context.User.Identity.Name, out ctx);
+            ctx = new Context();
+            ctx.ConnectionId = Context.ConnectionId;
+            return ctx;
+        }
+
+        public Context ClearSample()
+        {
+            Context ctx = null;
+            contexts.TryGetValue(Context.User.Identity.Name, out ctx);
+            if (ctx == null)
+                return null;
+
+            ctx.ConnectionId = Context.ConnectionId;
+            ctx.LotNum = "";
+            ctx.SampleId = 0;
+            contexts.AddOrUpdate(Context.User.Identity.Name, ctx, (k, v) => ctx);
+            return ctx;
+        }
+
+        public List<int> Stats()
+        {
+            Context ctx = null;
+            contexts.TryGetValue(Context.User.Identity.Name, out ctx);
+            if (ctx == null)
+                return null;
+            return ctx.Stats();
         }
 
         public override Task OnConnected()

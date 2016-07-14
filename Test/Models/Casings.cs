@@ -6,7 +6,9 @@ using System.Web;
 namespace Test.Models
 {
     public class CasingView : CasingSample
-    { }
+    {
+
+    }
 
     public class Casings
     {
@@ -81,16 +83,6 @@ namespace Test.Models
                 product = result.Item1.SingleOrDefault();
                 samples = result.Item2;
             }
-        }
-    }
-
-    public class CasingResult
-    {
-        public List<LineTx> runs { get; set; }
-
-        public CasingResult(int sampleid)
-        {
-
         }
     }
 }

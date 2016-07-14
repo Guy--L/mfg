@@ -3,13 +3,22 @@
     var spec = "";
     if (Model.ProductSpec != null)
     {
-        spec = Model.ProductSpec;
+        var tip = new Tooltip("click to set context").Placement("bottom");
+
+        if (string.IsNullOrWhiteSpace(ViewBag.Product))
+        {
+            spec = Model.ProductSpec;
+        }
+        else
+        {
+            spec = "<i class='fa fa-gift text-info ctx' data-target='Context_Product' data-id='Context_ProductCodeId' title='set context'></i> " + Model.ProductSpec;
+        }
     }
     var active = Model.IsActive ?? true;
 }
-<tr data-id="@Model.ProductCodeId" title="@Model.ProductCodeId">
+<tr data-id="@Model.ProductCodeId" title="@Model.ProductCodeId" data-name="@Model.FullCode">
     <td>@Model._ProductCode.Trim()</td>
-    <td>@spec</td>
+    <td>@Html.Raw(spec)</td>
     @Html.Raw((active ? "<td title='is active'><div class='hidden'>current</div></td>" : "<td title='is inactive'><i class='fa fa-ban text-danger'></i><div class='hidden'>inactive</div></td>"))
     <td>@Model.LineNames</td>
     <td>@Model.ReelMoist_Min</td>

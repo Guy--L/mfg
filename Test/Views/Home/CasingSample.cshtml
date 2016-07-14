@@ -14,8 +14,8 @@
                 @Html.HiddenFor(m => m.SampleId)
                 @Html.HiddenFor(m => m.ProductCodeId)
                 <h2 class="detailctx">
-                    @Html.Bootstrap().Button().Text(@Model.product.FullCode.ToString()).PrependIcon(new Icon("fa fa-gift text-info")).Class("ctx").Data(new { target = "Context_Product", id = "Context_ProductCodeId" }).Tooltip(tip)
-                    @Html.Bootstrap().Button().Text(@Model.LotNum.ToString()).PrependIcon(new Icon("fa fa-barcode text-info")).Class("ctx").Data(new { target = "Context_LotNum", id = "Context_SampleId" }).Tooltip(tip)
+                    @Html.Bootstrap().Button().Text(@Model.product.FullCode.ToString()).PrependIcon(new Icon("fa fa-2x fa-gift text-info")).Class("ctx").Data(new { target = "Context_Product", id = "Context_ProductCodeId" }).Tooltip(tip)
+                    @Html.Bootstrap().Button().Text(@Model.LotNum.ToString()).PrependIcon(new Icon("fa fa-2x fa-barcode text-info")).Class("ctx").Data(new { target = "Context_LotNum", id = "Context_SampleId" }).Tooltip(tip)
                 </h2>
                 <table class="table table-responsive table-condensed" id="productspectable">
                     <thead>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNet.SignalR;
 using Owin;
 
 namespace Test
@@ -10,7 +11,9 @@ namespace Test
     {
         public void Configuration(IAppBuilder app)
         {
-            app.MapSignalR();
+            var hubConfiguration = new HubConfiguration();
+            hubConfiguration.EnableDetailedErrors = true;
+            app.MapSignalR(hubConfiguration);
         }
     }
 }

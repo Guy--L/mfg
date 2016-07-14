@@ -10,27 +10,59 @@
 </div>
 
 <div class="row">
-    <div class="col-md-2">
-        <h2>Casings</h2>
-        <p><a class="btn btn-default" href="@Url.Action("CasingSamples", "Home", null, Request.Url.Scheme)"><i class="fa fa-5x fa-cut"></i></a></p>
-    </div>
+    <nav class="col-md-2 col-md-offset-1 bg-success">
+        <h2>Samples</h2>
+        <p>
+            <a class="btn btn-default" href="@Url.Action("CasingSamples", "Home", null, Request.Url.Scheme)"><i class="fa fa-5x fa-cut"></i></a>
+            <strong id="samplecount" class="text-primary ctxcnt">@Model.SampleCnt</strong>
+        </p>
+    </nav>
     <div class="col-md-2">
         <h2>Solutions</h2>
-        <p><a class="btn btn-default" href="@Url.Action("SolutionBatches", "Home", null, Request.Url.Scheme)"><i class="fa fa-5x fa-flask"></i></a></p>
+        <p>
+            <a class="btn btn-default" href="@Url.Action("SolutionBatches", "Home", null, Request.Url.Scheme)"><i class="fa fa-5x fa-flask"></i></a>
+            <strong id="solutioncount" class="text-primary ctxcnt">@Model.SolutionCnt</strong>
+        </p>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 bg-success">
         <h2>Lines</h2>
-        <p><a class="btn btn-default" href="@Url.Action("Lines", "Control", null, Request.Url.Scheme)"><i class="fa fa-5x fa-list-ol"></i></a></p>
+        <p>
+            <a class="btn btn-default" href="@Url.Action("Lines", "Control", null, Request.Url.Scheme)"><i class="fa fa-5x fa-list-ol"></i></a>
+            <strong id="linecount" class="text-primary ctxcnt">@Model.LineCnt</strong>
+        </p>
     </div>
     <div class="col-md-2">
         <h2>Products</h2>
-        <p><a class="btn btn-default" href="@Url.Action("Products", "Control", null, Request.Url.Scheme)"><i class="fa fa-5x fa-gift"></i></a></p>
+        <p>
+            <a class="btn btn-default" href="@Url.Action("Products", "Control", null, Request.Url.Scheme)"><i class="fa fa-5x fa-gift"></i></a>
+            <strong id="productcount" class="text-primary ctxcnt">@Model.ProductCnt</strong>
+        </p>
     </div>
-    <div class="col-md-2">
-        <h2>Conversions</h2>
-        <p><a class="btn btn-default" href="@Url.Action("Conversions", "Control", null, Request.Url.Scheme)"><i class="fa fa-5x fa-random"></i></a></p>
+    <div class="col-md-2 bg-success">
+        <h2>Schedule</h2>
+        <p>
+            <a class="btn btn-default" href="@Url.Action("Schedule", "Control", null, Request.Url.Scheme)"><i class="fa fa-5x fa-random"></i></a>
+            <strong id="schedulecount" class="text-primary ctxcnt">@Model.ScheduleCnt</strong>
+        </p>
     </div>
 </div>
 
 @section scripts{
+    <script type="text/javascript">
+        function ctxstats(stats) {
+            if (typeof stats == 'undefined') {
+                $('#samplecount').text('');
+                $('#solutioncount').text('');
+                $('#linecount').text('');
+                $('#productcount').text('');
+                $('#schedulecount').text('');
+                return;
+            }
+            $('#samplecount').text(stats[0] + ' ');
+            $('#solutioncount').text(stats[1] + ' ');
+            $('#linecount').text(stats[2] + ' ');
+            $('#productcount').text(stats[3] + ' ');
+            $('#schedulecount').text(stats[4] + ' ');
+        }
+    </script>
 }

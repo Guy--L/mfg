@@ -223,6 +223,13 @@ namespace Test.Controllers
             return RedirectToAction("CasingSample", new { @id = s.SampleId });
         }
 
+        /// <summary>
+        /// Context sensitive action.  Redirects to 
+        /// 1) Lab Batches, 
+        /// 2) Samples related to product or 
+        /// 3) Specific Sample requested 
+        /// </summary>
+        /// <returns></returns>
         public ActionResult CasingSamples()
         {
             if (_top.SampleId != 0)

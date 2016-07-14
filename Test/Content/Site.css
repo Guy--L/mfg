@@ -285,11 +285,23 @@ form#casingup button#upload {
     cursor: pointer;
 }
 
-#contextform .context-tooltip {
-    background-color: orangered;
-    text-align:left;
-}
-
 h2.detailctx i {
     cursor: pointer;
+}
+
+i.ctx {
+    cursor: pointer;
+}
+
+.ctxcnt {
+    white-space: nowrap;
+    font-size: x-large;
+}
+
+.tooltip.bottom .tooltip-inner {
+    text-align: left;
+    background-color:green;
+}
+.tooltip.bottom .tooltip-arrow {
+      border-bottom-color:green;
 }

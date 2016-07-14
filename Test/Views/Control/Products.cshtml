@@ -1,11 +1,16 @@
 ﻿@model Test.Models.Products
 
+@{ 
+    var all = string.IsNullOrWhiteSpace(Model.Product);
+    ViewBag.Product = Model.Product;
+}
+
 <div class="container">
     <br />
     <table id="products" class="table table-striped table-hover table-condensed table-bordered">
         <thead>
             <tr>
-                <th colspan="2">List of Products</th>
+                <th colspan="2">List of Products@(all?"":(" having Code "+Model.Product))</th>
                 <th colspan="2">
                     <button class="btn btn-success btn-xs" id="addproduct">
                         <i class="fa fa-plus"></i> <i class="fa fa-gift"></i> Add New Product
@@ -64,12 +69,22 @@
     $(function () {
         $('#products tbody').on('click', 'tr', function (e) {
             var id = $(this).data('id');
-            location.href = '@Url.Action("Product","Control",null,Request.Url.Scheme)/' + id;
+            location.href = '@Url.Action("Product", "Control", null, Request.Url.Scheme)/' + id;
         });
         $('#addproduct').on('click', function () {
-            location.href = '@Url.Action("Product", "Control",null,Request.Url.Scheme)/0';
+            location.href = '@Url.Action("Product", "Control", null, Request.Url.Scheme)/0';
         });
-        attachDT();
+        @(all?"attachDT();":"")
+        $('i.ctx').on('click', function (e) {
+            e.stopPropagation();
+
+            var row = $(this).closest('tr');
+            var id = row.data('id');
+            var prd = row.data('name');
+
+            $('input#Context_Product').val(prd);
+            $('input#Context_ProductCodeId').val(id);
+        });
     });
 </script>
 }

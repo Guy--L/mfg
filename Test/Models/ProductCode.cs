@@ -87,6 +87,7 @@ namespace Test.Models
     }
     public class Products
     {
+        public string Product { get; set; }
         public List<ProductCode> products { get; set; }
 
         public static string _get = @"
@@ -128,6 +129,9 @@ namespace Test.Models
               order by CASE WHEN l.lineid IS NULL THEN 1 ELSE 0 END, l.ProductCodeId
         ";
 
+        public static string _versions = _get + @"
+            where p.ProductCode = (select productcode from [productcode] where productcodeid = @0)
+        ";
         public static string _pending = _all + @"
               where c.LineId = @0 and c.Started is null
               order by c.Scheduled
@@ -138,6 +142,17 @@ namespace Test.Models
             using (var labdb = new labDB())
             {
                 products = labdb.FetchOneToMany<ProductCode>(p => p.running, _all);
+                Product = null;
+            }
+        }
+
+        public Products(int id)
+        {
+
+            using (var labdb = new labDB())
+            {
+                products = labdb.FetchOneToMany<ProductCode>(p => p.running, _versions, id);
+                Product = products.FirstOrDefault()?._ProductCode;
             }
         }
     }

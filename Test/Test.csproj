@@ -687,7 +687,7 @@
     <Content Include="Views\Control\Line.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\LineRow.cshtml" />
     <Content Include="Views\Control\Lines.cshtml" />
-    <Content Include="Views\Control\Conversions.cshtml" />
+    <Content Include="Views\Control\Schedule.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Conversion.cshtml" />
     <Content Include="Views\Control\Conversion.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\LinePick.cshtml" />

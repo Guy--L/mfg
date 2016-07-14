@@ -23,7 +23,4 @@
     <td>@Model.System</td>
     <td>@Model.SolutionType</td>
     <td>@Html.Raw(Model.Icon)</td>
-    @if (!ViewBag.Undo) {
-        <td style="overflow-wrap: none;">@Html.Raw(actions)</td>
-    }
 </tr>

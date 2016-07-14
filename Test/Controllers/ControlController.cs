@@ -43,7 +43,7 @@ namespace Test.Controllers
             return RedirectToAction("Lines");
         }
 
-        public ActionResult Conversions()
+        public ActionResult Schedule()
         {
             ViewBag.Undo = false;
             var c = new Conversions();
@@ -163,7 +163,7 @@ namespace Test.Controllers
 
         public ActionResult Products()
         {
-            var p = new Products();
+            var p = _top.ProductCodeId == 0 ? new Products() : new Products(_top.ProductCodeId);
             return View(p);
         }
 
