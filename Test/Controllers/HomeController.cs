@@ -199,21 +199,15 @@ namespace Test.Controllers
 
         public JsonResult RunsEver()
         {
-            var runs = Run.RunsEver(_top.ProductCodeId);
-            var lines = runs.Select(r => r.Name).Distinct().OrderBy(r => r);
-            var content = new
-            {
-                lanes = lines.Select((n, i) => new { id = i, label = n }),
-                items = runs.Select(r => new
+            var runs = Run.RunsEver(_top.ProductCodeId).Select(r => new
                 {
                     lane = r.Name,
                     id = r.LineTxId,
                     begin = r.Stamp.ToJSMSecs(),
-                    end = r.EndStamp.ToJSMSecs(),
+                    finish = r.EndStamp.ToJSMSecs(),
                     samples = r.Samples
-                })
-            };
-            return Json(content, JsonRequestBehavior.AllowGet);
+                });
+            return Json(runs, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Casings()

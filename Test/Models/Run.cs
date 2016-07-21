@@ -39,7 +39,7 @@ namespace Test.Models
             and n.productcodeid = @0
             and s.Code = 'RP'
             group by n.linetxid, n.lineid, n.stamp, n.endstamp
-            order by n.stamp
+            order by {3} n.stamp
         ";
 
         public string Name { get { return Line.names[LineId].Replace("-",""); } }
@@ -59,7 +59,7 @@ namespace Test.Models
             {
                 try
                 {
-                    runs = d.Fetch<Run>(string.Format(_byProduct, _current, _latest, _where), productcodeid, asof);
+                    runs = d.Fetch<Run>(string.Format(_byProduct, _current, _latest, _where, ""), productcodeid, asof);
                 }
                 catch (Exception e)
                 {
@@ -76,7 +76,7 @@ namespace Test.Models
             {
                 try
                 {
-                    runs = d.Fetch<Run>(string.Format(_byProduct, "", "", ""), productcodeid);
+                    runs = d.Fetch<Run>(string.Format(_byProduct, "", "", "", "n.lineid,"), productcodeid);
                 }
                 catch (Exception e)
                 {

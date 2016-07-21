@@ -1,20 +1,11 @@
 ﻿function swim(id) {
 
-    d3.json('http://localhost:49458/Home/RunsEver', function (error, data) {
-        if (error) {
-            console.log(error);
-            return;
-        }
-        console.log(data);
-        return;
+    d3.json('http://localhost:49458/Home/RunsEver', function (rets) {
 
-        data.forEach(function (d) {
-            d.id = d.id;
-            d.start = new Date(d.begin);
-           
-            d.Datum = new Date(parseInt(d.Datum.substr(6)));;
-            d.Count = d.Count;
-        });
+        var data = parseData(rets),
+            items = data.items,
+            lanes = data.lanes,
+            now = new Date();
 
         var margin = { top: 20, right: 15, bottom: 15, left: 60 }
             , width = 960 - margin.left - margin.right
@@ -170,7 +161,7 @@
             .attr('clip-path', 'url(#clip)');
 
         mini.append('g').selectAll('miniItems')
-            .data(getPaths(items))
+            .data(getPaths())
             .enter().append('path')
             .attr('class', function (d) { return 'miniItem ' + d.class; })
             .attr('d', function (d) { return d.path; });
@@ -198,103 +189,184 @@
 
         mini.selectAll('rect.background').remove();
         display();
+
+        function display() {
+
+            var rects, labels
+              , minExtent = d3.time.day(brush.extent()[0])
+              , maxExtent = d3.time.day(brush.extent()[1])
+              , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent });
+
+            mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
+
+            x1.domain([minExtent, maxExtent]);
+
+            if ((maxExtent - minExtent) > 1468800000) {
+                x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d %j'))
+                x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
+            }
+            else if ((maxExtent - minExtent) > 172800000) {
+                x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d %j'))
+                x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
+            }
+            else {
+                x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
+                x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e %j'))
+            }
+
+
+            //x1Offset.range([0, x1(d3.time.day.ceil(now) - x1(d3.time.day.floor(now)))]);
+
+            // shift the today line
+            main.select('.main.todayLine')
+                .attr('x1', x1(now) + 0.5)
+                .attr('x2', x1(now) + 0.5);
+
+            // update the axis
+            main.select('.main.axis.date').call(x1DateAxis);
+            main.select('.main.axis.month').call(x1MonthAxis)
+                .selectAll('text')
+                    .attr('dx', 5)
+                    .attr('dy', 12);
+
+            // upate the item rects
+            rects = itemRects.selectAll('rect')
+                .data(visItems, function (d) { return d.id; })
+                .attr('x', function (d) { return x1(d.start); })
+                .attr('width', function (d) { return x1(d.end) - x1(d.start); });
+
+            rects.enter().append('rect')
+                .attr('x', function (d) { return x1(d.start); })
+                .attr('y', function (d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
+                .attr('width', function (d) { return x1(d.end) - x1(d.start); })
+                .attr('height', function (d) { return .8 * y1(1); })
+                .attr('class', function (d) { return 'mainItem ' + d.class; });
+
+            rects.exit().remove();
+
+            // update the item labels
+            labels = itemRects.selectAll('text')
+                .data(visItems, function (d) { return d.id; })
+                .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; });
+
+            //labels.enter().append('text')
+            //    .text(function (d) { return 'Samples: ' + d.samples; })
+            //    .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; })
+            //    .attr('y', function (d) { return y1(d.lane) + .4 * y1(1) + 1; })
+            //    .attr('text-anchor', 'start')
+            //    .attr('class', 'itemLabel');
+
+            labels.exit().remove();
+        }
+
+        function moveBrush() {
+            var origin = d3.mouse(this)
+              , point = x.invert(origin[0])
+              , halfExtent = (brush.extent()[1].getTime() - brush.extent()[0].getTime()) / 2
+              , start = new Date(point.getTime() - halfExtent)
+              , end = new Date(point.getTime() + halfExtent);
+
+            brush.extent([start, end]);
+            display();
+        }
+
+        // generates a single path for each item class in the mini display
+        // ugly - but draws mini 2x faster than append lines or line generator
+        // is there a better way to do a bunch of lines as a single path with d3?
+        function getPaths() {
+            var paths = {}, d, offset = .5 * y2(1) + 0.5, result = [];
+            for (var i = 0; i < items.length; i++) {
+                d = items[i];
+                if (!paths[d.class]) paths[d.class] = '';
+                paths[d.class] += ['M', x(d.start), (y2(d.lane) + offset), 'H', x(d.end)].join(' ');
+            }
+
+            for (var className in paths) {
+                result.push({ class: className, path: paths[className] });
+            }
+
+            return result;
+        }
     });
 }
 
-function display () {
+function addToLane(chart, item) {
+    var name = item.lane;
 
-	var rects, labels
-	  , minExtent = d3.time.day(brush.extent()[0])
-	  , maxExtent = d3.time.day(brush.extent()[1])
-	  , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent});
+    if (!chart.lanes[name])
+        chart.lanes[name] = [];
 
-	mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
+    var lane = chart.lanes[name];
 
-	x1.domain([minExtent, maxExtent]);
+    var sublane = 0;
+    while (isOverlapping(item, lane[sublane]))
+        sublane++;
 
-	if ((maxExtent - minExtent) > 1468800000) {
-		x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
-	}
-	else if ((maxExtent - minExtent) > 172800000) {
-		x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
-		x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
-	}
-	else {
-		x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
-		x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
-	}
+    if (!lane[sublane]) {
+        lane[sublane] = [];
+    }
 
+    lane[sublane].push(item);
+};
 
-	//x1Offset.range([0, x1(d3.time.day.ceil(now) - x1(d3.time.day.floor(now)))]);
+function isOverlapping(item, lane) {
+    if (lane) {
+        for (var i = 0; i < lane.length; i++) {
+            var t = lane[i];
+            if (item.start < t.end && item.end > t.start) {
+                console.log('overlapped');
+                return true;
+            }
+        }
+    }
+    return false;
+};
 
-	// shift the today line
-	main.select('.main.todayLine')
-		.attr('x1', x1(now) + 0.5)
-		.attr('x2', x1(now) + 0.5);
+function parseData(data) {
+    var i = 0, length = data.length, node;
+    chart = { lanes: {} };
 
-	// update the axis
-	main.select('.main.axis.date').call(x1DateAxis);
-	main.select('.main.axis.month').call(x1MonthAxis)
-		.selectAll('text')
-			.attr('dx', 5)
-			.attr('dy', 12);
+    for (i; i < length; i++) {
+        var item = data[i];
+        item.start = new Date(item.begin);
+        item.end = new Date(item.finish);
+        addToLane(chart, item);
+    }
+    return collapseLanes(chart);
+};
 
-	// upate the item rects
-	rects = itemRects.selectAll('rect')
-		.data(visItems, function (d) { return d.id; })
-		.attr('x', function(d) { return x1(d.start); })
-		.attr('width', function(d) { return x1(d.end) - x1(d.start); });
+function collapseLanes(chart) {
+    var lanes = [], items = [], laneId = 0;
+    var now = new Date();
 
-	rects.enter().append('rect')
-		.attr('x', function(d) { return x1(d.start); })
-		.attr('y', function(d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
-		.attr('width', function(d) { return x1(d.end) - x1(d.start); })
-		.attr('height', function(d) { return .8 * y1(1); })
-		.attr('class', function(d) { return 'mainItem ' + d.class; });
+    for (var laneName in chart.lanes) {
+        var lane = chart.lanes[laneName];
 
-	rects.exit().remove();
+        for (var i = 0; i < lane.length; i++) {
+            var subLane = lane[i];
 
-	// update the item labels
-	labels = itemRects.selectAll('text')
-		.data(visItems, function (d) { return d.id; })
-		.attr('x', function(d) { return x1(Math.max(d.start, minExtent)) + 2; });
+            lanes.push({
+                id: laneId,
+                label: i === 0 ? laneName : ''
+            });
 
-	labels.enter().append('text')
-		.text(function (d) { return 'Item\n\n\n\n Id: ' + d.id; })
-		.attr('x', function(d) { return x1(Math.max(d.start, minExtent)) + 2; })
-		.attr('y', function(d) { return y1(d.lane) + .4 * y1(1) + 0.5; })
-		.attr('text-anchor', 'start')
-		.attr('class', 'itemLabel');
+            for (var j = 0; j < subLane.length; j++) {
+                var item = subLane[j];
 
-	labels.exit().remove();
+                items.push({
+                    id: item.id,
+                    lane: laneId,
+                    start: item.start,
+                    end: item.end,
+                    class: item.end > now ? 'future' : 'past',
+                    desc: item.desc
+                });
+            }
+
+            laneId++;
+        }
+    }
+
+    return { lanes: lanes, items: items };
 }
 
-function moveBrush () {
-	var origin = d3.mouse(this)
-	  , point = x.invert(origin[0])
-	  , halfExtent = (brush.extent()[1].getTime() - brush.extent()[0].getTime()) / 2
-	  , start = new Date(point.getTime() - halfExtent)
-	  , end = new Date(point.getTime() + halfExtent);
-
-	brush.extent([start,end]);
-	display();
-}
-
-// generates a single path for each item class in the mini display
-// ugly - but draws mini 2x faster than append lines or line generator
-// is there a better way to do a bunch of lines as a single path with d3?
-function getPaths(items) {
-	var paths = {}, d, offset = .5 * y2(1) + 0.5, result = [];
-	for (var i = 0; i < items.length; i++) {
-		d = items[i];
-		if (!paths[d.class]) paths[d.class] = '';
-		paths[d.class] += ['M',x(d.start),(y2(d.lane) + offset),'H',x(d.end)].join(' ');
-	}
-
-	for (var className in paths) {
-		result.push({class: className, path: paths[className]});
-	}
-
-	return result;
-}

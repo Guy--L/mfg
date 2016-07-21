@@ -9,7 +9,8 @@
     <p class="lead">Sample Collection and Logging</p>
 </div>
 
-<div class="row" id="lanes">
+<div class="row">
+    <div class="col-md-10 col-md-offset-1" id="lanes"></div>
 </div>
 
 <div class="row">
@@ -73,5 +74,11 @@
             $('.jumbotron').hide();
             swim('#lanes');
         }
+        $(function () {
+            if ($('input#Context_ProductCodeId').val() != 0) {
+                $('.jumbotron').hide();
+                swim('#lanes');
+            }
+        });
     </script>
 }
