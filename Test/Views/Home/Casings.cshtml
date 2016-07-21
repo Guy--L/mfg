@@ -1,11 +1,11 @@
 ﻿@model Test.Models.Casings
 <div class="container">
-    <h2 class="text-primary">Casing Tests for @ViewBag.Context.Product</h2>
-    <table id="casings" class="table table-condensed table-no-border">
+    <br />
+    <table id="casingviews" class="table table-condensed">
         <thead>
             <tr>
-                <th colspan="3"></th>
-                <th>Hi<br />Aim<br />Lo</th>
+                <th colspan="3"><h2 class="text-primary">Casing Tests for @ViewBag.Context.Product</h2></th>
+                <th style="text-align:right;">High<br />Target<br />Low</th>
                 <th>@Model.product.Gly_Max<br />@Model.product.Gly_Aim<br />@Model.product.Gly_Min</th>
                 <th>@Model.product.ReelMoist_Max<br />@Model.product.ReelMoist_Aim<br />@Model.product.ReelMoist_Min</th>
                 <th colspan="2"></th>
@@ -30,7 +30,7 @@
 @section scripts {
     <script type="text/javascript">
         function attachDT() {
-            q = $('#casings').dataTable({
+            q = $('#casingviews').dataTable({
                 "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
                 "bPaginate": false,
                 "oLanguage": {
@@ -45,10 +45,10 @@
             });
         }
         $(function () {
-            $('#casings tbody').on('click', 'tr', function () {
+            $('#casingviews tbody').on('click', 'tr', function () {
                 var id = $(this).data('id');
                 id = (id != '' && typeof id !== 'undefined') ? id : -bid;
-                location.href = '@Url.Action("CasingSample", "Home", null, Request.Url.Scheme)/' + id;
+                location.href = '@Url.Action("CasingView", "Home", null, Request.Url.Scheme)/' + id;
             });
             attachDT();
         });

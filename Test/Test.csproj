@@ -240,12 +240,14 @@
     <Compile Include="Models\Casings.cs" />
     <Compile Include="Models\CasingSampleArchive.cs" />
     <Compile Include="Models\Conversion.cs" />
+    <Compile Include="Models\Extensions.cs" />
     <Compile Include="Models\Extruder.cs" />
     <Compile Include="Models\Limit.cs" />
     <Compile Include="Models\Line.cs" />
     <Compile Include="Models\LineTx.cs" />
     <Compile Include="Models\Lookups.cs" />
     <Compile Include="Models\Plan.cs" />
+    <Compile Include="Models\Run.cs" />
     <Compile Include="Models\SolutionRecipe.cs" />
     <Compile Include="Models\Status.cs" />
     <Compile Include="Models\System.cs" />
@@ -279,6 +281,7 @@
       <DependentUpon>Tags.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Context.cs" />
+    <Compile Include="Models\TagSample.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -492,6 +495,9 @@
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\d3\d3.js" />
+    <Content Include="Scripts\d3\d3.min.js" />
+    <Content Include="Scripts\d3\d3.v2.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
     <Content Include="Scripts\DataTables\autoFill.foundation.js" />
@@ -560,6 +566,10 @@
     <Content Include="Scripts\flotr2.min.js" />
     <Content Include="Scripts\flotr2.nolibs.js" />
     <Content Include="Scripts\html2canvas.js" />
+    <Content Include="Scripts\d3\README.md" />
+    <Content Include="Scripts\d3\LICENSE" />
+    <Content Include="Scripts\d3\CHANGES.md" />
+    <Content Include="Scripts\d3\API.md" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
     <Content Include="Scripts\jquery-2.2.0.js" />
     <Content Include="Scripts\jquery-2.2.0.min.js" />
@@ -591,8 +601,10 @@
     <Content Include="Scripts\jssor.slider.mini.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\portHub.js" />
+    <Content Include="Scripts\randomData.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\swimlane.js" />
     <Content Include="Scripts\TwitterBootstrapMvcJs.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="SQL\LinesAll.sql" />
@@ -618,6 +630,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Tags.cs</LastGenOutput>
     </Content>
+    <Content Include="Views\Home\swim.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -708,6 +721,9 @@
     <Content Include="Views\Shared\_Context.cshtml" />
     <Content Include="Views\Home\CasingSample.cshtml" />
     <Content Include="Views\Home\Casings.cshtml" />
+    <Content Include="Views\Home\CasingView.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Run.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Plan.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Slides\" />

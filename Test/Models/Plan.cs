@@ -8,31 +8,24 @@ using NPOI.SS.UserModel;
 
 namespace Test.Models
 {
-    static class Extensions
-    {
-        public static string ToSStamp(this DateTime stamp)
-        {
-            return stamp.ToString("yyyy-MM-dd");
-        }
-
-        public static string Before(this DateTime stamp)
-        {
-            return stamp.ToSStamp() + " 00:00:00";
-        }
-    }
-
     public class Plans
     {
         public List<Plan> plans { get; set; }
+        public string Product { get; set; }
+        public bool filtered { get { return !string.IsNullOrWhiteSpace(Product); } }
 
-        public Plans()
+        public Plans(int id)
         {
-            plans = Plan.Plans();
+            plans = Plan.Plans(id);
         }
     }
 
     partial class Plan
     {
+        public string LineName { get { return Line.names[LineId].Replace("-",""); } }
+        public string Date { get { return Stamp.ToString("MM/dd"); } }
+        public string SysName { get { return Models.System.Systems[SystemId.Value]; } }
+
         public string Extruder { get { return Models.Extruder.Colors[ExtruderId]; } }
         public string System { get { return Models.System.Systems[SystemId.Value]; } }
         public string SolutionType { get { return SolutionRecipe.Solutions[SolutionRecipeId.Value]; } }
@@ -106,9 +99,11 @@ namespace Test.Models
         private static int deleted = 0;
         private static int added = 0;
 
-        public static List<Plan> Plans()
+        public static List<Plan> Plans(int id)
         {
-            return Fetch(" order by stamp desc");
+            if (id == 0)
+                return Fetch(" order by stamp desc");
+            return Fetch(" where productcodeid = @0 order by stamp desc", id);
         }
 
         private int AppendFt(string comment)

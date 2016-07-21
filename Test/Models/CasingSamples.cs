@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Omu.ValueInjecter;
 using System.IO;
 using System.Web;
 using System.Diagnostics;
@@ -325,7 +324,7 @@ namespace Test.Models
                     }
                     catch (Exception e)
                     {
-                        var tst = e;
+                        Elmah.ErrorSignal.FromCurrentContext().Raise(new NotImplementedException("Error in CasingSample() " + e.Message));
                     }
                 }
                 return;

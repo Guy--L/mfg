@@ -1,11 +1,15 @@
 ﻿@model Test.Models.CasingView
+@{ 
+    var g = Model.glycstatus;
+    var m = Model.moiststatus;
+}
 <tr data-id="@Model.SampleId">
     <td>@Model.Line.Name</td>
     <td>@Model.Stamp.ToString("yyyy-MM-dd HH:mm")</td>
     <td>@Model.ReelNumber</td>
     <td>@Model.Footage</td>
-    <td class="@Model.GlyStatus">@(Model.GlyPct.HasValue?@Model.GlyPct.Value.ToString("N2"):"")</td>
-    <td class="@Model.MoistStatus">@(Model.MoistPct.HasValue?Model.MoistPct.Value.ToString("N2"):"")</td>
+    <td class="bg-@g text-@g">@(Model.GlyPct.HasValue ? @Model.GlyPct.Value.ToString("N2") : "")</td>
+    <td class="bg-@m text-@m">@(Model.MoistPct.HasValue?Model.MoistPct.Value.ToString("N2"):"")</td>
     <td>@Model.Tech</td>
     <td>@Model.Note</td>
 </tr>

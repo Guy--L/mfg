@@ -52,7 +52,12 @@
                         </tr>
                         <tr>
                             <td><b>Layflat</b></td>
-                            <td></td>
+                            <td class="text-primary"
+                                title="@Model.layflat.N: stdp @Model.layflat.Stdp.Value.ToString("N2"), 
+                                        min @Model.layflat.Minimum.Value.ToString("N2"), 
+                                        max @Model.layflat.Maximum.Value.ToString("N2")">
+                                @Model.layflat.Average.Value.ToString("N2")
+                            </td>
                             <td>@Model.product.LF_Min</td>
                             <td>@Model.product.LF_LCL</td>
                             <td>@Model.product.LF_Aim</td>
@@ -63,18 +68,23 @@
                 </table>
             </div>
             <div class="col-xs-6">
+                <br /><br />
                 <h5 class="runctx text-primary">
-                    @Model.product.FullCode Production Run 
+                    @Model.product.FullCode Production Run@(Model.runs.Count>1?"s":"")
                 </h5>
                 <table class="table table-responsive table-condensed" id="productruntable">
                     <thead>
                         <tr>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            <th>
+                                Line
+                            </th>
+                            <th>Start</th>
+                            <th>End</th>
                             <th>Samples</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @Html.DisplayFor(m => m.runs)
                     </tbody>
                 </table>
             </div>
@@ -95,11 +105,11 @@
             });*@
             $('#previous').on('click', function (e) {
                 e.preventDefault();
-                location.href = '@Url.Action("PreviousCasingSample", "Home", null, Request.Url.Scheme)/' + $id.val();
+                location.href = '@Url.Action("PreviousCasingView", "Home", null, Request.Url.Scheme)/' + $id.val();
             });
             $('#next').on('click', function (e) {
                 e.preventDefault();
-                location.href = '@Url.Action("NextCasingSample", "Home", null, Request.Url.Scheme)/' + $id.val();
+                location.href = '@Url.Action("NextCasingView", "Home", null, Request.Url.Scheme)/' + $id.val();
             });
             $('button.ctx').on('click', function (e) {
                 var target = $(this).data('target');

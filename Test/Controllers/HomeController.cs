@@ -197,30 +197,49 @@ namespace Test.Controllers
             return View();
         }
 
+        public JsonResult RunsEver()
+        {
+            var runs = Run.RunsEver(_top.ProductCodeId);
+            var lines = runs.Select(r => r.Name).Distinct().OrderBy(r => r);
+            var content = new
+            {
+                lanes = lines.Select((n, i) => new { id = i, label = n }),
+                items = runs.Select(r => new
+                {
+                    lane = r.Name,
+                    id = r.LineTxId,
+                    begin = r.Stamp.ToJSMSecs(),
+                    end = r.EndStamp.ToJSMSecs(),
+                    samples = r.Samples
+                })
+            };
+            return Json(content, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult Casings()
         {
             Casings s = new Casings(_top.ProductCodeId);
             return View(s);
         }
 
-        public ActionResult CasingSample(int id)
+        public ActionResult CasingView(int id)
         {
-            CasingSample s = TempData["Casing"] as CasingSample;
-            return View(s??(new CasingSample(id, 0)));
+            CasingView s = TempData["Casing"] as CasingView;
+            return View(s??(new CasingView(id, 0)));
         }
 
-        public ActionResult PreviousCasingSample(int id)
+        public ActionResult PreviousCasingView(int id)
         {
-            CasingSample s = new CasingSample(id, -1);
+            CasingView s = new CasingView(id, -1);
             TempData["Casing"] = s;
-            return RedirectToAction("CasingSample", new { @id = s.SampleId });
+            return RedirectToAction("CasingView", new { @id = s.SampleId });
         }
 
-        public ActionResult NextCasingSample(int id)
+        public ActionResult NextCasingView(int id)
         {
-            CasingSample s = new CasingSample(id, 1);
+            CasingView s = new CasingView(id, 1);
             TempData["Casing"] = s;
-            return RedirectToAction("CasingSample", new { @id = s.SampleId });
+            return RedirectToAction("CasingView", new { @id = s.SampleId });
         }
 
         /// <summary>
@@ -233,7 +252,7 @@ namespace Test.Controllers
         public ActionResult CasingSamples()
         {
             if (_top.SampleId != 0)
-                return RedirectToAction("CasingSample", new { @id = _top.SampleId });
+                return RedirectToAction("CasingView", new { @id = _top.SampleId });
 
             if (_top.ProductCodeId != 0)
                 return RedirectToAction("Casings", new { @id = _top.ProductCodeId });

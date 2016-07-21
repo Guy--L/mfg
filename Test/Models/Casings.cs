@@ -7,7 +7,19 @@ namespace Test.Models
 {
     public class CasingView : CasingSample
     {
+        public string moiststatus { get { return this.SpecClr(m => m.MoistPct); } }
+        public string glycstatus { get { return this.SpecClr(m => m.GlyPct); } }
 
+        public List<Run> runs;
+        public TagSample layflat;
+
+        public CasingView(int id, int direction) : base(id, direction)
+        {
+            runs = Run.RunsNow(Stamp, product.ProductCodeId);
+            layflat = new TagSample(LineId, "layflat_mm_pv", Stamp.AddHours(-4), Stamp);     // hack to get average over last sample interval  
+        }
+
+        public CasingView() { }
     }
 
     public class Casings
@@ -66,7 +78,33 @@ namespace Test.Models
                   ,r.[EditCount]      as Gly__EditCount
                   ,r.[Scheduled]      as Gly__Scheduled     
                   ,r.[ParameterId]    as Gly__ParameterId
+                  ,p.[ProductCodeId]  as _product__ProductCodeId
+                  ,p.[ProductCode]    as _product___ProductCode     
+                  ,p.[ProductSpec]    as _product__ProductSpec      
+                  ,p.[PlastSpec]      as _product__PlastSpec        
+                  ,p.[WetLayflat_Aim] as _product__WetLayflat_Aim   
+                  ,p.[WetLayflat_Min] as _product__WetLayflat_Min   
+                  ,p.[WetLayflat_Max] as _product__WetLayflat_Max   
+                  ,p.[Glut_Aim]       as _product__Glut_Aim      
+                  ,p.[Glut_Max]       as _product__Glut_Max     
+                  ,p.[Glut_Min]       as _product__Glut_Min      
+                  ,p.[ReelMoist_Aim]  as _product__ReelMoist_Aim 
+                  ,p.[ReelMoist_Min]  as _product__ReelMoist_Min 
+                  ,p.[ReelMoist_Max]  as _product__ReelMoist_Max 
+                  ,p.[LF_Aim]         as _product__LF_Aim        
+                  ,p.[LF_Min]         as _product__LF_Min        
+                  ,p.[LF_Max]         as _product__LF_Max        
+                  ,p.[LF_LCL]         as _product__LF_LCL        
+                  ,p.[LF_UCL]         as _product__LF_UCL        
+                  ,p.[OilType]        as _product__OilType       
+                  ,p.[Oil_Aim]        as _product__Oil_Aim       
+                  ,p.[Oil_Min]        as _product__Oil_Min       
+                  ,p.[Oil_Max]        as _product__Oil_Max       
+                  ,p.[Gly_Aim]        as _product__Gly_Aim       
+                  ,p.[Gly_Min]        as _product__Gly_Min       
+                  ,p.[Gly_Max]        as _product__Gly_Max       
               FROM [dbo].[Sample] s
+              join ProductCode p on p.productcodeid = s.productcodeid
               left join [Line] n on n.LineId = s.LineId
               left join [dbo].[Reading] r on r.SampleId = s.SampleId
               where s.productcodeid = @0

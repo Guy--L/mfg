@@ -1,91 +1,36 @@
-﻿@model Test.Models.Conversions
+﻿@model Test.Models.Plans
 
 <div class="container">
     <br />
-    <table id="conversions" class="table table-striped table-hover table-condensed table-bordered">
+    <table id="plans" class="table table-striped table-hover table-condensed">
         <thead>
             <tr>
-                <th colspan="2">Schedule</th>
-                <th colspan="6">
-                    <button class="btn btn-xs" id="conversion2xls">
-                        <i class="fa fa-cloud-download"></i> Weekly Production Schedule
-                    </button>
-                </th>
-                <th>
-                    <button class="btn btn-primary btn-xs" id="undoconversion">
-                        <i class="fa fa-undo"></i> Undo Recent Conversion
-                    </button>
-                </th>
+                <th colspan="8"><h3 class="text-primary">Schedule@(Model.filtered?" for "+Model.Product:"")</h3></th>
             </tr>
             <tr>
                 <th>Line</th>
-                <th title="yy-MM-dd">Scheduled</th>
-                <th title="yy-MM-dd">Started</th>
-                <th title="yy-MM-dd">Completed</th>
-                <th>Product</th>
+                <th>Scheduled</th>
+                <th width="100px;">Product</th>
                 <th>Extruder</th>
                 <th>Reqd Ft</th>
                 <th>Sys</th>                
                 <th>Soln</th>
-                <th>State</th>
+                <th>Comment</th>
             </tr>
         </thead>
         <tbody>
-            @Html.DisplayFor(m => m.conversions)
+            @Html.DisplayFor(m => m.plans)
         </tbody>
     </table>
 </div>
 
 @section scripts {
-    <script type="text/javascript">
-    function attachDT() {
-        q = $('#conversions').dataTable({
-            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
-            "order": [[1, "desc"]],
-            "bPaginate": false,
-            "oLanguage": {
-                "sInfo": "_TOTAL_ conversion(s)",
-                "sInfoFiltered": "(of _MAX_ unfiltered)",
-                "sProcessing": "<i class='fa fa-spinner fa-spin'></i>"
-            },
-            fixedHeader: {
-                headerOffset: 50
-            }
-        });
-    }
-    $(function () {
-        $('#conversions tbody').on('click', 'tr', function (e) {
+<script type="text/javascript">
+    @*$(function () {
+        $('#plans tbody').on('click', 'tr', function (e) {
             var id = $(this).closest('tr').data('id');
-            location.href = '@Url.Action("Conversion","Control",null,Request.Url.Scheme)/'+id;
+            location.href = '@Url.Action("Plan","Control",null,Request.Url.Scheme)/'+id;
         });
-        $('#addconversion').on('click', function () {
-            location.href = '@Url.Action("Conversion","Control",null,Request.Url.Scheme)/0';
-        });
-        $('#undoconversion').on('click', function () {
-            location.href = '@Url.Action("UndoConversions","Control",null,Request.Url.Scheme)';
-        });
-        $('#conversion2xls').on('click', function () {
-            location.href = '@Url.Action("ExportConversions", "Control", null, Request.Url.Scheme)';
-        });
-        $('.btnignore').on('click', function (e) {
-            e.stopPropagation();
-            var id = $(this).closest('tr').data('id');
-            e.preventDefault();
-            location.href = '@Url.Action("IgnoreConversion", "Control", null, Request.Url.Scheme)/'+id;
-        });
-        $('.btnstart').on('click', function (e) {
-            e.stopPropagation();
-            var id = $(this).closest('tr').data('id');
-            e.preventDefault();
-            location.href = '@Url.Action("StartConversion", "Control", null, Request.Url.Scheme)/'+id;
-        });
-        $('.btncomplete').on('click', function (e) {
-            e.stopPropagation();
-            var id = $(this).closest('tr').data('id');
-            e.preventDefault();
-            location.href = '@Url.Action("CompleteConversion", "Control", null, Request.Url.Scheme)/'+id;
-        });
-        attachDT();
-    });
+    });*@
 </script>
 }

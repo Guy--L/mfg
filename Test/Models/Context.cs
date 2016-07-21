@@ -130,7 +130,7 @@ namespace Test.Models
                 }
                 catch (Exception e)
                 {
-                    var tst = e;
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("lot# context ", e));
                 }
             }
             Stats();
@@ -153,7 +153,7 @@ namespace Test.Models
             }
             catch (Exception e)
             {
-                var tst = e;
+                Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("stats for context ", e));
             }
             return Statistics;
         }

@@ -45,8 +45,8 @@ namespace Test.Controllers
 
         public ActionResult Schedule()
         {
-            ViewBag.Undo = false;
-            var c = new Conversions();
+            var c = new Plans(_top.ProductCodeId);
+            c.Product = _top.Product;
             return View(c);
         }
 

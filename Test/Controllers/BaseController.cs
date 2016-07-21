@@ -190,7 +190,8 @@ namespace Test.Controllers
                 Session.Set<Context>("Context", _top);
             else
                 Session.Remove("Context");
-            ViewBag.Context = _top;   
+            if (_top == null) _top = new Context();
+            ViewBag.Context = _top;
 
             base.OnActionExecuting(filterContext);
         }

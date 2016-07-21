@@ -106,5 +106,6 @@
     <None Include="Data\AddSolnSystems.sql" />
     <None Include="Data\Tags2Current.sql" />
     <None Include="Data\AddTag2Soln.sql" />
+    <None Include="Data\ViewProduction.sql" />
   </ItemGroup>
 </Project>
