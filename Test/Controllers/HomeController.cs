@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -199,15 +200,23 @@ namespace Test.Controllers
 
         public JsonResult RunsEver()
         {
-            var runs = Run.RunsEver(_top.ProductCodeId).Select(r => new
+            var runs = Run.RunsEver(_top.ProductCodeId);
+            if (_top.SampleId != 0)
+                runs.Add(new Run(_top));                        // add lot context if needed
+
+            var data = runs.Select(r => new
                 {
                     lane = r.Name,
                     id = r.LineTxId,
                     begin = r.Stamp.ToJSMSecs(),
                     finish = r.EndStamp.ToJSMSecs(),
-                    samples = r.Samples
+                    samples = r.Samples,
+                    productcode = r.ProductCode,
+                    productspec = r.ProductSpec,
+                    productcodeid = r.ProductCodeId
                 });
-            return Json(runs, JsonRequestBehavior.AllowGet);
+
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Casings()

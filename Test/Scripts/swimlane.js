@@ -1,10 +1,19 @@
 ﻿function swim(id) {
 
+    if ($(id).children().length > 0)
+        d3.select(id).selectAll('svg').remove();
+     
+    console.log('swim attempt');
+
     d3.json('http://localhost:49458/Home/RunsEver', function (rets) {
+
+        if (rets.length == 0)
+            return;
 
         var data = parseData(rets),
             items = data.items,
             lanes = data.lanes,
+            lot = data.lot,
             now = new Date();
 
         var margin = { top: 20, right: 15, bottom: 15, left: 60 }
@@ -22,6 +31,9 @@
         var ext = d3.extent(lanes, function (d) { return d.id; });
         var y1 = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, mainHeight]);
         var y2 = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, miniHeight]);
+
+        //d3.select(id).remove();
+
 
         var chart = d3.select(id)
             .append('svg:svg')
@@ -195,23 +207,25 @@
             var rects, labels
               , minExtent = d3.time.day(brush.extent()[0])
               , maxExtent = d3.time.day(brush.extent()[1])
-              , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent });
+              , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent })
+              , visFocus = focus.filter(function (d) { return d.start < maxExtent && d.end > minExtent });
 
             mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
 
             x1.domain([minExtent, maxExtent]);
 
+            // julian date would be %d after %a %d and %b %e
             if ((maxExtent - minExtent) > 1468800000) {
-                x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d %j'))
+                x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
                 x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
             }
             else if ((maxExtent - minExtent) > 172800000) {
-                x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d %j'))
+                x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
                 x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
             }
             else {
                 x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
-                x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e %j'))
+                x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
             }
 
 
@@ -249,12 +263,12 @@
                 .data(visItems, function (d) { return d.id; })
                 .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; });
 
-            //labels.enter().append('text')
-            //    .text(function (d) { return 'Samples: ' + d.samples; })
-            //    .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; })
-            //    .attr('y', function (d) { return y1(d.lane) + .4 * y1(1) + 1; })
-            //    .attr('text-anchor', 'start')
-            //    .attr('class', 'itemLabel');
+            labels.enter().append('text')
+                .text(function (d) { return 'Samples: ' + d.samples; })
+                .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; })
+                .attr('y', function (d) { return y1(d.lane) + .7 * y1(1) + 0.5; })
+                .attr('text-anchor', 'start')
+                .attr('class', 'itemLabel');
 
             labels.exit().remove();
         }
@@ -299,8 +313,8 @@ function addToLane(chart, item) {
     var lane = chart.lanes[name];
 
     var sublane = 0;
-    while (isOverlapping(item, lane[sublane]))
-        sublane++;
+    //while (isOverlapping(item, lane[sublane]))
+    //    sublane++;
 
     if (!lane[sublane]) {
         lane[sublane] = [];
@@ -314,7 +328,6 @@ function isOverlapping(item, lane) {
         for (var i = 0; i < lane.length; i++) {
             var t = lane[i];
             if (item.start < t.end && item.end > t.start) {
-                console.log('overlapped');
                 return true;
             }
         }
@@ -351,7 +364,13 @@ function collapseLanes(chart) {
             });
 
             for (var j = 0; j < subLane.length; j++) {
+
                 var item = subLane[j];
+
+                if (item.id == 0) {
+                    var lot = { lane: laneId, start: item.start, end: item.end };
+                    continue;
+                }
 
                 items.push({
                     id: item.id,
@@ -359,7 +378,11 @@ function collapseLanes(chart) {
                     start: item.start,
                     end: item.end,
                     class: item.end > now ? 'future' : 'past',
-                    desc: item.desc
+                    samples: item.samples,
+                    desc: item.desc,
+                    productcode: item.productcode,
+                    productspec: item.productspec,
+                    productid: item.productcodeid
                 });
             }
 
@@ -367,6 +390,6 @@ function collapseLanes(chart) {
         }
     }
 
-    return { lanes: lanes, items: items };
+    return { lanes: lanes, items: items, lot: lot };
 }
 

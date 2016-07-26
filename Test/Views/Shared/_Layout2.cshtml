@@ -126,20 +126,25 @@
                 }, 1000); // Re-start connection after 1 second
             });
             $('input#Context_Product').on('change', function (e) {
+                console.log('change fired');
                 if (!pcodepattern.test($(this).val())) {
                     $(this).founded(false);
                     prdi.founded(false);
                 }
-                else
+                else {
+                    $(this).val($(this).val().toUpperCase());
                     xhub.server.byProduct($(this).val()).done(ctxUpdate);
+                }
             });
             $('input#Context_LotNum').on('change', function (e) {
                 if (!lotpattern.test($(this).val())) {
                     $(this).founded(false);
                     loti.founded(false);
                 }
-                else
+                else {
+                    $(this).val($(this).val().toUpperCase());
                     xhub.server.byLotNum($(this).val()).done(ctxUpdate);
+                }
             });
             $('i#producticon').on('click', function (e) {
                 xhub.server.clear().done(ctxUpdate);

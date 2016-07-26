@@ -19,7 +19,7 @@ namespace Test.Models
             where productcode = @0 and productspec = @1
         ";
         private static string _sample = @"
-            select top 1 sampleid, p.productcodeid, productcode + ' ' + productspec as product, s.stamp as start, s.stamp as [end]
+            select top 1 sampleid, p.productcodeid, productcode + ' ' + productspec as product, dateadd(hour, -6, s.stamp) as start, s.stamp as [end]
             from [sample] s
             join productcode p on p.productcodeid = s.productcodeid
             join line n on n.lineid = s.lineid
@@ -92,6 +92,12 @@ namespace Test.Models
         public string LineCnt { get { return Statistics?[2].ToString() + ' '; } }
         public string ProductCnt { get { return Statistics?[3].ToString() + ' '; } }
         public string ScheduleCnt { get { return Statistics?[4].ToString() + ' '; } }
+
+        public int LaneId {
+            get {
+                return Line.all[LotNum.Substring(5, 1)+'-'+LotNum.Substring(6, 1)];
+            }
+        }
 
         public Context()
         { }

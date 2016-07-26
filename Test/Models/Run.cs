@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NPoco;
 
 namespace Test.Models
 {
@@ -42,15 +43,59 @@ namespace Test.Models
             order by {3} n.stamp
         ";
 
+        private static string _byCode = @";
+            with cut as (
+	            select linetxid, lineid, stamp, productcodeid, statusid, endstamp from (
+		            select distinct linetxid, lineid, stamp, productcodeid, statusid, 
+			            lead(stamp, 1, getdate()) over (partition by lineid order by stamp) as endstamp
+		            from linetx
+	            ) a
+            )
+            select 
+                  n.linetxid
+	            , n.lineid
+	            , n.stamp
+	            , n.endstamp
+                , p.productcode
+                , p.productspec
+                , p.productcodeid
+	            , count(x.sampleid) as [samples]
+            from cut n
+            join line l on l.lineid = n.lineid
+            join unit u on u.unitid = l.unitid
+            join productcode p on p.ProductCodeId = n.ProductCodeId
+            join [status] s on s.StatusId = n.StatusId
+            left join [sample] x on x.lineid = n.lineid
+            where productcode like '@0%'
+            x.stamp >= n.stamp 
+            and x.stamp <= n.endstamp
+            and s.Code = 'RP'
+            group by n.linetxid, n.lineid, n.stamp, n.endstamp
+            order by n.lineid, n.stamp
+        ";
+
         public string Name { get { return Line.names[LineId].Replace("-",""); } }
         public int LineId { get; set; }
         public int LineTxId { get; set; }
         public DateTime Stamp { get; set; }
         public DateTime EndStamp { get; set; }
         public int Samples { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductSpec { get; set; }
+        public int ProductCodeId { get; set; }
 
         public string begin { get { return Stamp.ToShort(); } }
         public string end { get { return EndStamp.ToShort(); } }
+
+        public Run() { }
+
+        public Run(Context c)
+        {
+            LineTxId = 0;
+            Stamp = c.Start;
+            EndStamp = c.End;
+            LineId = c.LaneId;
+        }
 
         public static List<Run> RunsNow(DateTime asof, int productcodeid)
         {
@@ -80,10 +125,28 @@ namespace Test.Models
                 }
                 catch (Exception e)
                 {
-                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding all runs ", e));
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding all runs by productcodeid ", e));
                 }
             }
             return runs;
         }
+
+        public static List<Run> RunsEver(string productcode)
+        {
+            List<Run> runs = null;
+            using (labDB d = new labDB())
+            {
+                try
+                {
+                    runs = d.Fetch<Run>(_byCode, productcode);
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding all runs by productcode ", e));
+                }
+            }
+            return runs;
+        }
+
     }
 }
