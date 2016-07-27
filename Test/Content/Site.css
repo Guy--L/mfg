@@ -352,8 +352,21 @@ i.ctx {
     fill: lightgreen;
 }
 
+.chosen {
+    stroke: blue;
+    fill: green;
+}
+
 .brush .extent {
     stroke: gray;
     fill: blue;
     fill-opacity: .165;
 }
+
+.lot {
+    stroke-width: 2;
+    stroke: magenta;
+    fill: magenta;
+    fill-opacity: .5;
+}
+

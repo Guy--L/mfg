@@ -3,8 +3,6 @@
     if ($(id).children().length > 0)
         d3.select(id).selectAll('svg').remove();
      
-    console.log('swim attempt');
-
     d3.json('http://localhost:49458/Home/RunsEver', function (rets) {
 
         if (rets.length == 0)
@@ -13,7 +11,6 @@
         var data = parseData(rets),
             items = data.items,
             lanes = data.lanes,
-            lot = data.lot,
             now = new Date();
 
         var margin = { top: 20, right: 15, bottom: 15, left: 60 }
@@ -172,12 +169,26 @@
         var itemRects = main.append('g')
             .attr('clip-path', 'url(#clip)');
 
-        mini.append('g').selectAll('miniItems')
+        var minig = mini.append('g');
+        minig.selectAll('miniItems')
             .data(getPaths())
             .enter().append('path')
             .attr('class', function (d) { return 'miniItem ' + d.class; })
             .attr('d', function (d) { return d.path; });
 
+        var lotmark = minig.select('path.lot');
+        var lotpos = lotmark.attr('d').split(' ');
+        console.log(lotpos);
+
+        minig.append('rect')
+            .attr('x', lotpos[1])
+            .attr('y', Number(lotpos[2])-1.5)
+            .attr('width', lotpos[4]-lotpos[1])
+            .attr('height', 10)
+            .attr('class', 'miniItem lot');
+
+        lotmark.remove();
+        
         // invisible hit area to move around the selection window
         mini.append('rect')
             .attr('pointer-events', 'painted')
@@ -207,14 +218,13 @@
             var rects, labels
               , minExtent = d3.time.day(brush.extent()[0])
               , maxExtent = d3.time.day(brush.extent()[1])
-              , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent })
-              , visFocus = focus.filter(function (d) { return d.start < maxExtent && d.end > minExtent });
+              , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent });
 
             mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
 
             x1.domain([minExtent, maxExtent]);
 
-            // julian date would be %d after %a %d and %b %e
+            // julian date would be %j after %a %d and %b %e
             if ((maxExtent - minExtent) > 1468800000) {
                 x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
                 x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
@@ -254,7 +264,8 @@
                 .attr('y', function (d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
                 .attr('width', function (d) { return x1(d.end) - x1(d.start); })
                 .attr('height', function (d) { return .8 * y1(1); })
-                .attr('class', function (d) { return 'mainItem ' + d.class; });
+                .attr('class', function (d) { return 'mainItem ' + d.class; })
+                .on('click', function (d) { var r = d3.select(this); r.classed('chosen', !r.classed('chosen')); d.class = r.attr('class'); });
 
             rects.exit().remove();
 
@@ -264,7 +275,7 @@
                 .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; });
 
             labels.enter().append('text')
-                .text(function (d) { return 'Samples: ' + d.samples; })
+                .text(function (d) { return d.id == 0?'': 'Samples: ' + d.samples; })
                 .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; })
                 .attr('y', function (d) { return y1(d.lane) + .7 * y1(1) + 0.5; })
                 .attr('text-anchor', 'start')
@@ -299,6 +310,7 @@
                 result.push({ class: className, path: paths[className] });
             }
 
+            console.log(result);
             return result;
         }
     });
@@ -367,17 +379,12 @@ function collapseLanes(chart) {
 
                 var item = subLane[j];
 
-                if (item.id == 0) {
-                    var lot = { lane: laneId, start: item.start, end: item.end };
-                    continue;
-                }
-
                 items.push({
                     id: item.id,
                     lane: laneId,
                     start: item.start,
                     end: item.end,
-                    class: item.end > now ? 'future' : 'past',
+                    class: item.id == 0? 'lot' : (item.end > now ? 'future' : 'past'),
                     samples: item.samples,
                     desc: item.desc,
                     productcode: item.productcode,
@@ -390,6 +397,6 @@ function collapseLanes(chart) {
         }
     }
 
-    return { lanes: lanes, items: items, lot: lot };
+    return { lanes: lanes, items: items };
 }
 
