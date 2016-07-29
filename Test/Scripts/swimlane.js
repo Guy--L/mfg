@@ -181,8 +181,8 @@
             .attr('id', function (d) { return 'miniItem_' + d.id; })
             .attr('x1', function (d) { return x(d.start); })
             .attr('x2', function (d) { return x(d.end); })
-            .attr('y1', function (d) { return y2(d.lane) + offset; })
-            .attr('y2', function (d) { return y2(d.lane) + offset; });
+            .attr('y1', function (d) { return y2(d.laneid) + offset; })
+            .attr('y2', function (d) { return y2(d.laneid) + offset; });
 
         //var lotmark = minig.select('path.lot');
         //var lotpos = lotmark.attr('d').split(' ');
@@ -273,7 +273,7 @@
 
             rects.enter().append('rect')
                 .attr('x', function (d) { return x1(d.start); })
-                .attr('y', function (d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
+                .attr('y', function (d) { return y1(d.laneid) + .1 * y1(1) + 0.5; })
                 .attr('width', function (d) { return x1(d.end) - x1(d.start); })
                 .attr('height', function (d) { return .8 * y1(1); })
                 .attr('class', function (d) { return 'mainItem ' + d.class; })
@@ -282,10 +282,10 @@
                     if (clickedOnce) {
                         clickedOnce = false;
                         clearTimeout(timer);
-                        var querystring = items.filter(function (d) { return d.class.indexOf('chosen') >= 0; })
-                                            .map(function (i) { return i.id; })
-                                            .join(',') + ',' + item.id;
-                        rundetail(ids);
+                        //var querystring = items.filter(function (d) { return d.class.indexOf('chosen') >= 0; })
+                        //                    .map(function (i) { return i.id; })
+                        //                    .join(',') + ',' + item.id;
+                        return;
                     } else {
                         var that = this;
                         timer = setTimeout(function () {
@@ -295,7 +295,7 @@
                             var s = mini.select('#miniItem_' + item.id);
                             s.classed('chosen', !s.classed('chosen'));
                             clickedOnce = false;
-                            rundetail({ id: item.id, lane: item.lane, start: item.start, end: item.end });
+                            rundetail(item.id, item.lane, item.begin, item.finish);
                         }, 150);
                         clickedOnce = true;
                     }
@@ -337,7 +337,7 @@
             for (var i = 0; i < items.length; i++) {
                 d = items[i];
                 if (!paths[d.class]) paths[d.class] = '';
-                paths[d.class] += ['M', x(d.start), (y2(d.lane) + offset), 'H', x(d.end)].join(' ');
+                paths[d.class] += ['M', x(d.start), (y2(d.laneid) + offset), 'H', x(d.end)].join(' ');
             }
 
             for (var className in paths) {
@@ -349,11 +349,11 @@
     });
 }
 
-function rundetail(obj)
+function rundetail(id, group, start, end)
 {
-    d3.json('/Home/RunDetail?' + $.param(obj), function (rets, chk) {
+    
+    d3.json('/Home/RunDetail/' + id + '/' + group + '/' + start + '/' + end, function (rets, chk) {
 
-        console.log($.param(obj));
         console.log(rets);
         console.log(chk);
 
@@ -435,7 +435,10 @@ function collapseLanes(chart) {
 
                 items.push({
                     id: item.id,
-                    lane: laneId,
+                    laneid: laneId,
+                    lane: lane,
+                    begin: item.begin,
+                    finish: item.finish,
                     start: item.start,
                     end: item.end,
                     class: item.id == 0? 'lot' : (item.end > now ? 'future' : 'past'),

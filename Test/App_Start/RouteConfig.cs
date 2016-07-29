@@ -12,7 +12,14 @@ namespace Test
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}/{group}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional, group = UrlParameter.Optional },
+                defaults: new {
+                      controller = "Home"
+                    , action = "Index"
+                    , id = UrlParameter.Optional
+                    , group = UrlParameter.Optional
+                    , start = UrlParameter.Optional
+                    , end = UrlParameter.Optional
+                },
                 namespaces: new[] { "Test.Controllers" }
             );
         }

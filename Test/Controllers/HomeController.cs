@@ -220,13 +220,13 @@ namespace Test.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult RunDetail(int tid, string lane, DateTime start, DateTime end)
+        public JsonResult RunDetail(int id, string group, long start, long end)
         {
-            var samples = TagSample.Span(lane, start, end);
+            var samples = TagSample.Span(group, start.FromJSMSecs(), end.FromJSMSecs());
 
             var data = samples.Select(r => new
             {
-                id = tid,
+                id = id,
                 series = r.series,
                 limit = r.limit
             });

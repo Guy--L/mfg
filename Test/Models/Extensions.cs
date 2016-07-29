@@ -17,9 +17,9 @@ namespace Test.Models
             return (long)((dt.ToUniversalTime().Ticks - DatetimeMinTimeTicks) / 10000);
         }
 
-        public static DateTime FromJSMSecs(this double tm)
+        public static DateTime FromJSMSecs(this long tm)
         {
-            return new DateTime(((long)tm * 10000) + DatetimeMinTimeTicks).ToLocalTime();
+            return new DateTime((tm * 10000) + DatetimeMinTimeTicks).ToLocalTime();
         }
 
 

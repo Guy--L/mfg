@@ -85,7 +85,6 @@ namespace Test.Models
         public double? Maximum { get; set; }
 
         public Limit limit { get; set; }
-
         public List<Value> series { get; set; }
 
         public TagSample(int lineid, string tagname, DateTime start, DateTime end, bool detail)
