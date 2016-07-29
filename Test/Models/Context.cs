@@ -100,7 +100,7 @@ namespace Test.Models
         }
 
         public Context()
-        { }
+        {}
 
         public Context(string code, string spec)
         {

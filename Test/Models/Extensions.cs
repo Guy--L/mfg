@@ -7,6 +7,9 @@ namespace Test.Models
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Time related extensions for javascript and database
+        /// </summary>
         private static readonly long DatetimeMinTimeTicks = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).Ticks;
 
         public static long ToJSMSecs(this DateTime dt)
@@ -72,22 +75,37 @@ namespace Test.Models
             return UnixEpoch.AddSeconds(anInt);
         }
 
+        /// <summary>
+        /// Specification related functions
+        /// </summary>
+        /// <param name="cs">Casing Sample</param>
+        /// <param name="pct">Projection onto either Moisture, Glycerin or Oil</param>
+        /// <returns>Rounded return for equivalence to Excel programming</returns>
         public static double[] specs(this CasingView cs, Func<CasingView, double?> pct)
         {
-            if (cs == null) return null;
-            if (pct(cs) == cs.MoistPct && cs.product != null)
+            if (cs == null || cs.product == null) return null;
+            if (pct(cs) == cs.MoistPct)
                 return new double[]
                 {
                     Math.Round(cs.product.ReelMoist_Min.Value, 1),
                     Math.Round(cs.product.ReelMoist_Aim.Value, 1),
                     Math.Round(cs.product.ReelMoist_Max.Value, 1)
                 };
-            if (pct(cs) == cs.GlyPct && cs.product != null)
+            if (pct(cs) == cs.GlyPct)
                 return new double[]
                 {
                     Math.Round(cs.product.Gly_Min.Value, 1),
                     Math.Round(cs.product.Gly_Aim.Value, 1),
                     Math.Round(cs.product.Gly_Max.Value, 1)
+                };
+            if (pct(cs) == cs.LayFlat)
+                return new double[]
+                {
+                    Math.Round(cs.product.LF_Min.Value, 1),
+                    Math.Round(cs.product.LF_LCL.Value, 1),
+                    Math.Round(cs.product.LF_Aim.Value, 1),
+                    Math.Round(cs.product.LF_UCL.Value, 1),
+                    Math.Round(cs.product.LF_Max.Value, 1)
                 };
             return null;
         }
@@ -98,7 +116,7 @@ namespace Test.Models
             var std = cs.specs(pct);
             if (std == null) return false;
             var val = Math.Round(pct(cs).Value, 1);
-            return val < std[0] || std[2] < val;
+            return val < std[0] || std[std.Length-1] < val;
         }
 
         public static bool OOControl(this CasingView cs, Func<CasingView, double?> pct)
@@ -109,10 +127,11 @@ namespace Test.Models
             var val = Math.Round(pct(cs).Value, 1);
             if (pct(cs) == cs.MoistPct)          return val < (std[0] + .5) || (std[2] - .5) < val;
             if (pct(cs) == cs.GlyPct)            return val < (std[1] - 1) || (std[1] + 1) < val;
+            if (pct(cs) == cs.LayFlat)           return val < std[1] || std[3] < val;
             return false;
         }
 
-        public static string SpecClr(this CasingView cs, Func<CasingView, double?> pct)
+        public static string SpecColor(this CasingView cs, Func<CasingView, double?> pct)
         {
             if (cs.OOSpec(pct)) return "danger";
             if (cs.OOControl(pct)) return "warning";

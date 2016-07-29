@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NPoco;
+using System.Linq;
 
 namespace Test.Models
 {
@@ -8,10 +9,9 @@ namespace Test.Models
     {
         private static string _latest = @" left join cut m on n.lineid = m.lineid and m.stamp > n.stamp ";
         private static string _where = @" m.stamp is null and ";
-        private static string _current = @"
-            where a.stamp < @1
-        ";
-
+        private static string _current = @" where a.stamp < @1 ";
+        private static string _byLineTx = @" where a.linetxid = @0 ";
+        private static string _product = @" n.productcodeid = @0 and s.Code = 'RP' and ";
         private static string _byProduct = @";
             with cut as (
 	            select linetxid, lineid, stamp, productcodeid, statusid, endstamp from (
@@ -26,20 +26,28 @@ namespace Test.Models
 	            , n.lineid
 	            , n.stamp
 	            , n.endstamp
+                , p.productcodeid
+                , p.productcode
+                , p.productspec
 	            , count(x.sampleid) as [samples]
             from cut n
             {1}
             join line l on l.lineid = n.lineid
             join unit u on u.unitid = l.unitid
-            join productcode p on p.ProductCodeId = n.ProductCodeId
+            join productcode p on p.productcodeid = n.productcodeid
             join [status] s on s.StatusId = n.StatusId
             left join [sample] x on x.lineid = n.lineid
             where {2}
-            x.stamp >= n.stamp 
-            and x.stamp <= n.endstamp
-            and n.productcodeid = @0
-            and s.Code = 'RP'
-            group by n.linetxid, n.lineid, n.stamp, n.endstamp
+                x.stamp >= n.stamp 
+                and x.stamp <= n.endstamp
+            group by                   
+                  n.linetxid
+	            , n.lineid
+	            , n.stamp
+	            , n.endstamp
+                , p.productcodeid
+                , p.productcode
+                , p.productspec
             order by {3} n.stamp
         ";
 
@@ -56,9 +64,7 @@ namespace Test.Models
 	            , n.lineid
 	            , n.stamp
 	            , n.endstamp
-                , p.productcode
-                , p.productspec
-                , p.productcodeid
+                , n.productcodeid
 	            , count(x.sampleid) as [samples]
             from cut n
             join line l on l.lineid = n.lineid
@@ -74,7 +80,14 @@ namespace Test.Models
             order by n.lineid, n.stamp
         ";
 
-        public string Name { get { return Line.names[LineId].Replace("-",""); } }
+        private static string[] detail = new string[]
+        {
+            "csg_glyc_pct", 
+            "csg_moist_pct",
+            "layflat_mm_pv"
+        };
+
+        public string Name { get { return Line.names[LineId].Replace("-", ""); } }
         public int LineId { get; set; }
         public int LineTxId { get; set; }
         public DateTime Stamp { get; set; }
@@ -87,6 +100,11 @@ namespace Test.Models
         public string begin { get { return Stamp.ToShort(); } }
         public string end { get { return EndStamp.ToShort(); } }
 
+        [ResultColumn] public List<Sample> samples { get; set; }
+
+        public List<TagSample> series {get;set;}
+
+
         public Run() { }
 
         public Run(Context c)
@@ -95,6 +113,23 @@ namespace Test.Models
             Stamp = c.Start;
             EndStamp = c.End;
             LineId = c.LaneId;
+        }
+
+        public Run(int id)
+        {
+            Run run = null;
+            using (labDB d = new labDB())
+            {
+                try
+                {
+                    run = d.Fetch<Run>(string.Format(_byProduct, _byLineTx, "", "", ""), id).SingleOrDefault();
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding run by line tx ", e));
+                }
+            }
+            series = detail.Select(t => new TagSample(run.LineId, t, run.Stamp, run.EndStamp, true)).ToList();
         }
 
         public static List<Run> RunsNow(DateTime asof, int productcodeid)
@@ -121,7 +156,7 @@ namespace Test.Models
             {
                 try
                 {
-                    runs = d.Fetch<Run>(string.Format(_byProduct, "", "", "", "n.lineid,"), productcodeid);
+                    runs = d.Fetch<Run>(string.Format(_byProduct, "", "", _product, "n.lineid,"), productcodeid);
                 }
                 catch (Exception e)
                 {
@@ -147,6 +182,5 @@ namespace Test.Models
             }
             return runs;
         }
-
     }
 }

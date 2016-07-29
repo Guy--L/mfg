@@ -7,19 +7,22 @@ namespace Test.Models
 {
     public class CasingView : CasingSample
     {
-        public string moiststatus { get { return this.SpecClr(m => m.MoistPct); } }
-        public string glycstatus { get { return this.SpecClr(m => m.GlyPct); } }
+        public string moiststatus { get { return this.SpecColor(m => m.MoistPct); } }
+        public string glycstatus { get { return this.SpecColor(m => m.GlyPct); } }
+        public string lfstatus { get { return this.SpecColor(m => m.LayFlat); } }
 
         public List<Run> runs;
         public TagSample layflat;
+        public double? LayFlat { get { return layflat.Average; } }
 
         public CasingView(int id, int direction) : base(id, direction)
         {
             runs = Run.RunsNow(Stamp, product.ProductCodeId);
-            layflat = new TagSample(LineId, "layflat_mm_pv", Stamp.AddHours(-4), Stamp);     // hack to get average over last sample interval  
+            layflat = new TagSample(LineId, "layflat_mm_pv", Stamp.AddHours(-4), Stamp, false);     // hack to get average over last sample interval  
         }
 
         public CasingView() { }
+
     }
 
     public class Casings

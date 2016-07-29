@@ -3,7 +3,10 @@
     if ($(id).children().length > 0)
         d3.select(id).selectAll('svg').remove();
      
-    d3.json('http://localhost:49458/Home/RunsEver', function (rets) {
+    d3.json('/Home/RunsEver', function (rets) {
+
+        if (typeof rets === 'undefined')
+            return;
 
         if (rets.length == 0)
             return;
@@ -169,25 +172,29 @@
         var itemRects = main.append('g')
             .attr('clip-path', 'url(#clip)');
 
-        var minig = mini.append('g');
-        minig.selectAll('miniItems')
-            .data(getPaths())
-            .enter().append('path')
+        var offset = .5 * y2(1) + 0.5;
+
+        mini.append('g').selectAll('miniItems')
+            .data(items)
+            .enter().append('line')
             .attr('class', function (d) { return 'miniItem ' + d.class; })
-            .attr('d', function (d) { return d.path; });
+            .attr('id', function (d) { return 'miniItem_' + d.id; })
+            .attr('x1', function (d) { return x(d.start); })
+            .attr('x2', function (d) { return x(d.end); })
+            .attr('y1', function (d) { return y2(d.lane) + offset; })
+            .attr('y2', function (d) { return y2(d.lane) + offset; });
 
-        var lotmark = minig.select('path.lot');
-        var lotpos = lotmark.attr('d').split(' ');
-        console.log(lotpos);
+        //var lotmark = minig.select('path.lot');
+        //var lotpos = lotmark.attr('d').split(' ');
 
-        minig.append('rect')
-            .attr('x', lotpos[1])
-            .attr('y', Number(lotpos[2])-1.5)
-            .attr('width', lotpos[4]-lotpos[1])
-            .attr('height', 10)
-            .attr('class', 'miniItem lot');
+        //minig.append('rect')
+        //    .attr('x', lotpos[1])
+        //    .attr('y', Number(lotpos[2])-1.5)
+        //    .attr('width', lotpos[4]-lotpos[1])
+        //    .attr('height', 10)
+        //    .attr('class', 'miniItem lot');
 
-        lotmark.remove();
+        //lotmark.remove();
         
         // invisible hit area to move around the selection window
         mini.append('rect')
@@ -259,29 +266,56 @@
                 .attr('x', function (d) { return x1(d.start); })
                 .attr('width', function (d) { return x1(d.end) - x1(d.start); });
 
+            var timer;
+            var clickedOnce;
+            //var runClicked;
+            //var 
+
             rects.enter().append('rect')
                 .attr('x', function (d) { return x1(d.start); })
                 .attr('y', function (d) { return y1(d.lane) + .1 * y1(1) + 0.5; })
                 .attr('width', function (d) { return x1(d.end) - x1(d.start); })
                 .attr('height', function (d) { return .8 * y1(1); })
                 .attr('class', function (d) { return 'mainItem ' + d.class; })
-                .on('click', function (d) { var r = d3.select(this); r.classed('chosen', !r.classed('chosen')); d.class = r.attr('class'); });
+                .on('click', function (d) {
+                    var item = d;
+                    if (clickedOnce) {
+                        clickedOnce = false;
+                        clearTimeout(timer);
+                        var querystring = items.filter(function (d) { return d.class.indexOf('chosen') >= 0; })
+                                            .map(function (i) { return i.id; })
+                                            .join(',') + ',' + item.id;
+                        rundetail(ids);
+                    } else {
+                        var that = this;
+                        timer = setTimeout(function () {
+                            var r = d3.select(that);
+                            r.classed('chosen', !r.classed('chosen'));
+                            item.class = r.attr('class');
+                            var s = mini.select('#miniItem_' + item.id);
+                            s.classed('chosen', !s.classed('chosen'));
+                            clickedOnce = false;
+                            rundetail({ id: item.id, lane: item.lane, start: item.start, end: item.end });
+                        }, 150);
+                        clickedOnce = true;
+                    }
+                });
 
             rects.exit().remove();
 
             // update the item labels
-            labels = itemRects.selectAll('text')
-                .data(visItems, function (d) { return d.id; })
-                .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; });
+            //labels = itemRects.selectAll('text')
+            //    .data(visItems, function (d) { return d.id; })
+            //    .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; });
 
-            labels.enter().append('text')
-                .text(function (d) { return d.id == 0?'': 'Samples: ' + d.samples; })
-                .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; })
-                .attr('y', function (d) { return y1(d.lane) + .7 * y1(1) + 0.5; })
-                .attr('text-anchor', 'start')
-                .attr('class', 'itemLabel');
+            //labels.enter().append('text')
+            //    .text(function (d) { return d.id == 0?'': 'Samples: ' + d.samples; })
+            //    .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; })
+            //    .attr('y', function (d) { return y1(d.lane) + .7 * y1(1) + 0.5; })
+            //    .attr('text-anchor', 'start')
+            //    .attr('class', 'itemLabel');
 
-            labels.exit().remove();
+            //labels.exit().remove();
         }
 
         function moveBrush() {
@@ -310,9 +344,29 @@
                 result.push({ class: className, path: paths[className] });
             }
 
-            console.log(result);
             return result;
         }
+    });
+}
+
+function rundetail(obj)
+{
+    d3.json('/Home/RunDetail?' + $.param(obj), function (rets, chk) {
+
+        console.log($.param(obj));
+        console.log(rets);
+        console.log(chk);
+
+        if (typeof rets === 'undefined')
+            return;
+
+        if (rets.length == 0)
+            return;
+
+        var data = parseData(rets),
+            items = data.items,
+            lanes = data.lanes,
+            now = new Date();
     });
 }
 
@@ -386,10 +440,10 @@ function collapseLanes(chart) {
                     end: item.end,
                     class: item.id == 0? 'lot' : (item.end > now ? 'future' : 'past'),
                     samples: item.samples,
-                    desc: item.desc,
                     productcode: item.productcode,
                     productspec: item.productspec,
-                    productid: item.productcodeid
+                    productid: item.productid,
+                    series: item.series
                 });
             }
 

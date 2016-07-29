@@ -201,6 +201,7 @@ namespace Test.Controllers
         public JsonResult RunsEver()
         {
             var runs = Run.RunsEver(_top.ProductCodeId);
+
             if (_top.SampleId != 0)
                 runs.Add(new Run(_top));                        // add lot context if needed
 
@@ -211,11 +212,24 @@ namespace Test.Controllers
                     begin = r.Stamp.ToJSMSecs(),
                     finish = r.EndStamp.ToJSMSecs(),
                     samples = r.Samples,
+                    productid = r.ProductCodeId,
                     productcode = r.ProductCode,
-                    productspec = r.ProductSpec,
-                    productcodeid = r.ProductCodeId
+                    productspec = r.ProductSpec
                 });
 
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult RunDetail(int tid, string lane, DateTime start, DateTime end)
+        {
+            var samples = TagSample.Span(lane, start, end);
+
+            var data = samples.Select(r => new
+            {
+                id = tid,
+                series = r.series,
+                limit = r.limit
+            });
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 

@@ -57,34 +57,6 @@ namespace Test.Models
         }
     }
 
-    public class PRelate
-    {
-        private ProductCode current;
-        public ProductCode Map(ProductCode p, Line l, Unit u)
-        {
-            if (p == null)
-                return current;
-
-            if (current != null && current.ProductCodeId == p.ProductCodeId)
-            {
-                if (l != null)
-                {
-                    l.unit = u;
-                    current.running.Add(l);
-                }
-                return null;
-            }
-            var prev = current;
-            current = p;
-            if (l != null)
-            {
-                current.running = new List<Line>();
-                l.unit = u;
-                current.running.Add(l);
-            }
-            return prev;            
-        }
-    }
     public class Products
     {
         public string Product { get; set; }

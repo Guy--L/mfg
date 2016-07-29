@@ -370,3 +370,6 @@ i.ctx {
     fill-opacity: .5;
 }
 
+.miniItem.lot {
+    stroke-width: 12;
+}
