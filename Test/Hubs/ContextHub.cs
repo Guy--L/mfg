@@ -13,6 +13,25 @@ namespace Test.Hubs
     {
         public static ConcurrentDictionary<string, Context> contexts = new ConcurrentDictionary<string, Context>();
 
+        public List<Run> RunsEver()
+        {
+            Context _top = contexts[Context.User.Identity.Name];
+
+            var runs = Run.RunsEver(_top.ProductCodeId);
+
+            if (_top.SampleId != 0)
+                runs.Add(new Run(_top));                        // add lot context if needed
+
+            return runs;
+        }
+
+        public List<TagSample> RunDetail(string channel, long start, long end)
+        {
+            var samples = TagSample.Span(channel, start.FromJSMSecs(), end.FromJSMSecs());
+
+            return samples;
+        }
+
         public Context ByProduct(string product)
         {
             string code = product.Trim().ToUpper();

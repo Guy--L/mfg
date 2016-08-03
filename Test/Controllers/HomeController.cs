@@ -207,7 +207,7 @@ namespace Test.Controllers
 
             var data = runs.Select(r => new
                 {
-                    lane = r.Name,
+                    lane = r.Lane,
                     id = r.LineTxId,
                     begin = r.Stamp.ToJSMSecs(),
                     finish = r.EndStamp.ToJSMSecs(),

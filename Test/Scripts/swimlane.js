@@ -3,7 +3,7 @@
     if ($(id).children().length > 0)
         d3.select(id).selectAll('svg').remove();
      
-    d3.json('/Home/RunsEver', function (rets) {
+    xhub.server.runsEver().done(function (rets) {
 
         if (typeof rets === 'undefined')
             return;
@@ -23,7 +23,7 @@
             , mainHeight = height - miniHeight - 50;
 
         var x = d3.time.scale()
-            .domain([d3.time.sunday(d3.min(items, function (d) { return d.start; })),
+            .domain([d3.time.sunday(d3.min(items, function (d) { return d.begin; })),
                         d3.max(items, function (d) { return d.end; })])
             .range([0, width]);
         var x1 = d3.time.scale().range([0, width]);
@@ -179,7 +179,7 @@
             .enter().append('line')
             .attr('class', function (d) { return 'miniItem ' + d.class; })
             .attr('id', function (d) { return 'miniItem_' + d.id; })
-            .attr('x1', function (d) { return x(d.start); })
+            .attr('x1', function (d) { return x(d.begin); })
             .attr('x2', function (d) { return x(d.end); })
             .attr('y1', function (d) { return y2(d.laneid) + offset; })
             .attr('y2', function (d) { return y2(d.laneid) + offset; });
@@ -225,7 +225,7 @@
             var rects, labels
               , minExtent = d3.time.day(brush.extent()[0])
               , maxExtent = d3.time.day(brush.extent()[1])
-              , visItems = items.filter(function (d) { return d.start < maxExtent && d.end > minExtent });
+              , visItems = items.filter(function (d) { return d.begin < maxExtent && d.end > minExtent });
 
             mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
 
@@ -263,8 +263,8 @@
             // upate the item rects
             rects = itemRects.selectAll('rect')
                 .data(visItems, function (d) { return d.id; })
-                .attr('x', function (d) { return x1(d.start); })
-                .attr('width', function (d) { return x1(d.end) - x1(d.start); });
+                .attr('x', function (d) { return x1(d.begin); })
+                .attr('width', function (d) { return x1(d.end) - x1(d.begin); });
 
             var timer;
             var clickedOnce;
@@ -272,9 +272,9 @@
             //var 
 
             rects.enter().append('rect')
-                .attr('x', function (d) { return x1(d.start); })
+                .attr('x', function (d) { return x1(d.begin); })
                 .attr('y', function (d) { return y1(d.laneid) + .1 * y1(1) + 0.5; })
-                .attr('width', function (d) { return x1(d.end) - x1(d.start); })
+                .attr('width', function (d) { return x1(d.end) - x1(d.begin); })
                 .attr('height', function (d) { return .8 * y1(1); })
                 .attr('class', function (d) { return 'mainItem ' + d.class; })
                 .on('click', function (d) {
@@ -295,7 +295,7 @@
                             var s = mini.select('#miniItem_' + item.id);
                             s.classed('chosen', !s.classed('chosen'));
                             clickedOnce = false;
-                            rundetail(item.id, item.lane, item.begin, item.finish);
+                            rundetail(item);
                         }, 150);
                         clickedOnce = true;
                     }
@@ -306,11 +306,11 @@
             // update the item labels
             //labels = itemRects.selectAll('text')
             //    .data(visItems, function (d) { return d.id; })
-            //    .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; });
+            //    .attr('x', function (d) { return x1(Math.max(d.begin, minExtent)) + 2; });
 
             //labels.enter().append('text')
             //    .text(function (d) { return d.id == 0?'': 'Samples: ' + d.samples; })
-            //    .attr('x', function (d) { return x1(Math.max(d.start, minExtent)) + 2; })
+            //    .attr('x', function (d) { return x1(Math.max(d.begin, minExtent)) + 2; })
             //    .attr('y', function (d) { return y1(d.lane) + .7 * y1(1) + 0.5; })
             //    .attr('text-anchor', 'start')
             //    .attr('class', 'itemLabel');
@@ -322,10 +322,10 @@
             var origin = d3.mouse(this)
               , point = x.invert(origin[0])
               , halfExtent = (brush.extent()[1].getTime() - brush.extent()[0].getTime()) / 2
-              , start = new Date(point.getTime() - halfExtent)
+              , begin = new Date(point.getTime() - halfExtent)
               , end = new Date(point.getTime() + halfExtent);
 
-            brush.extent([start, end]);
+            brush.extent([begin, end]);
             display();
         }
 
@@ -337,7 +337,7 @@
             for (var i = 0; i < items.length; i++) {
                 d = items[i];
                 if (!paths[d.class]) paths[d.class] = '';
-                paths[d.class] += ['M', x(d.start), (y2(d.laneid) + offset), 'H', x(d.end)].join(' ');
+                paths[d.class] += ['M', x(d.begin), (y2(d.laneid) + offset), 'H', x(d.end)].join(' ');
             }
 
             for (var className in paths) {
@@ -349,29 +349,20 @@
     });
 }
 
-function rundetail(id, group, start, end)
+function rundetail(item)
 {
-    
-    d3.json('/Home/RunDetail/' + id + '/' + group + '/' + start + '/' + end, function (rets, chk) {
-
-        console.log(rets);
-        console.log(chk);
-
-        if (typeof rets === 'undefined')
-            return;
-
-        if (rets.length == 0)
-            return;
-
-        var data = parseData(rets),
-            items = data.items,
-            lanes = data.lanes,
-            now = new Date();
+    console.log(item);
+    console.log('rundetail '+ item.lane+', '+item.start+', '+item.stop);
+    xhub.server.runDetail(item.lane, item.start, item.stop).done(function (dets) {
+        console.log(dets);
+    }).fail(function (msg) {
+        console.log(msg);
     });
+    console.log('rundetailend');
 }
 
 function addToLane(chart, item) {
-    var name = item.lane;
+    var name = item.Lane;
 
     if (!chart.lanes[name])
         chart.lanes[name] = [];
@@ -393,7 +384,7 @@ function isOverlapping(item, lane) {
     if (lane) {
         for (var i = 0; i < lane.length; i++) {
             var t = lane[i];
-            if (item.start < t.end && item.end > t.start) {
+            if (item.begin < t.end && item.end > t.begin) {
                 return true;
             }
         }
@@ -407,8 +398,8 @@ function parseData(data) {
 
     for (i; i < length; i++) {
         var item = data[i];
-        item.start = new Date(item.begin);
-        item.end = new Date(item.finish);
+        item.begin = new Date(item.start);
+        item.end = new Date(item.stop);
         addToLane(chart, item);
     }
     return collapseLanes(chart);
@@ -434,18 +425,20 @@ function collapseLanes(chart) {
                 var item = subLane[j];
 
                 items.push({
-                    id: item.id,
+                    id: item.LineTxId,
                     laneid: laneId,
-                    lane: lane,
+                    lane: laneName,
+                    stamp: item.Stamp,
+                    endstamp: item.EndStamp,
                     begin: item.begin,
-                    finish: item.finish,
-                    start: item.start,
                     end: item.end,
-                    class: item.id == 0? 'lot' : (item.end > now ? 'future' : 'past'),
+                    start: item.start,
+                    stop: item.stop,
+                    class: item.LineTxId == 0 ? 'lot' : (item.end > now ? 'future' : 'past'),
                     samples: item.samples,
-                    productcode: item.productcode,
-                    productspec: item.productspec,
-                    productid: item.productid,
+                    productcode: item.ProductCode,
+                    productspec: item.ProductSpec,
+                    productid: item.ProductCodeId,
                     series: item.series
                 });
             }

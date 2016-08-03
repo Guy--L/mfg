@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NPoco;
 
 namespace Test.Models
 {
@@ -92,6 +93,8 @@ namespace Test.Models
             where t2.tagid is null
             order by name
         ";
+
+        [ResultColumn] public string tagname { get; set; }
         
         public static string UpdateLimits(string lineids, bool replace)
         {

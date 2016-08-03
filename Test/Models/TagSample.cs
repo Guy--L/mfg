@@ -45,21 +45,22 @@ namespace Test.Models
             order by stamp desc
         ";
 
-        private static string _linesample = @"
-            declare @tags table (tagid int)    
+        private static string _linesample = @";
+            declare @@tags table (tagid int, tagname varchar(64))    
             
-            select tagid into @tags from tag t
+            insert into @@tags 
+            select t.tagid, t.name as tagname from tag t
             join device d on t.deviceid = d.deviceid
             join channel c on d.channelid = c.channelid
             where c.name = @0 and t.name in ('layflat_mm_pv', 'csg_moist_pct', 'csg_glyc_pct')       
 
             select
-                 tagid 
-                ,convert(float,value,0) as dvalue
-                ,cast(DATEDIFF(s, '1970-01-01 00:00:00', stamp) as bigint)*1000 + cast(DATEPART(ms, stamp) as bigint) as epoch
-                ,stamp
+                 p.tagid 
+                ,convert(float,p.value,0) as dvalue
+                ,cast(DATEDIFF(s, '1970-01-01 00:00:00', p.stamp) as bigint)*1000 + cast(DATEPART(ms, p.stamp) as bigint) as epoch
+                ,p.stamp
             from production p
-            join @tag t on p.tagid = t.tagid
+            join @@tags t on p.tagid = t.tagid
             and p.stamp >= @1 and p.stamp <= @2
 
             ;with asof as (
@@ -67,9 +68,9 @@ namespace Test.Models
                 from limit
                 where stamp <= @1
             )
-            select m.limitid, m.tagid, m.stamp, m.lolo, m.lo, m.aim, m.hi, m.hihi 
+            select m.limitid, m.tagid, t.tagname, m.stamp, m.lolo, m.lo, m.aim, m.hi, m.hihi 
             from asof m
-            join @tags t on t.tagid = m.tagid
+            join @@tags t on t.tagid = m.tagid
             left join asof n on n.tagid = m.tagid and n.stamp > m.stamp 
             where n.limitid is null
             order by stamp desc
@@ -116,9 +117,16 @@ namespace Test.Models
 
             using (tagDB t = new tagDB())
             {
-                var results = t.FetchMultiple<Value, Limit>(_linesample, channel, start.ToStamp(), end.ToStamp());
-                var series = results.Item1.ToLookup(k => k.TagId, v => v);
-                tagsamples = results.Item2.Select(n => new TagSample(n, series[n.TagId].ToList(), start, end)).ToList();
+                try
+                {
+                    var results = t.FetchMultiple<Value, Limit>(_linesample, channel, start.ToStamp(), end.ToStamp());
+                    var series = results.Item1.ToLookup(k => k.TagId, v => v);
+                    tagsamples = results.Item2.Select(n => new TagSample(n, series[n.TagId].ToList(), start, end)).ToList();
+                }
+                catch (Exception e)
+                {
+                    var tst = e;
+                }
             }
             return tagsamples;
         }

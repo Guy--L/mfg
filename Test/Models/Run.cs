@@ -5,6 +5,11 @@ using System.Linq;
 
 namespace Test.Models
 {
+    public class RunView
+    {
+
+    }
+
     public class Run
     {
         private static string _latest = @" left join cut m on n.lineid = m.lineid and m.stamp > n.stamp ";
@@ -87,7 +92,7 @@ namespace Test.Models
             "layflat_mm_pv"
         };
 
-        public string Name { get { return Line.names[LineId].Replace("-", ""); } }
+        public string Lane { get { return Line.names[LineId].Replace("-", ""); } }
         public int LineId { get; set; }
         public int LineTxId { get; set; }
         public DateTime Stamp { get; set; }
@@ -97,8 +102,8 @@ namespace Test.Models
         public string ProductSpec { get; set; }
         public int ProductCodeId { get; set; }
 
-        public string begin { get { return Stamp.ToShort(); } }
-        public string end { get { return EndStamp.ToShort(); } }
+        public long start { get { return Stamp.ToJSMSecs(); } }
+        public long stop { get { return EndStamp.ToJSMSecs(); } }
 
         [ResultColumn] public List<Sample> samples { get; set; }
 
