@@ -11,6 +11,7 @@
         if (rets.length == 0)
             return;
 
+        var details;
         var data = parseData(rets),
             items = data.items,
             lanes = data.lanes,
@@ -184,18 +185,6 @@
             .attr('y1', function (d) { return y2(d.laneid) + offset; })
             .attr('y2', function (d) { return y2(d.laneid) + offset; });
 
-        //var lotmark = minig.select('path.lot');
-        //var lotpos = lotmark.attr('d').split(' ');
-
-        //minig.append('rect')
-        //    .attr('x', lotpos[1])
-        //    .attr('y', Number(lotpos[2])-1.5)
-        //    .attr('width', lotpos[4]-lotpos[1])
-        //    .attr('height', 10)
-        //    .attr('class', 'miniItem lot');
-
-        //lotmark.remove();
-        
         // invisible hit area to move around the selection window
         mini.append('rect')
             .attr('pointer-events', 'painted')
@@ -222,13 +211,12 @@
 
         function display() {
 
-            var rects, labels
+            var rects, labels, lines
               , minExtent = d3.time.day(brush.extent()[0])
               , maxExtent = d3.time.day(brush.extent()[1])
               , visItems = items.filter(function (d) { return d.begin < maxExtent && d.end > minExtent });
 
             mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
-
             x1.domain([minExtent, maxExtent]);
 
             // julian date would be %j after %a %d and %b %e
@@ -244,8 +232,6 @@
                 x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
                 x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
             }
-
-
             //x1Offset.range([0, x1(d3.time.day.ceil(now) - x1(d3.time.day.floor(now)))]);
 
             // shift the today line
@@ -266,11 +252,6 @@
                 .attr('x', function (d) { return x1(d.begin); })
                 .attr('width', function (d) { return x1(d.end) - x1(d.begin); });
 
-            var timer;
-            var clickedOnce;
-            //var runClicked;
-            //var 
-
             rects.enter().append('rect')
                 .attr('x', function (d) { return x1(d.begin); })
                 .attr('y', function (d) { return y1(d.laneid) + .1 * y1(1) + 0.5; })
@@ -278,30 +259,28 @@
                 .attr('height', function (d) { return .8 * y1(1); })
                 .attr('class', function (d) { return 'mainItem ' + d.class; })
                 .on('click', function (d) {
-                    var item = d;
-                    if (clickedOnce) {
-                        clickedOnce = false;
-                        clearTimeout(timer);
-                        //var querystring = items.filter(function (d) { return d.class.indexOf('chosen') >= 0; })
-                        //                    .map(function (i) { return i.id; })
-                        //                    .join(',') + ',' + item.id;
-                        return;
-                    } else {
-                        var that = this;
-                        timer = setTimeout(function () {
-                            var r = d3.select(that);
-                            r.classed('chosen', !r.classed('chosen'));
-                            item.class = r.attr('class');
-                            var s = mini.select('#miniItem_' + item.id);
-                            s.classed('chosen', !s.classed('chosen'));
-                            clickedOnce = false;
-                            rundetail(item);
-                        }, 150);
-                        clickedOnce = true;
-                    }
-                });
+                    var r = d3.select(this);
+                    r.classed('chosen', !r.classed('chosen'));
+                    d.class = r.attr('class');
+                    var s = mini.select('#miniItem_' + d.id);
+                    s.classed('chosen', !s.classed('chosen'));
+                    rundetail(d);
+                })
+                .append('g')
+                .attr('transform', 'translate(0,' + function (d) { return y1(d.laneid) + .1 * y1(1) + 0.5; } + ')');
 
             rects.exit().remove();
+
+            rects.selectAll('g').selectAll
+                .data(visItems, function (d) { return d.id; });
+            //lines = itemRects.selectAll('line').data(visItems);
+            //lines.enter().append('line');
+
+            //lines.attr('x1', function(d,i){return })
+
+            details = itemRects.selectAll('g')
+                .data(visItems, function (d) { return d.id; });
+
 
             // update the item labels
             //labels = itemRects.selectAll('text')
@@ -351,14 +330,22 @@
 
 function rundetail(item)
 {
-    console.log(item);
-    console.log('rundetail '+ item.lane+', '+item.start+', '+item.stop);
-    xhub.server.runDetail(item.lane, item.start, item.stop).done(function (dets) {
-        console.log(dets);
+    if (item.hasOwnProperty('sampled'))
+        return;
+
+    xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
+        item.sampled = [];
+        for (var i = 0; i < details.length; i++) {
+            var sequence = details[i].series;
+            for (var j = 0; j < sequence.length; j++) {
+                sequence[j].time = new Date(sequence[j].epoch);
+            }
+            item.sampled.push(details[i]);
+        }
+        console.log(item);
     }).fail(function (msg) {
         console.log(msg);
     });
-    console.log('rundetailend');
 }
 
 function addToLane(chart, item) {

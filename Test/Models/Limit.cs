@@ -94,7 +94,15 @@ namespace Test.Models
             order by name
         ";
 
+        private static Dictionary<string, string> _labels = new Dictionary<string, string>()
+        {
+            { "layflat_mm_pv", "LayFlat" },
+            { "csg_moist_pct", "Moisture" },
+            { "csg_glyc_pct", "Glycerin" }
+        };
+
         [ResultColumn] public string tagname { get; set; }
+        public string label { get { return _labels[tagname]; } }
         
         public static string UpdateLimits(string lineids, bool replace)
         {

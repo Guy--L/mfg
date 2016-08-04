@@ -7,8 +7,9 @@ namespace Test.Models
 {
     public class Value : All
     {
-        public double? dvalue { get; set; }
-        public long epoch { get; set; }
+        [ResultColumn] public double? dvalue { get; set; }
+        [ResultColumn] public long epoch { get; set; }
+        [ResultColumn] public int control { get; set; }
     }
 
     public class TagSample
@@ -46,34 +47,44 @@ namespace Test.Models
         ";
 
         private static string _linesample = @";
-            declare @@tags table (tagid int, tagname varchar(64))    
+            declare @@tags table (tagid int, tagname varchar(64), limitid int, stamp datetime, lolo float, lo float, aim float, hi float, hihi float)    
             
-            insert into @@tags 
-            select t.tagid, t.name as tagname from tag t
-            join device d on t.deviceid = d.deviceid
-            join channel c on d.channelid = c.channelid
-            where c.name = @0 and t.name in ('layflat_mm_pv', 'csg_moist_pct', 'csg_glyc_pct')       
-
-            select
-                 p.tagid 
-                ,convert(float,p.value,0) as dvalue
-                ,cast(DATEDIFF(s, '1970-01-01 00:00:00', p.stamp) as bigint)*1000 + cast(DATEPART(ms, p.stamp) as bigint) as epoch
-                ,p.stamp
-            from production p
-            join @@tags t on p.tagid = t.tagid
-            and p.stamp >= @1 and p.stamp <= @2
-
             ;with asof as (
-                select limitid, tagid, stamp, lolo, lo, aim, hi, hihi
+                select limitid, tagid, stamp, round(lolo, 1) as lolo, round(lo, 1) as lo, round(aim, 1) as aim, round(hi, 1) as hi, round(hihi, 1) as hihi
                 from limit
                 where stamp <= @1
             )
-            select m.limitid, m.tagid, t.tagname, m.stamp, m.lolo, m.lo, m.aim, m.hi, m.hihi 
-            from asof m
-            join @@tags t on t.tagid = m.tagid
-            left join asof n on n.tagid = m.tagid and n.stamp > m.stamp 
-            where n.limitid is null
-            order by stamp desc
+            insert into @@tags 
+            select t.tagid, t.name as tagname, m.limitid, m.stamp, m.lolo, m.lo, m.aim, m.hi, m.hihi
+            from tag t
+            left join asof m on m.tagid = t.tagid
+            left join asof n on n.tagid = m.tagid and n.stamp > m.stamp
+            join device d on t.deviceid = d.deviceid
+            join channel c on d.channelid = c.channelid
+            where c.name = @0 
+            and t.name in ('layflat_mm_pv', 'csg_moist_pct', 'csg_glyc_pct')       
+            and n.limitid is null
+
+            select tagid, tagname, limitid, stamp, lolo, lo, aim, hi, hihi from @@tags
+
+            select tagid, dvalue, epoch, stamp, 
+                case when rvalue < lolo then -2
+                     when rvalue > hihi then 2
+                     when rvalue < lo then -1
+                     when rvalue > hi then 1
+                     else 0
+                end as control from (
+                    select
+                         p.tagid 
+                        ,convert(float,p.value,0) as dvalue
+                        ,round(convert(float,p.value,0),1) as rvalue
+                        ,cast(datediff(s, '1970-01-01 00:00:00', p.stamp) as bigint)*1000 + cast(datepart(ms, p.stamp) as bigint) as epoch
+                        ,p.stamp
+                        ,t.lolo, t.lo, t.aim, t.hi, t.hihi
+                    from production p
+                    join @@tags t on p.tagid = t.tagid
+                    and p.stamp >= @1 and p.stamp <= @2
+                ) v
         ";
 
         public DateTime Start { get; set; }
@@ -85,6 +96,7 @@ namespace Test.Models
         public double? Minimum { get; set; }
         public double? Maximum { get; set; }
 
+        public string Name { get; set; }
         public Limit limit { get; set; }
         public List<Value> series { get; set; }
 
@@ -105,6 +117,7 @@ namespace Test.Models
 
         public TagSample(Limit _limit, List<Value> values, DateTime _start, DateTime _end)
         {
+            Name = _limit.label;
             limit = _limit;
             series = values;
             Start = _start;
@@ -119,9 +132,9 @@ namespace Test.Models
             {
                 try
                 {
-                    var results = t.FetchMultiple<Value, Limit>(_linesample, channel, start.ToStamp(), end.ToStamp());
-                    var series = results.Item1.ToLookup(k => k.TagId, v => v);
-                    tagsamples = results.Item2.Select(n => new TagSample(n, series[n.TagId].ToList(), start, end)).ToList();
+                    var results = t.FetchMultiple<Limit, Value>(_linesample, channel, start.ToStamp(), end.ToStamp());
+                    var series = results.Item2.ToLookup(k => k.TagId, v => v);
+                    tagsamples = results.Item1.Select(n => new TagSample(n, series[n.TagId].ToList(), start, end)).ToList();
                 }
                 catch (Exception e)
                 {

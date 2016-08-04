@@ -33,7 +33,7 @@ namespace Test.Models
         private static string _statsByProduct = @"
             select coalesce(cnt, 0) c from (
                 select 1 ord, count(*) cnt from [sample] where productcodeid = @0
-                  union
+                  union all
                 select 2, count(distinct s.SolutionTestId) cnt
                 from [solutiontest] s
                 join solutionbatch b on b.SolutionBatchId = s.SolutionBatchId
@@ -41,11 +41,11 @@ namespace Test.Models
                 join LineTx x on x.SystemId = n.SystemId
                 join [status] t on t.StatusId = x.StatusId
                 where x.productcodeid = @0 and t.Code = 'RP'
-                  union
+                  union all
                 select 3, count(*) cnt from line where productcodeid = @0
-                  union
+                  union all
                 select 4, count(*) cnt from productcode where productcode = (select productcode from productcode where productcodeid = @0)
-                  union
+                  union all
                 select 5, count(*) cnt from [plan]
                 where productcodeid = @0 
             ) t order by ord
