@@ -96,7 +96,7 @@ namespace Test.Models
         public double? Minimum { get; set; }
         public double? Maximum { get; set; }
 
-        public string Name { get; set; }
+        public string Label { get; set; }
         public Limit limit { get; set; }
         public List<Value> series { get; set; }
 
@@ -117,7 +117,7 @@ namespace Test.Models
 
         public TagSample(Limit _limit, List<Value> values, DateTime _start, DateTime _end)
         {
-            Name = _limit.label;
+            Label = _limit.label;
             limit = _limit;
             series = values;
             Start = _start;

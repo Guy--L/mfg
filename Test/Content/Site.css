@@ -373,3 +373,19 @@ i.ctx {
 .miniItem.lot {
     stroke-width: 12;
 }
+
+.trace {
+    stroke-width: 4;
+}
+
+.belowspec, .abovespec {
+    stroke: red;
+}
+
+.belowctl, .abovespec {
+    stroke: yellow;
+}
+
+.inrange {
+    stroke: lime;
+}
