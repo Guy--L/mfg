@@ -78,7 +78,7 @@ namespace Test.Models
                          p.tagid 
                         ,convert(float,p.value,0) as dvalue
                         ,round(convert(float,p.value,0),1) as rvalue
-                        ,cast(datediff(s, '1970-01-01 00:00:00', p.stamp) as bigint)*1000 + cast(datepart(ms, p.stamp) as bigint) as epoch
+                        ,dbo.epoch(p.stamp) as epoch
                         ,p.stamp
                         ,t.lolo, t.lo, t.aim, t.hi, t.hihi
                     from production p

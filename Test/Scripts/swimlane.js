@@ -246,19 +246,25 @@
                     .attr('dx', 5)
                     .attr('dy', 12);
 
-            // upate the item rects
+            // update the item rects
             rects = itemRects.selectAll('g')
                 .data(visItems, function (d) { return d.id; })
-                .attr('transform', function (d) { return 'translate(' + x1(d.begin) + ',' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; })
+                .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; })
 
             rects.selectAll('rect')
+                .attr('x', function (d) { return x1(d.begin); })
                 .attr('width', function (d) { return x1(d.end) - x1(d.begin); });
 
-            rects.enter().append('g')
-                .attr('transform', function (d) { return 'translate(' + x1(d.begin) + ',' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
+            //rects.selectAll('line')
+                //.attr()
 
-            rects.append('rect')
-                .attr('x', 0)
+            // add new item rects
+            var newr = rects.enter().append('g')
+                .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
+
+            newr.append('rect')
+                .attr('id', function (d) { return d.id; })
+                .attr('x', function (d) { return x1(d.begin); })
                 .attr('y', 0)
                 .attr('width', function (d) { return x1(d.end) - x1(d.begin); })
                 .attr('height', .8 * y1(1))
@@ -270,93 +276,26 @@
                     var s = mini.select('#miniItem_' + d.id);
                     s.classed('chosen', !s.classed('chosen'));
                     console.log('run begin: ' + d.begin + ' - ' + d.end);
-                    //rundetail(d, r);
+                    rundetail(d, d3.select(this.parentNode));
                 });
 
-            rects.exit().selectAll('rect').remove();
-            rects.exit().remove();
+            // remove item rects out of window
+            var delr = rects.exit();
+            delr.selectAll('rect').remove();
+            delr.remove();
 
-            //subrects.exit().remove();
-
-            //displaydetail(rects);
-                
-            //lines = itemRects.selectAll('line').data(visItems);
-            //lines.enter().append('line');
-
-            //lines.attr('x1', function(d,i){return })
-
-            //details = itemRects.selectAll('g')
-            //    .data(visItems, function (d) { return d.id; });
-
-            // update the item labels
-            //labels = itemRects.selectAll('text')
-            //    .data(visItems, function (d) { return d.id; })
-            //    .attr('x', function (d) { return x1(Math.max(d.begin, minExtent)) + 2; });
-
-            //labels.enter().append('text')
-            //    .text(function (d) { return d.id == 0?'': 'Samples: '; })
-            //    .attr('x', function (d) { return x1(Math.max(d.begin, minExtent)) + 2; })
-            //    .attr('y', function (d) { return y1(d.laneid) + .7 * y1(1) + 0.5; })
-            //    .attr('text-anchor', 'start')
-            //    .attr('class', 'itemLabel');
-
-            //labels.exit().remove();
             console.log('display completed');
         }
 
         var marker = ['belowspec', 'belowctl', 'inrange', 'abovectl', 'abovespec'];
 
-        function displaydetail(rect)
-        {
-            console.log('rect');
-            console.log(rect);
-            var trans = 'translate(0,' + rect.attr('y') + ')';
-
-            var trace = rect.append('g')
-                //.attr('transform', trans)
-                .attr('class', 'detail');
-
-            trace.append('text').text('Hello').attr('x', rect.attr('x')+10).attr('y', rect.attr('y')+7).attr('text-anchor', 'start');
-            //trace.append('svg:circle')
-            //    .attr('class', 'lot')
-            //    .attr('cx', rect.attr(x))
-            //    .attr('cy', 0)
-            //    .attr('r', +rect.attr('height') * 2);
-
-            //var detail = trace.selectAll('g')
-            //    .data(function (d, i) { console.log('sampled '+i); return d.sampled; })
-            //    .enter()
-            //    .append('g')
-            //    .attr('class', function (d) { return 'trace ' + d.Label; });
-
-            //debugger;
-
-            //detail.append('line')
-            //    .attr('class', 'lot')
-            //    .attr('x1', rect.attr('x'))
-            //    .attr('y1', -Number(rect.attr('height')) / 2)
-            //    .attr('x2', Number(rect.attr('x')) + Number(rect.attr('width')))
-            //    .attr('y2', Number(rect.attr('height')) / 2);
-
-            //.selectAll('line')
-               // .data(function (d) { return d.series; })
-               // .enter()
-               // .append('line')
-               // .attr('x1', function (d) { return x1(d.time0); })
-               // .attr('y1', -rect.attr('height'))
-               // .attr('x2', function (d) { return x1(d.time1); })
-               // .attr('y2', rect.attr('height'))
-            // .attr('class', function (d) { return marker[d.control + 2]; });
-            console.log('detail appended');
-        }
-
-        function rundetail(item, run) {
-            if (item.hasOwnProperty('sampled'))
+        function rundetail(item, rungroup) {
+            if (item.hasOwnProperty('details'))
                 return;
 
             console.log('getting detail');
+
             xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
-                item.sampled = [];
                 for (var i = 0; i < details.length; i++) {
                     var seq = details[i].series;
                     if (!seq.length || seq.length < 1)
@@ -369,10 +308,35 @@
                         seq[j].time1 = new Date(seq[j].epoch);
                         seq[j].time0 = seq[j - 1].time1;
                     }
-                    item.sampled.push(details[i]);
-                    console.log(details[i].Label + ': ' + seq[0].time0 + ' - ' + seq[seq.length - 1].time1);
                 }
-                displaydetail(run);
+                item.details = details;
+
+                var trace = rungroup.append('g')
+                    .attr('class', 'detail')
+
+                var ysplit = d3.scale.ordinal()
+                    .domain(d3.range(item.details.length))
+                    .rangeRoundBands([0, .8 * y1(1)]);
+
+                console.log(ysplit.rangeBand());
+                console.log(ysplit(0) + ', ' + ysplit(1) + ', ' + ysplit(2));
+
+                var detail = trace.selectAll('g')
+                    .data(item.details).enter().append('g')
+                    .attr('ysplit', function (d, i) { return ysplit(i);})
+                    .attr('transform', function (d, i) { return 'translate(0,' + ysplit(i) + ')'; });
+
+                detail.selectAll('line')
+                    .data(function (d) { return d.series; })
+                    .enter().append('line')
+                    .attr('x1', function (d) { return x1(d.time0); })
+                    .attr('y1', function (d, i, j) { return ysplit(j); })
+                    .attr('x2', function (d) { return x1(d.time1); })
+                    .attr('y2', function (d, i, j) { return ysplit(j); })
+                    .attr('stroke-width', ysplit.rangeBand())
+                    .attr('class', function (d) { return marker[d.control + 2]; });
+
+                console.log('detail displayed');
             }).fail(function (msg) {
                 console.log('rundetail fail');
                 console.log(msg);

@@ -371,11 +371,11 @@ i.ctx {
 }
 
 .miniItem.lot {
-    stroke-width: 12;
+    stroke-width: 20;
 }
 
 .trace {
-    stroke-width: 4;
+    stroke-width: 3;
 }
 
 .belowspec, .abovespec {

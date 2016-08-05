@@ -59,6 +59,7 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Data" />
+    <Folder Include="Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Channel.sql" />
@@ -92,6 +93,7 @@
     <Build Include="SplitInts.sql" />
     <Build Include="Review.sql" />
     <Build Include="UpdateReview.sql" />
+    <Build Include="Functions\Epoch.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="taglogs.refactorlog" />
