@@ -9,7 +9,14 @@ namespace Test.Models
     {
         [ResultColumn] public double? dvalue { get; set; }
         [ResultColumn] public long epoch { get; set; }
-        [ResultColumn] public int control { get; set; }
+        [ResultColumn] public int ctrl { get; set; }
+    }
+
+    public class Trace
+    {
+        [ResultColumn] public int tagid { get; set; }
+        [ResultColumn] public long start { get; set; }
+        [ResultColumn] public long stop { get; set; }
     }
 
     public class TagSample
@@ -48,6 +55,8 @@ namespace Test.Models
 
         private static string _linesample = @";
             declare @@tags table (tagid int, tagname varchar(64), limitid int, stamp datetime, lolo float, lo float, aim float, hi float, hihi float)    
+            declare @@vals table (tagid int, dvalue float, epoch bigint, stamp datetime, ctrl int)
+            declare @@trace table (tagid int, ctl int, start bigint, stop bigint)
             
             ;with asof as (
                 select limitid, tagid, stamp, round(lolo, 1) as lolo, round(lo, 1) as lo, round(aim, 1) as aim, round(hi, 1) as hi, round(hihi, 1) as hihi
@@ -61,21 +70,21 @@ namespace Test.Models
             left join asof n on n.tagid = m.tagid and n.stamp > m.stamp
             join device d on t.deviceid = d.deviceid
             join channel c on d.channelid = c.channelid
-            where c.name = @0 
+            where c.name = @0
             and t.name in ('layflat_mm_pv', 'csg_moist_pct', 'csg_glyc_pct')       
             and n.limitid is null
 
             select tagid, tagname, limitid, stamp, lolo, lo, aim, hi, hihi from @@tags
 
+            insert into @@vals
             select tagid, dvalue, epoch, stamp, 
                 case when rvalue < lolo then -2
                      when rvalue > hihi then 2
                      when rvalue < lo then -1
                      when rvalue > hi then 1
                      else 0
-                end as control from (
-                    select
-                         p.tagid 
+                end as ctrl from (
+                    select p.tagid 
                         ,convert(float,p.value,0) as dvalue
                         ,round(convert(float,p.value,0),1) as rvalue
                         ,dbo.epoch(p.stamp) as epoch
@@ -85,6 +94,43 @@ namespace Test.Models
                     join @@tags t on p.tagid = t.tagid
                     and p.stamp >= @1 and p.stamp <= @2
                 ) v
+            order by tagid, epoch
+
+            select tagid, dvalue, epoch, stamp, ctrl from @@vals
+
+            ;with a as (
+                select tagid
+                    , abs(ctrl) as ctl
+                    , epoch
+					, prvepoch = lag(epoch, 1, epoch) over (order by epoch)
+                    , prvctl = lag(abs(ctrl), 1, abs(ctrl)) 
+                        over (order by epoch) 
+                from @@vals
+            ), b as (
+                select tagid
+                    , ctl
+                    , epoch
+					, prvepoch
+                    , ranker = sum(case when ctl = prvctl then 0 else 1 end) 
+                        over (order by epoch, ctl)
+                from a
+            )
+            insert into @@trace
+            select tagid
+                ,ctl
+                ,min(prvepoch) start
+                ,max(epoch) stop
+            from b
+            group by tagid, ctl, ranker
+            order by start
+ 
+            select tagid, start, stop 
+            from @@trace
+            where ctl = 1
+
+            select tagid, start, stop 
+            from @@trace
+            where ctl = 2
         ";
 
         public DateTime Start { get; set; }
@@ -99,6 +145,8 @@ namespace Test.Models
         public string Label { get; set; }
         public Limit limit { get; set; }
         public List<Value> series { get; set; }
+        public List<Trace> xcontrol { get; set; }
+        public List<Trace> xspec { get; set; }
 
         public TagSample(int lineid, string tagname, DateTime start, DateTime end, bool detail)
         {
@@ -115,11 +163,13 @@ namespace Test.Models
             }
         }
 
-        public TagSample(Limit _limit, List<Value> values, DateTime _start, DateTime _end)
+        public TagSample(Limit _limit, List<Value> values, List<Trace> xc, List<Trace> xs, DateTime _start, DateTime _end)
         {
             Label = _limit.label;
             limit = _limit;
             series = values;
+            xcontrol = xc;
+            xspec = xs;
             Start = _start;
             End = _end;
         }
@@ -127,14 +177,24 @@ namespace Test.Models
         public static List<TagSample> Span(string channel, DateTime start, DateTime end)
         {
             List<TagSample> tagsamples = null;
+            List<Trace> trace = null;
 
             using (tagDB t = new tagDB())
             {
                 try
                 {
-                    var results = t.FetchMultiple<Limit, Value>(_linesample, channel, start.ToStamp(), end.ToStamp());
+                    var results = t.FetchMultiple<Limit, Value, Trace, Trace>(_linesample, channel, start.ToStamp(), end.ToStamp());
                     var series = results.Item2.ToLookup(k => k.TagId, v => v);
-                    tagsamples = results.Item1.Select(n => new TagSample(n, series[n.TagId].ToList(), start, end)).ToList();
+                    var ooctrl = results.Item3.ToLookup(k => k.tagid, v => v);
+                    var oospec = results.Item4.ToLookup(k => k.tagid, v => v);
+                    tagsamples = results.Item1.Select(
+                        n => new TagSample(n,
+                                        series[n.TagId].ToList(),
+                                        ooctrl[n.TagId].ToList(),
+                                        oospec[n.TagId].ToList(),
+                                        start,
+                                        end)).ToList();
+                    
                 }
                 catch (Exception e)
                 {

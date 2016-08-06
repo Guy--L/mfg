@@ -318,9 +318,6 @@
                     .domain(d3.range(item.details.length))
                     .rangeRoundBands([0, .8 * y1(1)]);
 
-                console.log(ysplit.rangeBand());
-                console.log(ysplit(0) + ', ' + ysplit(1) + ', ' + ysplit(2));
-
                 var detail = trace.selectAll('g')
                     .data(item.details).enter().append('g')
                     .attr('ysplit', function (d, i) { return ysplit(i);})
@@ -334,7 +331,7 @@
                     .attr('x2', function (d) { return x1(d.time1); })
                     .attr('y2', function (d, i, j) { return ysplit(j); })
                     .attr('stroke-width', ysplit.rangeBand())
-                    .attr('class', function (d) { return marker[d.control + 2]; });
+                    .attr('class', function (d) { return marker[d.ctrl + 2]; });
 
                 console.log('detail displayed');
             }).fail(function (msg) {

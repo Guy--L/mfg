@@ -19,7 +19,7 @@ namespace Test.Models
 
         public static DateTime FromJSMSecs(this long tm)
         {
-            return new DateTime((tm * 10000) + DatetimeMinTimeTicks).ToLocalTime();
+            return new DateTime((tm * 10000) + DatetimeMinTimeTicks).ToUniversalTime();
         }
 
 
