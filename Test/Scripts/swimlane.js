@@ -15,7 +15,13 @@
         var data = parseData(rets),
             items = data.items,
             lanes = data.lanes,
-            now = new Date();
+            now = new Date(),
+            focal = now;
+
+        if (rets[rets.length - 1].LineTxId == 0) {
+            focal = new Date(rets[rets.length - 1].start);
+            console.log('focal set to ' + focal);
+        }
 
         var margin = { top: 20, right: 15, bottom: 15, left: 60 }
             , width = 960 - margin.left - margin.right
@@ -196,7 +202,7 @@
         // draw the selection area
         var brush = d3.svg.brush()
             .x(x)
-            .extent([d3.time.monday(now), d3.time.saturday.ceil(now)])
+            .extent([d3.time.monday(focal), d3.time.saturday.ceil(focal)])
             .on("brush", display);
 
         mini.append('g')
@@ -211,7 +217,7 @@
 
         function display() {
 
-            var rects, labels, lines
+            var rects, tracers, lines
               , minExtent = d3.time.day(brush.extent()[0])
               , maxExtent = d3.time.day(brush.extent()[1])
               , visItems = items.filter(function (d) { return d.begin < maxExtent && d.end > minExtent });
@@ -247,22 +253,30 @@
                     .attr('dy', 12);
 
             // update the item rects
-            rects = itemRects.selectAll('g')
+            rects = itemRects.selectAll('.run')
                 .data(visItems, function (d) { return d.id; })
-                .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; })
+                .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
 
             rects.selectAll('rect')
                 .attr('x', function (d) { return x1(d.begin); })
                 .attr('width', function (d) { return x1(d.end) - x1(d.begin); });
 
-            //rects.selectAll('line')
-                //.attr()
+            rects.selectAll('text')
+                .attr('x', function (d) { return x1(Math.max(d.begin, minExtent)) + 2; });
+
+            var paths = rects.filter(function (d) { return d.hasOwnProperty('path'); });
+            paths.selectAll('.detail')
+                .attr('transform', function (d) { return 'translate(' + x1(d.begin) + ',0) scale(' + x1(1000000) / d.loadz + ',1)'; });
 
             // add new item rects
-            var newr = rects.enter().append('g')
+            var newr = rects.enter();
+
+            var group = newr.append('g')
+                .attr('loaded', function (d) { return d.hasOwnProperty('path');})
+                .attr('class', 'run')
                 .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
 
-            newr.append('rect')
+            group.append('rect')
                 .attr('id', function (d) { return d.id; })
                 .attr('x', function (d) { return x1(d.begin); })
                 .attr('y', 0)
@@ -278,67 +292,105 @@
                     console.log('run begin: ' + d.begin + ' - ' + d.end);
                     rundetail(d, d3.select(this.parentNode));
                 });
+            group.append('text')
+                .attr('id', function (d) { return 'loading_' + d.id; })
+                .attr('x', function (d) { return  x1(Math.max(d.begin, minExtent)) + 2; })
+                .attr('y', .6 * y1(1))
+		        .attr('text-anchor', 'start')
+		        .attr('class', 'loading')
+                .text('loading...')
+                .style('opacity', function (d) { return d.loading?1:0; });
 
+            var detail = group.filter(function (d) { return d.hasOwnProperty('path'); })
+                .append('g')
+                .attr('class', 'detail')
+                .attr('loadz', function (d) { return d.loadz; })
+                .attr('transform', function (d) { return 'translate(' + x1(d.begin)-x1(d.loadx) + ',0) scale(' + x1(1000000) / d.loadz + ',1)'; });
+
+            var marker = ['abovectl', 'abovespec'];
+
+            detail.selectAll('path').data(function (d) { return d.path; }).enter().append('path')
+                .attr('class', function (d, i) { return 'trace ' + marker[i]; })
+                .attr('d', function (d) { return d; });
+             
+            
+            //if (newp.length) {
+            //    var detail = newp.selectAll('.run').append('g')
+            //        .attr('class', 'detail')
+            //        .attr('transform', function (d) { return 'translate(' + x1(d.begin) + ',0) scale(' + x1(1) / d.loadz + ',1)'; });
+
+            //    debugger;
+
+            //    detail.append('path')
+            //        .attr('class', function (d, i) { return 'trace ' + marker[i]; })
+            //        .attr('d', function (d, i) { return d[i]; })
+            //}
             // remove item rects out of window
             var delr = rects.exit();
+
             delr.selectAll('rect').remove();
+            delr.selectAll('text').remove();
+            //delr.selectAll('g').selectAll('path').remove();
+            //delr.selectAll('g').remove();
             delr.remove();
 
-            console.log('display completed');
-        }
+            function getSpecPath(item)
+            {
+                var d, pen;
+                var oocpath = '', oospath = '';
 
-        var marker = ['belowspec', 'belowctl', 'inrange', 'abovectl', 'abovespec'];
+                oospath = ['M', x1(item.begin), 0, 'H', x1(item.begin)].join(' ');
+                oocpath = ['M', x1(item.begin), 0, 'H', x1(item.begin)].join(' ');
 
-        function rundetail(item, rungroup) {
-            if (item.hasOwnProperty('details'))
-                return;
-
-            console.log('getting detail');
-
-            xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
-                for (var i = 0; i < details.length; i++) {
-                    var seq = details[i].series;
-                    if (!seq.length || seq.length < 1)
-                        break;
-
-                    seq[0].time0 = new Date(seq[0].epoch - (seq[1].epoch - seq[0].epoch));
-                    seq[0].time1 = new Date(seq[0].epoch);
-
-                    for (var j = 1; j < seq.length; j++) {
-                        seq[j].time1 = new Date(seq[j].epoch);
-                        seq[j].time0 = seq[j - 1].time1;
+                for (i = 0; i < item.details.length; i++) {
+                    for (j = 0; j < item.details[i].xspec.length; j++) {
+                        d = item.details[i].xspec[j];
+                        pen = ['M', x1(new Date(d.start)), i * (.3*y1(1)) + 3,'H', x1(new Date(d.stop))].join(' ');
+                        if (d.ctl==1) oocpath += pen;
+                        else oospath += pen;
                     }
                 }
-                item.details = details;
+                return [oocpath, oospath];
+            }
 
-                var trace = rungroup.append('g')
-                    .attr('class', 'detail')
+            console.log('display completed');
 
-                var ysplit = d3.scale.ordinal()
-                    .domain(d3.range(item.details.length))
-                    .rangeRoundBands([0, .8 * y1(1)]);
+            function rundetail(item, rungroup) {
+                if (item.hasOwnProperty('details'))
+                    return;
 
-                var detail = trace.selectAll('g')
-                    .data(item.details).enter().append('g')
-                    .attr('ysplit', function (d, i) { return ysplit(i);})
-                    .attr('transform', function (d, i) { return 'translate(0,' + ysplit(i) + ')'; });
+                item.loading = true;
+                d3.select('#loading_' + item.id).style('opacity', 1);
 
-                detail.selectAll('line')
-                    .data(function (d) { return d.series; })
-                    .enter().append('line')
-                    .attr('x1', function (d) { return x1(d.time0); })
-                    .attr('y1', function (d, i, j) { return ysplit(j); })
-                    .attr('x2', function (d) { return x1(d.time1); })
-                    .attr('y2', function (d, i, j) { return ysplit(j); })
-                    .attr('stroke-width', ysplit.rangeBand())
-                    .attr('class', function (d) { return marker[d.ctrl + 2]; });
+                xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
+                    item.details = details;
+                    item.loadx = item.begin;
+                    item.loadz = x1(1000000);
+                    item.path = getSpecPath(item);
 
-                console.log('detail displayed');
-            }).fail(function (msg) {
-                console.log('rundetail fail');
-                console.log(msg);
-            });
+                    rungroup.append('g')
+                        .attr('transform', 'scale(1,1)')
+                        .attr('class', 'detail')
+                      .selectAll('path')
+                        .data(item.path)
+                        .enter().append('path')
+                        .attr('class', function (d, i) { return 'trace ' + marker[i]; })
+                        .attr('d', function (d) { return d; });
+
+                    item.loading = false;
+                    d3.select('#loading_' + item.id).style('opacity', 0);
+                }).fail(function (msg) {
+                    console.log('rundetail fail');
+                    console.log(msg);
+
+                    item.loading = false;
+                    d3.select('#loading_' + item.id).style('opacity', 0);
+                });
+            }
+
         }
+
+
 
         function moveBrush() {
             var origin = d3.mouse(this)
@@ -449,7 +501,8 @@ function collapseLanes(chart) {
                     productcode: item.ProductCode,
                     productspec: item.ProductSpec,
                     productid: item.ProductCodeId,
-                    series: item.series
+                    series: item.series,
+                    loading: false
                 });
             }
 

@@ -374,15 +374,19 @@ i.ctx {
     stroke-width: 20;
 }
 
+.loading {
+    stroke: orange;
+}
+
 .trace {
-    stroke-width: 3;
+    stroke-width: 4;
 }
 
 .belowspec, .abovespec {
     stroke: red;
 }
 
-.belowctl, .abovespec {
+.belowctl, .abovectl {
     stroke: yellow;
 }
 
