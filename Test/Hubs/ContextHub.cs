@@ -28,6 +28,7 @@ namespace Test.Hubs
         public List<TagSample> RunDetail(string channel, long start, long end)
         {
             var samples = TagSample.Span(channel, start.FromJSMSecs(), end.FromJSMSecs());
+            samples.Select((s, i) => { s.id = i; return true; }).ToList();
 
             return samples;
         }

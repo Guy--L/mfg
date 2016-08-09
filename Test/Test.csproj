@@ -495,6 +495,7 @@
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\d3button.js" />
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.min.js" />
     <Content Include="Scripts\d3\d3.v2.js" />
@@ -604,6 +605,7 @@
     <Content Include="Scripts\randomData.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\specheck.js" />
     <Content Include="Scripts\swimlane.js" />
     <Content Include="Scripts\TwitterBootstrapMvcJs.js" />
     <Content Include="Scripts\_references.js" />

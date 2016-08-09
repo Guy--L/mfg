@@ -170,6 +170,7 @@ namespace Test.Models
         public double? Minimum { get; set; }
         public double? Maximum { get; set; }
 
+        public int id { get; set; }
         public string Label { get; set; }
         public Limit limit { get; set; }
         public List<Value> series { get; set; }
