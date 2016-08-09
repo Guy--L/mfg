@@ -428,52 +428,52 @@
             bottom = limit.Aim - 1.2*bottom;
             var top = limit.HiHi - limit.Aim;
             top = limit.Aim + 1.2*top;
-            return [bottom, top];
+            return [top, bottom];
         }
 
         function specview(data) {
             main.attr('opacity', 0);
             mini.attr('opacity', 0);
 
+            var channel = 0;
             var lanes = data.details;
-            var dminiHeight = lanes.length * 12 + 50;
-            var dmainHeight = height - dminiHeight - 50;
+            var bottomHeight = lanes.length * 12 + 50;
+            var topHeight = height - bottomHeight - 50;
 
-            var x = d3.time.scale()
+            var xb = d3.time.scale()
                 .domain([d3.time.sunday(data.begin), data.end])
                 .range([0, width]);
-            var x1 = d3.time.scale().range([0, width]);
+            var xt = d3.time.scale().range([0, width]);
 
             var ext = d3.extent(lanes, function (d) { return d.id; });
-            var y1 = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, dmainHeight]);
+            var yb = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, bottomHeight]);
 
-            var y2 = d3.scale.linear()
-                .domain(limitextent(lanes[0].limit))
-                .range([0, dminiHeight]);
+            var yt;
+            var ytTagAxis;
 
-            var tagview = chart.append('g')
+            var top = chart.append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                 .attr('width', width)
-                .attr('height', mainHeight)
-                .attr('class', 'tagview');
+                .attr('height', topHeight)
+                .attr('class', 'top');
 
-            var channels = chart.append('g')
-                .attr('transform', 'translate(' + margin.left + ',' + (dmainHeight + 60) + ')')
+            var bottom = chart.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + (topHeight + 60) + ')')
                 .attr('width', width)
-                .attr('height', dminiHeight)
-                .attr('class', 'channels');
+                .attr('height', bottomHeight)
+                .attr('class', 'bottom');
 
             // draw the lanes for the mini chart
-            channels.append('g').selectAll('.laneLines')
+            bottom.append('g').selectAll('.laneLines')
                 .data(lanes)
                 .enter().append('line')
                 .attr('x1', 0)
-                .attr('y1', function (d) { return Math.round(y2(d.id)) + 0.5; })
+                .attr('y1', function (d) { return d3.round(yb(d.id)) + 0.5; })
                 .attr('x2', width)
-                .attr('y2', function (d) { return Math.round(y2(d.id)) + 0.5; })
+                .attr('y2', function (d) { return d3.round(yb(d.id)) + 0.5; })
                 .attr('stroke', function (d) { return d.label === '' ? 'white' : 'lightgray' });
 
-            channels.append('g').selectAll('.laneText')
+            bottom.append('g').selectAll('.laneText')
                 .data(lanes)
                 .enter().append('text')
                 .text(function (d) { return d.Label; })
@@ -481,90 +481,93 @@
                 .attr('y', function (d) { return y2(d.id + .5); })
                 .attr('dy', '0.5ex')
                 .attr('text-anchor', 'end')
-                .attr('class', 'laneText')
+                .attr('class', function (d, i) { return 'laneText'+(i==0?' chosen':'');})
                 .on('click', function (d, i) {
                     var r = d3.select(this);
                     var chosen = r.classed('chosen');
                     if (chosen) return;
 
-                    r.parentNode.selectAll('.laneText').classed('chosen', false);
+                    d3.select(this.parentNode).selectAll('.laneText').classed('chosen', false);
                     r.classed('chosen', true);
                     
-                    channel(i);
+                    channel = i;
                 });
 
             // draw the x axis
-            var xDateAxis = d3.svg.axis()
-                .scale(x)
+            var xbDateAxis = d3.svg.axis()
+                .scale(xb)
                 .orient('bottom')
-                .ticks(d3.time.mondays, (x.domain()[1] - x.domain()[0]) > 15552e6 ? 2 : 1)
+                .ticks(d3.time.mondays, (xb.domain()[1] - xb.domain()[0]) > 15552e6 ? 2 : 1)
                 .tickFormat(d3.time.format('%d'))
                 .tickSize(6, 0, 0);
 
-            var x1DateAxis = d3.svg.axis()
-                .scale(x1)
+            var xtDateAxis = d3.svg.axis()
+                .scale(xt)
                 .orient('bottom')
                 .ticks(d3.time.days, 1)
                 .tickFormat(d3.time.format('%a %d'))
                 .tickSize(6, 0, 0);
 
-            var xMonthAxis = d3.svg.axis()
-                .scale(x)
+            var xbMonthAxis = d3.svg.axis()
+                .scale(xb)
                 .orient('top')
                 .ticks(d3.time.months, 1)
                 .tickFormat(d3.time.format('%b %Y'))
                 .tickSize(15, 0, 0);
 
-            var x1MonthAxis = d3.svg.axis()
-                .scale(x1)
+            var xtMonthAxis = d3.svg.axis()
+                .scale(xt)
                 .orient('top')
                 .ticks(d3.time.mondays, 1)
                 .tickFormat(d3.time.format('%b - Week %W'))
                 .tickSize(15, 0, 0);
 
-            tagview.append('g')
-                .attr('transform', 'translate(0,' + dmainHeight + ')')
+            top.append('g')
+                .attr('transform', 'translate(0,' + topHeight + ')')
                 .attr('class', 'main axis date')
-                .call(x1DateAxis);
+                .call(xtDateAxis);
 
-            tagview.append('g')
+            switched();
+            top.append('g')
+                .attr('class', 'main axis value')
+                .call(ytTagAxis);
+
+            top.append('g')
                 .attr('transform', 'translate(0,0.5)')
                 .attr('class', 'main axis month')
-                .call(x1MonthAxis)
+                .call(xtMonthAxis)
                 .selectAll('text')
                     .attr('dx', 5)
                     .attr('dy', 12);
 
-            channels.append('g')
-                .attr('transform', 'translate(0,' + dminiHeight + ')')
+            bottom.append('g')
+                .attr('transform', 'translate(0,' + bottomHeight + ')')
                 .attr('class', 'axis date')
-                .call(xDateAxis);
+                .call(xbDateAxis);
 
-            channels.append('g')
+            bottom.append('g')
                 .attr('transform', 'translate(0,0.5)')
                 .attr('class', 'axis month')
-                .call(xMonthAxis)
+                .call(xbMonthAxis)
                 .selectAll('text')
                     .attr('dx', 5)
                     .attr('dy', 12);
 
-
-
             // draw a line representing today's date
-            //tagview.append('line')
+            //top.append('line')
             //    .attr('y1', 0)
-            //    .attr('y2', dmainHeight)
+            //    .attr('y2', topHeight)
             //    .attr('class', 'main todayLine')
             //    .attr('clip-path', 'url(#clip)');
 
-            //channels.append('line')
+            //bottom.append('line')
             //    .attr('x1', x(now) + 0.5)
             //    .attr('y1', 0)
             //    .attr('x2', x(now) + 0.5)
-            //    .attr('y2', dminiHeight)
+            //    .attr('y2', bottomHeight)
             //    .attr('class', 'todayLine');
 
-            var tagClip = tagview.append('g')
+            var topClip = top.append('g')
                     .attr('clip-path', 'url(#clip)');
 
             // draw the selection area
@@ -573,57 +576,70 @@
                 .extent([d3.time.monday(focal), d3.time.saturday.ceil(focal)])
                 .on("brush", brushed);
 
-            channels.append('g')
+            bottom.append('g')
                 .attr('class', 'x brush')
                 .call(brush)
                 .selectAll('rect')
                     .attr('y', 1)
-                    .attr('height', dminiHeight - 1);
+                    .attr('height', bottomHeight - 1);
 
-            view();
+            brushed();
 
-            function view() {
-                var rects, tracers, lines
-                  , minExtent = d3.time.day(brush.extent()[0])
+            var dataline = d3.svg.line()
+                .x(function (d) { return xt(new Date(d.epoch)); })
+                .y(function (d) { return yt(+d.dvalue); })
+
+            function switched() {
+                yt = d3.scale.linear()
+                    .domain(limitextent(lanes[channel].limit))
+                    .range([0, topHeight]);
+
+                ytTagAxis = d3.svg.axis()
+                    .scale(yt)
+                    .orient('left')
+
+                top.select('.main.axis.value').call(ytTagAxis);
+
+                top.selectAll('.dataline').remove();
+
+                top.append('path')
+                    .datum(lanes[channel].series)
+                    .attr('d', dataline)
+                    .attr('class', 'dataline');
+            }
+
+            function brushed() {
+                xt.domain(brush.empty() ? xb.domain() : brush.extent());
+
+
+                //top.selectAll('.dataline').remove();
+                top.select('.dataline').attr('d', dataline);
+
+                var
+                    minExtent = d3.time.day(brush.extent()[0])
                   , maxExtent = d3.time.day(brush.extent()[1]);
-//                  , visItems = items.filter(function (d) { return d.begin < maxExtent && d.end > minExtent });
 
-                channels.select('.brush').call(brush.extent([minExtent, maxExtent]));
-                x1.domain([minExtent, maxExtent]);
+                bottom.select('.brush').call(brush.extent([minExtent, maxExtent]));
 
                 // julian date would be %j after %a %d and %b %e
                 if ((maxExtent - minExtent) > 1468800000) {
-                    x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
-                    x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
+                    xtDateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
+                    xtMonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
                 }
                 else if ((maxExtent - minExtent) > 172800000) {
-                    x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
-                    x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
+                    xtDateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
+                    xtMonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
                 }
                 else {
-                    x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
-                    x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
+                    xtDateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
+                    xtMonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
                 }
-                tagview.select('.main.axis.date').call(x1DateAxis);
-                tagview.select('.main.axis.month').call(x1MonthAxis)
+                top.select('.main.axis.date').call(xtDateAxis);
+                top.select('.main.axis.month').call(xtMonthAxis)
                     .selectAll('text')
                         .attr('dx', 5)
                         .attr('dy', 12);
-
-                y1.domain([data.details[0].limit.LoLo, data.details[0].limit.HiHi]);
-
-                var valueline = d3.svg.line()
-                    .x(function (d) { return x1(new Date(d.epoch)); })
-                    .y(function (d) { return y1(d.dvalue); });
-
-                tagview.append("path")
-                    .attr("class", "line")
-                    .attr('stroke', 'blue')
-                    .attr('fill', 'none')
-                    .attr("d", valueline(lanes[0].series));
-
             }
-
         }
 
 

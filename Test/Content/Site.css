@@ -336,6 +336,14 @@ i.ctx {
 
 .axis line, .axis path {
     stroke: black;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+.dataline {
+    stroke: blue;
+    shape-rendering: crispEdges;
+    fill: none;
 }
 
 .miniItem {
