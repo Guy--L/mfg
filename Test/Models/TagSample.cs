@@ -7,9 +7,15 @@ namespace Test.Models
 {
     public class Value : All
     {
+        [ResultColumn] public long prdid { get; set; }
         [ResultColumn] public double? dvalue { get; set; }
         [ResultColumn] public long epoch { get; set; }
         [ResultColumn] public int ctrl { get; set; }
+
+        public string print()
+        {
+            return TagId + " " + Stamp.ToStamp() + ", " + epoch + " " + dvalue;
+        }
     }
 
     public class Trace
@@ -56,7 +62,7 @@ namespace Test.Models
 
         private static string _linesample = @";
             declare @@tags table (tagid int, tagname varchar(64), limitid int, stamp datetime, lolo float, lo float, aim float, hi float, hihi float)    
-            declare @@vals table (tagid int, dvalue float, epoch bigint, stamp datetime, ctrl int)
+            declare @@vals table (prdid bigint, tagid int, dvalue float, epoch bigint, stamp datetime, ctrl int)
             
             ;with asof as (
                 select limitid, tagid, stamp, round(lolo, 1) as lolo, round(lo, 1) as lo, round(aim, 1) as aim, round(hi, 1) as hi, round(hihi, 1) as hihi
@@ -77,14 +83,14 @@ namespace Test.Models
             select tagid, tagname, limitid, stamp, lolo, lo, aim, hi, hihi from @@tags
 
             insert into @@vals
-            select tagid, dvalue, epoch, stamp, 
+            select prdid, tagid, dvalue, epoch, stamp, 
                 case when rvalue < lolo then -2
                      when rvalue > hihi then 2
                      when rvalue < lo then -1
                      when rvalue > hi then 1
                      else 0
                 end as ctrl from (
-                    select p.tagid 
+                    select p.prdid, p.tagid 
                         ,convert(float,p.value,0) as dvalue
                         ,round(convert(float,p.value,0),1) as rvalue
                         ,dbo.epoch(p.stamp) as epoch
@@ -95,14 +101,14 @@ namespace Test.Models
                     and p.stamp >= @1 and p.stamp <= @2
                     where t.tagname != 'layflat_mm_pv'
                         union all
-                    select a.tagid
+                    select max(a.prdid) as prdid, a.tagid
                         ,avg(a.val) as dvalue
                         ,round(avg(a.val),1) as rvalue 
                         ,dbo.epoch(max(a.stamp)) as epoch
                         ,max(a.stamp) as stamp
                         ,a.lolo, a.lo, a.aim, a.hi, a.hihi
                     from (
-                        select p.tagid, convert(float,p.value,0) as val
+                        select p.prdid, p.tagid, convert(float,p.value,0) as val
                             ,p.stamp
                             ,((row_number() over (order by p.stamp))-1)/@3 as mesh
 							,t.lolo, t.lo, t.aim, t.hi, t.hihi
@@ -113,9 +119,10 @@ namespace Test.Models
                     ) a
                     group by mesh, tagid, lolo, lo, aim, hi, hihi
                 ) v
-            order by tagid, epoch
 
-            select tagid, dvalue, epoch, stamp, ctrl from @@vals
+            select prdid, tagid, dvalue, epoch, stamp, ctrl 
+            from @@vals
+            order by tagid, stamp
 
             ;with a as (
                 select tagid
@@ -205,7 +212,6 @@ namespace Test.Models
         public static List<TagSample> Span(string channel, DateTime start, DateTime end)
         {
             List<TagSample> tagsamples = null;
-            List<Trace> trace = null;
 
             using (tagDB t = new tagDB())
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -28,6 +29,9 @@ namespace Test.Hubs
         public List<TagSample> RunDetail(string channel, long start, long end)
         {
             var samples = TagSample.Span(channel, start.FromJSMSecs(), end.FromJSMSecs());
+
+            //Debug.WriteLine(string.Join("\n", samples[1].series.Select(r =>r.print()).ToArray()));
+
             samples.Select((s, i) => { s.id = i; return true; }).ToList();
 
             return samples;

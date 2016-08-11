@@ -365,6 +365,7 @@ i.ctx {
     fill: green;
 }
 
+.brushd .extent,
 .brush .extent {
     stroke: gray;
     fill: blue;
@@ -442,6 +443,41 @@ i.ctx {
 }
 
 .laneText {
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
+}
+
+.limitline {
+    opacity: 0.7;
+}
+
+.outofspec {
+    stroke: red;
+    stroke-width: 2;
+}
+
+.outofcontrol {
+    stroke: orange;
+    stroke-dasharray: 5;
+}
+
+.target {
+    stroke: green;
+    stroke-dasharray: 3;
+}
+
+.dot {
+    stroke: blue;
+    fill: blue;
+}
+
+.reicon {
+    font-family: FontAwesome;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.reicon:hover {
+    stroke: red;
+    fill: red;
 }

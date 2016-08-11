@@ -193,6 +193,7 @@
 
         // invisible hit area to move around the selection window
         mini.append('rect')
+            .attr('id', 'hit')
             .attr('pointer-events', 'painted')
             .attr('width', width)
             .attr('height', miniHeight)
@@ -213,6 +214,7 @@
                 .attr('height', miniHeight - 1);
 
         mini.selectAll('rect.background').remove();
+
         display();
 
         function display() {
@@ -276,6 +278,24 @@
                 .attr('class', 'run')
                 .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
 
+            function drill(d) {
+                var r = d3.select(this);
+                r.classed('chosen', !r.classed('chosen'));
+                d.class = r.attr('class');
+                var s = mini.select('#miniItem_' + d.id);
+                s.classed('chosen', !s.classed('chosen'));
+                console.log('run begin: ' + d.begin + ' - ' + d.end);
+                rundetail(d, d3.select(this.parentNode));
+            }
+
+            $(document).on('detailexit', function (e) {
+                main.attr('opacity', 1);
+                mini.attr('opacity', 1);
+                mini.select('#hit').on('mouseup', moveBrush);    // moveBrush
+                brush.on('brush', display);                      // display
+                main.selectAll('.mainItem').on('click', drill);  // drill
+            });
+
             group.append('rect')
                 .attr('id', function (d) { return d.id; })
                 .attr('x', function (d) { return x1(d.begin); })
@@ -283,15 +303,8 @@
                 .attr('width', function (d) { return x1(d.end) - x1(d.begin); })
                 .attr('height', .8 * y1(1))
                 .attr('class', function (d) { return 'mainItem ' + d.class; })
-                .on('click', function (d) {
-                    var r = d3.select(this);
-                    r.classed('chosen', !r.classed('chosen'));
-                    d.class = r.attr('class');
-                    var s = mini.select('#miniItem_' + d.id);
-                    s.classed('chosen', !s.classed('chosen'));
-                    console.log('run begin: ' + d.begin + ' - ' + d.end);
-                    rundetail(d, d3.select(this.parentNode));
-                });
+                .on('click', drill);
+
             group.append('text')
                 .attr('id', function (d) { return 'loading_' + d.id; })
                 .attr('x', function (d) { return  x1(Math.max(d.begin, minExtent)) + 2; })
@@ -313,19 +326,6 @@
                 .attr('class', function (d, i) { return 'trace ' + marker[i]; })
                 .attr('d', function (d) { return d; });
              
-            
-            //if (newp.length) {
-            //    var detail = newp.selectAll('.run').append('g')
-            //        .attr('class', 'detail')
-            //        .attr('transform', function (d) { return 'translate(' + x1(d.begin) + ',0) scale(' + x1(1) / d.loadz + ',1)'; });
-
-            //    debugger;
-
-            //    detail.append('path')
-            //        .attr('class', function (d, i) { return 'trace ' + marker[i]; })
-            //        .attr('d', function (d, i) { return d[i]; })
-            //}
-            // remove item rects out of window
             var delr = rects.exit();
 
             delr.selectAll('rect').remove();
@@ -368,17 +368,24 @@
                     item.loadz = x1(1000000);
                     item.path = getSpecPath(item);
 
-                    rungroup.append('g')
-                        .attr('transform', 'scale(1,1)')
-                        .attr('class', 'detail')
-                      .selectAll('path')
-                        .data(item.path)
-                        .enter().append('path')
-                        .attr('class', function (d, i) { return 'trace ' + marker[i]; })
-                        .attr('d', function (d) { return d; });
+                    //rungroup.append('g')
+                    //    .attr('transform', 'scale(1,1)')
+                    //    .attr('class', 'detail')
+                    //  .selectAll('path')
+                    //    .data(item.path)
+                    //    .enter().append('path')
+                    //    .attr('class', function (d, i) { return 'trace ' + marker[i]; })
+                    //    .attr('d', function (d) { return d; });
 
-                    specview(item);
+                    main.attr('opacity', 0);
+                    mini.attr('opacity', 0);
+                    mini.select('#hit').on('mouseup', null);        // moveBrush
+                    brush.on('brush', null);                        // display
+                    main.selectAll('.mainItem').on('click', null);  // drill
 
+                    var ex = specview(item);
+
+                    console.log('after specview '+ex);
                     item.loading = false;
                     d3.select('#loading_' + item.id).style('opacity', 0);
                 }).fail(function (msg) {
@@ -389,10 +396,7 @@
                     d3.select('#loading_' + item.id).style('opacity', 0);
                 });
             }
-
         }
-
-
 
         function moveBrush() {
             var origin = d3.mouse(this)
@@ -431,19 +435,27 @@
             return [top, bottom];
         }
 
-        function specview(data) {
-            main.attr('opacity', 0);
-            mini.attr('opacity', 0);
+        function limitrender(limit) {
+            return [
+                { 'level': limit.LoLo, 'cls': 'outofspec' },
+                { 'level': limit.Lo, 'cls': 'outofcontrol' },
+                { 'level': limit.Aim, 'cls': 'target' },
+                { 'level': limit.Hi, 'cls': 'outofcontrol' },
+                { 'level': limit.HiHi, 'cls': 'outofspec' }
+            ];
+        }
 
+        function specview(data) {
             var channel = 0;
             var lanes = data.details;
-            var bottomHeight = lanes.length * 12 + 50;
+            var bottomHeight = lanes.length * 6 + 50;
             var topHeight = height - bottomHeight - 50;
 
             var xb = d3.time.scale()
                 .domain([d3.time.sunday(data.begin), data.end])
                 .range([0, width]);
-            var xt = d3.time.scale().range([0, width]);
+            var xt = d3.time.scale()
+                .range([0, width]);
 
             var ext = d3.extent(lanes, function (d) { return d.id; });
             var yb = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, bottomHeight]);
@@ -478,7 +490,7 @@
                 .enter().append('text')
                 .text(function (d) { return d.Label; })
                 .attr('x', -10)
-                .attr('y', function (d) { return y2(d.id + .5); })
+                .attr('y', function (d) { return yb(d.id + .5); })
                 .attr('dy', '0.5ex')
                 .attr('text-anchor', 'end')
                 .attr('class', function (d, i) { return 'laneText'+(i==0?' chosen':'');})
@@ -491,6 +503,7 @@
                     r.classed('chosen', true);
                     
                     channel = i;
+                    switched(dataline);
                 });
 
             // draw the x axis
@@ -527,8 +540,16 @@
                 .attr('class', 'main axis date')
                 .call(xtDateAxis);
 
+            var dataline = d3.svg.line()
+                .x(function (d) { return xt(new Date(d.epoch)); })
+                .y(function (d) { return yt(+d.dvalue); });
+
+            var topClip = top.append('g')
+                .attr('clip-path', 'url(#clip)');
+
             switched();
             top.append('g')
+                .attr('transform', 'translate(-1.5,0)')
                 .attr('class', 'main axis value')
                 .call(ytTagAxis);
 
@@ -539,6 +560,19 @@
                 .selectAll('text')
                     .attr('dx', 5)
                     .attr('dy', 12);
+
+            top.append('text')
+                .attr('id', 'exit')
+                .attr('x', -25)
+                .attr('class', 'reicon')
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'central')
+                .text(function (d) { return '\uf057'; })
+                .on('click', function () {
+                    bottom.remove();
+                    top.remove();
+                    $(document).trigger('detailexit');
+                });
 
             bottom.append('g')
                 .attr('transform', 'translate(0,' + bottomHeight + ')')
@@ -553,45 +587,34 @@
                     .attr('dx', 5)
                     .attr('dy', 12);
 
-            // draw a line representing today's date
-            //top.append('line')
-            //    .attr('y1', 0)
-            //    .attr('y2', topHeight)
-            //    .attr('class', 'main todayLine')
-            //    .attr('clip-path', 'url(#clip)');
-
-            //bottom.append('line')
-            //    .attr('x1', x(now) + 0.5)
-            //    .attr('y1', 0)
-            //    .attr('x2', x(now) + 0.5)
-            //    .attr('y2', bottomHeight)
-            //    .attr('class', 'todayLine');
-
-            var topClip = top.append('g')
-                    .attr('clip-path', 'url(#clip)');
+            // invisible hit area to move around the selection window
+            bottom.append('rect')
+                .attr('pointer-events', 'painted')
+                .attr('width', width)
+                .attr('height', bottomHeight)
+                .attr('visibility', 'hidden')
+                .on('mouseup', moveBrushd);
 
             // draw the selection area
-            var brush = d3.svg.brush()
-                .x(x)
+            var brushd = d3.svg.brush()
+                .x(xb)
                 .extent([d3.time.monday(focal), d3.time.saturday.ceil(focal)])
-                .on("brush", brushed);
+                .on('brush', brushed);
 
             bottom.append('g')
-                .attr('class', 'x brush')
-                .call(brush)
+                .attr('class', 'x brushd')
+                .call(brushd)
                 .selectAll('rect')
                     .attr('y', 1)
                     .attr('height', bottomHeight - 1);
 
             brushed();
 
-            var dataline = d3.svg.line()
-                .x(function (d) { return xt(new Date(d.epoch)); })
-                .y(function (d) { return yt(+d.dvalue); })
-
             function switched() {
+                var limit = lanes[channel].limit;
+                
                 yt = d3.scale.linear()
-                    .domain(limitextent(lanes[channel].limit))
+                    .domain(limitextent(limit))
                     .range([0, topHeight]);
 
                 ytTagAxis = d3.svg.axis()
@@ -600,26 +623,52 @@
 
                 top.select('.main.axis.value').call(ytTagAxis);
 
-                top.selectAll('.dataline').remove();
+                //top.selectAll('.dataline').remove();
+                //top.append('path')
+                //    .datum(lanes[channel].series)
+                //    .attr('d', dataline)
+                //    .attr('class', 'dataline')
+                //    .attr('clip-path', 'url(#clip)');
 
-                top.append('path')
-                    .datum(lanes[channel].series)
-                    .attr('d', dataline)
-                    .attr('class', 'dataline');
+                
+                topClip.selectAll('.dot').remove();
+
+                topClip.selectAll('.dot')
+                     .data(lanes[channel].series, function (d) { return d.prdid; })
+                   .enter().append('circle')
+                     .attr('class', 'dot')
+                     .attr('r', 1)
+                     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
+                     .attr('cy', function (d) { return yt(+d.dvalue); });
+
+                top.selectAll('.limitline').remove();
+                top.selectAll('.limitline')
+                    .data(limitrender(limit)).enter()
+                    .append('line')
+                    .attr('class', function (d) { return 'limitline '+d.cls; })
+                    .attr('clip-path', 'url(#clip)')
+                    .attr('level', function (d) { return d.level; })
+                    .attr('x1', 0)
+                    .attr('x2', width)
+                    .attr('y1', function (d) { return yt(+d.level); })
+                    .attr('y2', function (d) { return yt(+d.level); });
             }
 
             function brushed() {
-                xt.domain(brush.empty() ? xb.domain() : brush.extent());
-
+                xt.domain(brushd.empty() ? xb.domain() : brushd.extent());
 
                 //top.selectAll('.dataline').remove();
-                top.select('.dataline').attr('d', dataline);
+                //top.select('.dataline').attr('d', dataline);
+
+                topClip.selectAll('.dot')
+                     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
+                     .attr('cy', function (d) { return yt(+d.dvalue); });
 
                 var
-                    minExtent = d3.time.day(brush.extent()[0])
-                  , maxExtent = d3.time.day(brush.extent()[1]);
+                    minExtent = d3.time.day(brushd.extent()[0])
+                  , maxExtent = d3.time.day(brushd.extent()[1]);
 
-                bottom.select('.brush').call(brush.extent([minExtent, maxExtent]));
+                bottom.select('.brushd').call(brushd.extent([minExtent, maxExtent]));
 
                 // julian date would be %j after %a %d and %b %e
                 if ((maxExtent - minExtent) > 1468800000) {
@@ -640,9 +689,18 @@
                         .attr('dx', 5)
                         .attr('dy', 12);
             }
+
+            function moveBrushd() {
+                var origin = d3.mouse(this)
+                  , point = xb.invert(origin[0])
+                  , halfExtent = (brushd.extent()[1].getTime() - brushd.extent()[0].getTime()) / 2
+                  , begin = new Date(point.getTime() - halfExtent)
+                  , end = new Date(point.getTime() + halfExtent);
+
+                brushd.extent([begin, end]);
+                brushed();
+            }
         }
-
-
     });
 }
 
