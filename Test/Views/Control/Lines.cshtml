@@ -7,11 +7,16 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="col-xs-12 text-primary"><h3>Assign Product to Line</h3></div>
+        <div class="col-xs-12 text-primary"><h3>Line Assignment</h3></div>
+    </div>
+    <div class="row-fluid">
+        <div class="col-md-10 col-md-offset-1" id="lanes"></div>
     </div>
     <div class="row-fluid">
         <div class="col-md-3">
             @Html.DisplayFor(m => m.systems)
+            <br />
+            @Html.Bootstrap().Button().Text("Line History").Id("history")
         </div>
         <div class="col-md-5">
             <table class="table table-condensed table-responsive" id="linetable">
@@ -31,12 +36,21 @@
 </div>
 
 @section scripts {
+    <script src="~/Scripts/d3/d3.v2.js" type="text/javascript"></script>
+    <script src="~/Scripts/memlane.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(function () {
-            $('button').on('click', function () {
+            $('#history').on('click', function (e) {
+                e.preventDefault();
+                console.log('calling history');
+                alllines('#lanes');
+            });
+            $('button.sys-').on('click', function () {
                 var id = $(this).data('id');
                 location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
             });
         });
     </script>
 }
+
+

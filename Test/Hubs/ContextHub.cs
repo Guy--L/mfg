@@ -26,6 +26,13 @@ namespace Test.Hubs
             return runs;
         }
 
+        public List<Run> RunsAll()
+        {
+            var runs = Run.RunsAll();
+
+            return runs;
+        }
+
         public List<TagSample> RunDetail(string channel, long start, long end)
         {
             var samples = TagSample.Span(channel, start.FromJSMSecs(), end.FromJSMSecs());

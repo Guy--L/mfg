@@ -1,9 +1,13 @@
-﻿function swim(id) {
+﻿function alllines(id) {
 
     if ($(id).children().length > 0)
         d3.select(id).selectAll('svg').remove();
      
-    xhub.server.runsEver().done(function (rets) {
+    xhub.server.runsAll().done(function (rets) {
+        var gelcolors = ['#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02', '#a6761d', '#666666'];
+        var geltypes = 'ABCDEGJP'.split('');
+
+        var gels = d3.scale.ordinal().domain(geltypes).range(gelcolors);
 
         if (typeof rets === 'undefined')
             return;
@@ -25,22 +29,18 @@
 
         var margin = { top: 20, right: 15, bottom: 15, left: 60 }
             , width = 960 - margin.left - margin.right
-            , height = 500 - margin.top - margin.bottom
-            , miniHeight = lanes.length * 12 + 50
-            , mainHeight = height - miniHeight - 50;
+            , height = 800 - margin.top - margin.bottom
+            , allHeight = lanes.length * 20 + 50;
 
         var x = d3.time.scale()
             .domain([d3.time.sunday(d3.min(items, function (d) { return d.begin; })),
                         d3.max(items, function (d) { return d.end; })])
             .range([0, width]);
-        var x1 = d3.time.scale().range([0, width]);
 
         var ext = d3.extent(lanes, function (d) { return d.id; });
-        var y1 = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, mainHeight]);
-        var y2 = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, miniHeight]);
+        var y = d3.scale.linear().domain([ext[0], ext[1] + 1]).range([0, allHeight]);
 
         //d3.select(id).remove();
-
 
         var chart = d3.select(id)
             .append('svg:svg')
@@ -48,32 +48,27 @@
             .attr('height', height + margin.top + margin.bottom)
             .attr('class', 'chart');
 
+
         chart.append('defs').append('clipPath')
             .attr('id', 'clip')
             .append('rect')
                 .attr('width', width)
-                .attr('height', mainHeight);
+                .attr('height', allHeight);
 
         var main = chart.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
             .attr('width', width)
-            .attr('height', mainHeight)
+            .attr('height', allHeight)
             .attr('class', 'main');
-
-        var mini = chart.append('g')
-            .attr('transform', 'translate(' + margin.left + ',' + (mainHeight + 60) + ')')
-            .attr('width', width)
-            .attr('height', miniHeight)
-            .attr('class', 'mini');
 
         // draw the lanes for the main chart
         main.append('g').selectAll('.laneLines')
             .data(lanes)
             .enter().append('line')
             .attr('x1', 0)
-            .attr('y1', function (d) { return d3.round(y1(d.id)) + 0.5; })
+            .attr('y1', function (d) { return d3.round(y(d.id)) + 0.5; })
             .attr('x2', width)
-            .attr('y2', function (d) { return d3.round(y1(d.id)) + 0.5; })
+            .attr('y2', function (d) { return d3.round(y(d.id)) + 0.5; })
             .attr('stroke', function (d) { return d.label === '' ? 'white' : 'lightgray' });
 
         main.append('g').selectAll('.laneText')
@@ -81,41 +76,13 @@
             .enter().append('text')
             .text(function (d) { return d.label; })
             .attr('x', -10)
-            .attr('y', function (d) { return y1(d.id + .5); })
+            .attr('y', function (d) { return y(d.id + .5); })
             .attr('dy', '0.5ex')
             .attr('text-anchor', 'end')
             .attr('class', 'laneText');
 
-        // draw the lanes for the mini chart
-        mini.append('g').selectAll('.laneLines')
-            .data(lanes)
-            .enter().append('line')
-            .attr('x1', 0)
-            .attr('y1', function (d) { return d3.round(y2(d.id)) + 0.5; })
-            .attr('x2', width)
-            .attr('y2', function (d) { return d3.round(y2(d.id)) + 0.5; })
-            .attr('stroke', function (d) { return d.label === '' ? 'white' : 'lightgray' });
-
-        mini.append('g').selectAll('.laneText')
-            .data(lanes)
-            .enter().append('text')
-            .text(function (d) { return d.label; })
-            .attr('x', -10)
-            .attr('y', function (d) { return y2(d.id + .5); })
-            .attr('dy', '0.5ex')
-            .attr('text-anchor', 'end')
-            .attr('class', 'laneText');
-
-        // draw the x axis
         var xDateAxis = d3.svg.axis()
             .scale(x)
-            .orient('bottom')
-            .ticks(d3.time.mondays, (x.domain()[1] - x.domain()[0]) > 15552e6 ? 2 : 1)
-            .tickFormat(d3.time.format('%d'))
-            .tickSize(6, 0, 0);
-
-        var x1DateAxis = d3.svg.axis()
-            .scale(x1)
             .orient('bottom')
             .ticks(d3.time.days, 1)
             .tickFormat(d3.time.format('%a %d'))
@@ -125,311 +92,125 @@
             .scale(x)
             .orient('top')
             .ticks(d3.time.months, 1)
-            .tickFormat(d3.time.format('%b %Y'))
-            .tickSize(15, 0, 0);
-
-        var x1MonthAxis = d3.svg.axis()
-            .scale(x1)
-            .orient('top')
-            .ticks(d3.time.mondays, 1)
-            .tickFormat(d3.time.format('%b - Week %W'))
+            .tickFormat(d3.time.format('%b'))
             .tickSize(15, 0, 0);
 
         main.append('g')
-            .attr('transform', 'translate(0,' + mainHeight + ')')
+            .attr('transform', 'translate(0,' + allHeight + ')')
             .attr('class', 'main axis date')
-            .call(x1DateAxis);
+            .call(xDateAxis);
 
         main.append('g')
             .attr('transform', 'translate(0,0.5)')
             .attr('class', 'main axis month')
-            .call(x1MonthAxis)
-            .selectAll('text')
-                .attr('dx', 5)
-                .attr('dy', 12);
-
-        mini.append('g')
-            .attr('transform', 'translate(0,' + miniHeight + ')')
-            .attr('class', 'axis date')
-            .call(xDateAxis);
-
-        mini.append('g')
-            .attr('transform', 'translate(0,0.5)')
-            .attr('class', 'axis month')
             .call(xMonthAxis)
             .selectAll('text')
                 .attr('dx', 5)
                 .attr('dy', 12);
 
-        // draw a line representing today's date
-        main.append('line')
-            .attr('y1', 0)
-            .attr('y2', mainHeight)
-            .attr('class', 'main todayLine')
-            .attr('clip-path', 'url(#clip)');
+        var div = d3.select(id).append('div')
+            .attr('class', 'runtip')
+            .style('opacity', 0);
 
-        mini.append('line')
-            .attr('x1', x(now) + 0.5)
-            .attr('y1', 0)
-            .attr('x2', x(now) + 0.5)
-            .attr('y2', miniHeight)
-            .attr('class', 'todayLine');
+        //var loading = chart
+        //    .append('text')
+        //    .text('loading...')
+        //    .attr('font-size', 26);
 
-        // draw the items
-        var itemRects = main.append('g')
-            .attr('clip-path', 'url(#clip)');
+        var offset = .5 * y(1) + 0.5;
 
-        var offset = .5 * y2(1) + 0.5;
+        function drill(d) {
+            var r = d3.select(this);
+            //r.classed('chosen', !r.classed('chosen'));
+            r.classed('chosen', true);
+            d.class = r.attr('class');
+            console.log('run begin: ' + d.begin + ' - ' + d.end);
+            rundetail(d, d3.select(this.parentNode));
+        }
 
-        mini.append('g').selectAll('miniItems')
+        var formatrTime = d3.time.format("%y/%m/%d %H:%M");
+        var formatsTime = d3.time.format("%m/%d %H:%M");
+
+        main.append('g').selectAll('.allItem')
             .data(items)
             .enter().append('line')
-            .attr('class', function (d) { return 'miniItem ' + d.class; })
-            .attr('id', function (d) { return 'miniItem_' + d.id; })
+            .attr('class', 'allItem')
+            .attr('id', function (d) { return 'allItem_' + d.id; })
             .attr('x1', function (d) { return x(d.begin); })
             .attr('x2', function (d) { return x(d.end); })
-            .attr('y1', function (d) { return y2(d.laneid) + offset; })
-            .attr('y2', function (d) { return y2(d.laneid) + offset; });
-
-        // invisible hit area to move around the selection window
-        mini.append('rect')
-            .attr('id', 'hit')
-            .attr('pointer-events', 'painted')
-            .attr('width', width)
-            .attr('height', miniHeight)
-            .attr('visibility', 'hidden')
-            .on('mouseup', moveBrush);
-
-        // draw the selection area
-        var brush = d3.svg.brush()
-            .x(x)
-            .extent([d3.time.monday(focal), d3.time.saturday.ceil(focal)])
-            .on("brush", display);
-
-        mini.append('g')
-            .attr('class', 'x brush')
-            .call(brush)
-            .selectAll('rect')
-                .attr('y', 1)
-                .attr('height', miniHeight - 1);
-
-        mini.selectAll('rect.background').remove();
-
-        display();
-
-        function display() {
-
-            var rects, tracers, lines
-              , minExtent = d3.time.day(brush.extent()[0])
-              , maxExtent = d3.time.day(brush.extent()[1])
-              , visItems = items.filter(function (d) { return d.begin < maxExtent && d.end > minExtent });
-
-            mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
-            x1.domain([minExtent, maxExtent]);
-
-            // julian date would be %j after %a %d and %b %e
-            if ((maxExtent - minExtent) > 1468800000) {
-                x1DateAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%a %d'))
-                x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
-            }
-            else if ((maxExtent - minExtent) > 172800000) {
-                x1DateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
-                x1MonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
-            }
-            else {
-                x1DateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
-                x1MonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
-            }
-            //x1Offset.range([0, x1(d3.time.day.ceil(now) - x1(d3.time.day.floor(now)))]);
-
-            // shift the today line
-            main.select('.main.todayLine')
-                .attr('x1', x1(now) + 0.5)
-                .attr('x2', x1(now) + 0.5);
-
-            // update the axis
-            main.select('.main.axis.date').call(x1DateAxis);
-            main.select('.main.axis.month').call(x1MonthAxis)
-                .selectAll('text')
-                    .attr('dx', 5)
-                    .attr('dy', 12);
-
-            // update the item rects
-            rects = itemRects.selectAll('.run')
-                .data(visItems, function (d) { return d.id; })
-                .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
-
-            rects.selectAll('rect')
-                .attr('x', function (d) { return x1(d.begin); })
-                .attr('width', function (d) { return x1(d.end) - x1(d.begin); });
-
-            rects.selectAll('text')
-                .attr('x', function (d) { return x1(Math.max(d.begin, minExtent)) + 2; });
-
-            // add new item rects
-            var newr = rects.enter();
-
-            var group = newr.append('g')
-                .attr('loaded', function (d) { return d.hasOwnProperty('path');})
-                .attr('class', 'run')
-                .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
-
-            function drill(d) {
-                var r = d3.select(this);
-                //r.classed('chosen', !r.classed('chosen'));
-                r.classed('chosen', true);
-                d.class = r.attr('class');
-                var s = mini.select('#miniItem_' + d.id);
-                s.classed('chosen', true);
-//                s.classed('chosen', !s.classed('chosen'));
-                console.log('run begin: ' + d.begin + ' - ' + d.end);
-                rundetail(d, d3.select(this.parentNode));
-            }
-
-            $(document).on('detailexit', function (e) {
-                main.attr('opacity', 1);
-                mini.attr('opacity', 1);
-
-                d3.select('#clip').select('rect').attr('height', mainHeight);
-
-                mini.select('#hit').on('mouseup', moveBrush);    // moveBrush
-                brush.on('brush', display);                      // display
-                main.selectAll('.mainItem').on('click', drill);  // drill
+            .attr('y1', function (d) { return y(d.laneid) + offset; })
+            .attr('y2', function (d) { return y(d.laneid) + offset; })
+            .style('stroke', function (d) { return gels(d.geltype); })
+            .style('stroke-width', function (d) { return d.productwidth / 2; })
+            .attr('title', function (d) { return d.productcode + ' ' + d.productspec })
+            .on('click', drill)
+            .on("mouseover", function (d) {
+                var hi = d3.select(this);
+                var hiColor = d3.rgb(gels(d.geltype)).brighter(2);
+                hi.style('stroke', hiColor);
+                hiColor = d3.rgb(hiColor).brighter(2);
+                div.transition()
+                    .duration(200)
+                    .style('opacity', .9)
+                    .style('background', hiColor);
+                div.html(formatrTime(d.begin) + " - " + formatsTime(d.end) + '<br />' + d.productcode + ' ' + d.productspec + '<br />(' + d.id + ')<br />'+d.comment)
+                    .style("left", (d3.event.pageX) - margin.left - 60 + "px")
+                    .style("top", (d3.event.pageY - 70) - margin.top + "px");
+            })
+            .on("mouseout", function (d) {
+                var hi = d3.select(this);
+                hi.style('stroke', gels(d.geltype));
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
             });
 
-            group.append('rect')
-                .attr('id', function (d) { return d.id; })
-                .attr('x', function (d) { return x1(d.begin); })
-                .attr('y', 0)
-                .attr('width', function (d) { return x1(d.end) - x1(d.begin); })
-                .attr('height', .8 * y1(1))
-                .attr('class', function (d) { return 'mainItem ' + d.class; })
-                .on('click', drill);
+        // Define the div for the tooltip
+        $(document).on('detailexit', function (e) {
+            main.attr('opacity', 1);
 
-            group.append('text')
-                .attr('id', function (d) { return 'loading_' + d.id; })
-                .attr('x', function (d) { return  x1(Math.max(d.begin, minExtent)) + 2; })
-                .attr('y', .6 * y1(1))
-		        .attr('text-anchor', 'start')
-		        .attr('class', 'loading')
-                .text('loading...')
-                .style('opacity', function (d) { return d.message?1:0; });
+            d3.select('#clip').select('rect').attr('height', allHeight);
 
-            //var detail = group.filter(function (d) { return d.hasOwnProperty('path'); })
-            //    .append('g')
-            //    .attr('class', 'detail')
-            //    .attr('loadz', function (d) { return d.loadz; })
-            //    .attr('transform', function (d) { return 'translate(' + x1(d.begin)-x1(d.loadx) + ',0) scale(' + x1(1000000) / d.loadz + ',1)'; });
+            main.selectAll('.mainItem').on('click', drill);  // drill
+        });
 
-            //var marker = ['abovectl', 'abovespec'];
 
-            //detail.selectAll('path').data(function (d) { return d.path; }).enter().append('path')
-            //    .attr('class', function (d, i) { return 'trace ' + marker[i]; })
-            //    .attr('d', function (d) { return d; });
-             
-            var delr = rects.exit();
+        function detailenter(item) {
+            main.attr('opacity', 0);
+            main.selectAll('.mainItem').on('click', null);  // drill
 
-            delr.selectAll('rect').remove();
-            delr.selectAll('text').remove();
-            //delr.selectAll('g').selectAll('path').remove();
-            //delr.selectAll('g').remove();
-            delr.remove();
+            specview(item);
+        }
 
-            //function getSpecPath(item)
-            //{
-            //    var d, pen;
-            //    var oocpath = '', oospath = '';
+        function rundetail(item, rungroup) {
+            //loading.style('opacity', 1);
 
-            //    oospath = ['M', x1(item.begin), 0, 'H', x1(item.begin)].join(' ');
-            //    oocpath = ['M', x1(item.begin), 0, 'H', x1(item.begin)].join(' ');
+            if (!item.hasOwnProperty('details')) {
+                xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
+                    item.details = details;
 
-            //    for (i = 0; i < item.details.length; i++) {
-            //        for (j = 0; j < item.details[i].xspec.length; j++) {
-            //            d = item.details[i].xspec[j];
-            //            pen = ['M', x1(new Date(d.start)), i * (.3*y1(1)) + 3,'H', x1(new Date(d.stop))].join(' ');
-            //            if (d.ctl==1) oocpath += pen;
-            //            else oospath += pen;
-            //        }
-            //    }
-            //    return [oocpath, oospath];
-            //}
-
-            console.log('display completed');
-
-            function detailenter(item) {
-                main.attr('opacity', 0);
-                mini.attr('opacity', 0);
-                mini.select('#hit').on('mouseup', null);        // moveBrush
-                brush.on('brush', null);                        // display
-                main.selectAll('.mainItem').on('click', null);  // drill
-
-                specview(item);
-            }
-
-            function rundetail(item, rungroup) {
-                var message = d3.select('#loading_' + item.id);
-                item.message = true;
-                message.style('opacity', 1);
-
-                if (!item.hasOwnProperty('details')) {
-                    xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
-                        item.details = details;
-
-                        detailenter(item);
-
-                        message.text('rendering...').style('opacity', 0);
-                        item.message = false;
-                    }).fail(function (msg) {
-                        console.log('rundetail fail');
-                        console.log(msg);
-
-                        message.text('failed to load')
-                            .attr('stroke', 'red');
-                    });
-                } else {
                     detailenter(item);
-                    console.log('.');
-                    debugger;
-                    item.message = false;
-                    message.style('opacity', 0);
-                }
+
+                    //loading.text('rendering...').style('opacity', 0);
+                }).fail(function (msg) {
+                    console.log('rundetail fail');
+                    console.log(msg);
+
+                    //loading.text('failed to load')
+                    //    .attr('stroke', 'red');
+                });
+            } else {
+                detailenter(item);
+                //loading.style('opacity', 0);
             }
         }
 
-        function moveBrush() {
-            var origin = d3.mouse(this)
-              , point = x.invert(origin[0])
-              , halfExtent = (brush.extent()[1].getTime() - brush.extent()[0].getTime()) / 2
-              , begin = new Date(point.getTime() - halfExtent)
-              , end = new Date(point.getTime() + halfExtent);
-
-            brush.extent([begin, end]);
-            display();
-        }
-
-        // generates a single path for each item class in the mini display
-        // ugly - but draws mini 2x faster than append lines or line generator
-        // is there a better way to do a bunch of lines as a single path with d3?
-        function getPaths() {
-            var paths = {}, d, offset = .5 * y2(1) + 0.5, result = [];
-            for (var i = 0; i < items.length; i++) {
-                d = items[i];
-                if (!paths[d.class]) paths[d.class] = '';
-                paths[d.class] += ['M', x(d.begin), (y2(d.laneid) + offset), 'H', x(d.end)].join(' ');
-            }
-
-            for (var className in paths) {
-                result.push({ class: className, path: paths[className] });
-            }
-
-            return result;
-        }
 
         function limitextent(limit) {
             var bottom = limit.Aim - limit.LoLo;
-            bottom = limit.Aim - 1.2*bottom;
+            bottom = limit.Aim - 1.2 * bottom;
             var top = limit.HiHi - limit.Aim;
-            top = limit.Aim + 1.2*top;
+            top = limit.Aim + 1.2 * top;
             return [top, bottom];
         }
 
@@ -447,7 +228,7 @@
             var channel = 0;
             var lanes = data.details;
             var bottomHeight = lanes.length * 6 + 50;
-            var topHeight = height - bottomHeight - 50;
+            var topHeight = height - bottomHeight - 50 - 300;
 
             var xb = d3.time.scale()
                 .domain([d3.time.sunday(data.begin), data.end])
@@ -491,7 +272,7 @@
                 .attr('y', function (d) { return yb(d.id + .5); })
                 .attr('dy', '0.5ex')
                 .attr('text-anchor', 'end')
-                .attr('class', function (d, i) { return 'laneText'+(i==0?' chosen':'');})
+                .attr('class', function (d, i) { return 'laneText' + (i == 0 ? ' chosen' : ''); })
                 .on('click', function (d, i) {
                     var r = d3.select(this);
                     var chosen = r.classed('chosen');
@@ -499,7 +280,7 @@
 
                     d3.select(this.parentNode).selectAll('.laneText').classed('chosen', false);
                     r.classed('chosen', true);
-                    
+
                     channel = i;
                     switched();
                 });
@@ -597,7 +378,7 @@
             var trace = bottom.selectAll('.trace')
                 .data(lanes)
               .enter().append('g')
-                .attr('transform', function (d, i) { return 'translate(0,' + (yb(i)+0.5*yb(1)) + ')'; })
+                .attr('transform', function (d, i) { return 'translate(0,' + (yb(i) + 0.5 * yb(1)) + ')'; })
                 .attr('class', 'trace');
 
             var tracepaint = ['outofspec', 'outofcontrol', 'target', 'outofcontrol', 'outofspec'];
@@ -605,10 +386,10 @@
             trace.selectAll('brun')
                 .data(function (d) { return d.series; })
               .enter().append('line')
-                .attr('class', function (d) { return 'brun ' + tracepaint[d.ctrl+2]; })
+                .attr('class', function (d) { return 'brun ' + tracepaint[d.ctrl + 2]; })
                 .attr('id', function (d) { return 'brun_' + d.prdid; })
                 .attr('x1', function (d, i, j) {
-                    return xb(i == 0? new Date(lanes[j].series[0].epoch): new Date(lanes[j].series[i-1].epoch));
+                    return xb(i == 0 ? new Date(lanes[j].series[0].epoch) : new Date(lanes[j].series[i - 1].epoch));
                 })
                 .attr('x2', function (d) { return xb(new Date(d.epoch)); })
                 .attr('y1', 0)
@@ -631,7 +412,7 @@
 
             function switched() {
                 var limit = lanes[channel].limit;
-                
+
                 yt = d3.scale.linear()
                     .domain(limitextent(limit))
                     .range([0, topHeight]);
@@ -649,7 +430,7 @@
                 //    .attr('class', 'dataline')
                 //    .attr('clip-path', 'url(#clip)');
 
-                
+
                 topClip.selectAll('.dot').remove();
 
                 topClip.selectAll('.dot')
@@ -664,7 +445,7 @@
                 top.selectAll('.limitline')
                     .data(limitrender(limit)).enter()
                     .append('line')
-                    .attr('class', function (d) { return 'limitline '+d.cls; })
+                    .attr('class', function (d) { return 'limitline ' + d.cls; })
                     .attr('clip-path', 'url(#clip)')
                     .attr('level', function (d) { return d.level; })
                     .attr('x1', 0)
@@ -720,6 +501,9 @@
                 brushed();
             }
         }
+    }).fail(function (e) {
+        console.log('fail');
+        console.log(e);
     });
 }
 
@@ -801,7 +585,10 @@ function collapseLanes(chart) {
                     productcode: item.ProductCode,
                     productspec: item.ProductSpec,
                     productid: item.ProductCodeId,
+                    productwidth: item.ProductWidth,
+                    geltype: item.GelType,
                     series: item.series,
+                    comment: item.Comment,
                     message: false
                 });
             }

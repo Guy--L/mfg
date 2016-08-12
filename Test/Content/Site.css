@@ -450,20 +450,26 @@ i.ctx {
 .limitline {
     opacity: 0.7;
 }
+.limitline .outofspec {
+    stroke-width: 2;
+}
+.limitline .target {
+    stroke-dasharray: 3;
+}
+.limitline .outofcontrol {
+    stroke-dasharray: 5;
+}
 
 .outofspec {
     stroke: red;
-    stroke-width: 2;
 }
 
 .outofcontrol {
     stroke: orange;
-    stroke-dasharray: 5;
 }
 
 .target {
     stroke: green;
-    stroke-dasharray: 3;
 }
 
 .dot {
@@ -480,4 +486,21 @@ i.ctx {
 .reicon:hover {
     stroke: red;
     fill: red;
+}
+
+.brun {
+    stroke-width: 8;
+}
+
+div.runtip {	
+    position: absolute;			
+    text-align: left;			
+    width: 300px;					
+    height: 70px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: yellow;	
+    border: 0px;		
+    border-radius: 4px;			
+    pointer-events: none;			
 }

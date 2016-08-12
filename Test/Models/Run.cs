@@ -5,11 +5,6 @@ using System.Linq;
 
 namespace Test.Models
 {
-    public class RunView
-    {
-
-    }
-
     public class Run
     {
         private static string _latest = @" left join cut m on n.lineid = m.lineid and m.stamp > n.stamp ";
@@ -56,10 +51,38 @@ namespace Test.Models
             order by {3} n.stamp
         ";
 
+        private static string _allRuns = @";
+           -- select distinct(cast(substring(r.productcode,3,1) as char)) geltype
+           -- from linetx n
+           -- join productcode r on n.productcodeid = r.ProductCodeId
+
+            with cut as (
+	            select linetxid, lineid, stamp, productcodeid, statusid, endstamp, comment from (
+		            select distinct linetxid, lineid, stamp, productcodeid, statusid, comment,
+			            lead(stamp, 1, getdate()) over (partition by lineid order by stamp) as endstamp
+		            from linetx
+	            ) a
+            )
+            select 
+                  n.linetxid
+	            , n.lineid
+	            , n.stamp
+	            , n.endstamp
+                , p.productcodeid
+                , p.productcode
+                , p.productspec
+                , cast(substring(p.productcode,1,2) as int) productwidth
+                , cast(substring(p.productcode,3,1) as char) geltype
+                , comment
+            from cut n
+            join productcode p on p.productcodeid = n.productcodeid
+            order by n.stamp
+        ";
+
         private static string _byCode = @";
             with cut as (
 	            select linetxid, lineid, stamp, productcodeid, statusid, endstamp from (
-		            select distinct linetxid, lineid, stamp, productcodeid, statusid, 
+		            select distinct linetxid, lineid, stamp, productcodeid, statusid,
 			            lead(stamp, 1, getdate()) over (partition by lineid order by stamp) as endstamp
 		            from linetx
 	            ) a
@@ -101,6 +124,9 @@ namespace Test.Models
         public string ProductCode { get; set; }
         public string ProductSpec { get; set; }
         public int ProductCodeId { get; set; }
+        public int ProductWidth { get; set; }
+        public string GelType { get; set; }
+        public string Comment { get; set; }
 
         public long start { get { return Stamp.ToJSMSecs(); } }
         public long stop { get { return EndStamp.ToJSMSecs(); } }
@@ -179,6 +205,23 @@ namespace Test.Models
                 try
                 {
                     runs = d.Fetch<Run>(_byCode, productcode);
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding all runs by productcode ", e));
+                }
+            }
+            return runs;
+        }
+
+        public static List<Run> RunsAll()
+        {
+            List<Run> runs = null;
+            using (labDB d = new labDB())
+            {
+                try
+                {
+                    runs = d.Fetch<Run>(_allRuns).OrderBy(r => r.Lane).ToList();
                 }
                 catch (Exception e)
                 {
