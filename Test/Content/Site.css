@@ -496,11 +496,14 @@ div.runtip {
     position: absolute;			
     text-align: left;			
     width: 300px;					
-    height: 70px;					
+    height: 90px;					
     padding: 2px;				
     font: 12px sans-serif;		
     background: yellow;	
-    border: 0px;		
+    border: 2px;
+    border-style: solid;
+    border-color: orange;		
     border-radius: 4px;			
-    pointer-events: none;			
+    pointer-events: none;		
+    opacity: 0;	
 }

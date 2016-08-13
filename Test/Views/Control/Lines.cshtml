@@ -41,13 +41,16 @@
     <script type="text/javascript">
         $(function () {
             $('#history').on('click', function (e) {
+                $(this).hide();
                 e.preventDefault();
-                console.log('calling history');
                 alllines('#lanes');
             });
             $('button.sys-').on('click', function () {
                 var id = $(this).data('id');
                 location.href = '@Url.Action("Line","Control",null,Request.Url.Scheme)/' + JSON.stringify(id);
+            });
+            $(document).on('historyexit', function (e) {
+                $('#history').show();
             });
         });
     </script>

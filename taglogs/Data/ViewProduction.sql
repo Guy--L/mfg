@@ -1,5 +1,7 @@
 ﻿create view Production
 as
-select tagid, value, stamp from [past]
-union all
-select tagid, value, stamp from [all]
+SELECT        cast(pastid AS bigint) AS prdid, tagid, value, stamp
+FROM            [past]
+UNION ALL
+SELECT        cast(allid AS bigint) + 2147483647 AS prdid, tagid, value, stamp
+FROM            [all]

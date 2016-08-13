@@ -76,6 +76,8 @@ namespace Test.Models
                 , comment
             from cut n
             join productcode p on p.productcodeid = n.productcodeid
+            join [status] s on s.StatusId = n.StatusId
+            where s.Code = 'RP'
             order by n.stamp
         ";
 

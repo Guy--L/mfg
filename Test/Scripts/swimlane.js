@@ -642,23 +642,22 @@
 
                 top.select('.main.axis.value').call(ytTagAxis);
 
-                //top.selectAll('.dataline').remove();
-                //top.append('path')
-                //    .datum(lanes[channel].series)
-                //    .attr('d', dataline)
-                //    .attr('class', 'dataline')
-                //    .attr('clip-path', 'url(#clip)');
+                top.selectAll('.dataline').remove();
+                top.append('path')
+                    .datum(lanes[channel].series)
+                    .attr('d', dataline)
+                    .attr('class', 'dataline')
+                    .attr('clip-path', 'url(#clip)');
 
-                
-                topClip.selectAll('.dot').remove();
+                //topClip.selectAll('.dot').remove();
 
-                topClip.selectAll('.dot')
-                     .data(lanes[channel].series, function (d) { return d.prdid; })
-                   .enter().append('circle')
-                     .attr('class', 'dot')
-                     .attr('r', 1)
-                     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
-                     .attr('cy', function (d) { return yt(+d.dvalue); });
+                //topClip.selectAll('.dot')
+                //     .data(lanes[channel].series, function (d) { return d.prdid; })
+                //   .enter().append('circle')
+                //     .attr('class', 'dot')
+                //     .attr('r', 1)
+                //     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
+                //     .attr('cy', function (d) { return yt(+d.dvalue); });
 
                 top.selectAll('.limitline').remove();
                 top.selectAll('.limitline')
@@ -676,12 +675,12 @@
             function brushed() {
                 xt.domain(brushd.empty() ? xb.domain() : brushd.extent());
 
-                //top.selectAll('.dataline').remove();
-                //top.select('.dataline').attr('d', dataline);
+                top.selectAll('.dataline').remove();
+                top.select('.dataline').attr('d', dataline);
 
-                topClip.selectAll('.dot')
-                     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
-                     .attr('cy', function (d) { return yt(+d.dvalue); });
+                //topClip.selectAll('.dot')
+                //     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
+                //     .attr('cy', function (d) { return yt(+d.dvalue); });
 
                 var
                     minExtent = d3.time.day(brushd.extent()[0])

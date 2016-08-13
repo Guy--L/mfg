@@ -84,8 +84,8 @@
         var xDateAxis = d3.svg.axis()
             .scale(x)
             .orient('bottom')
-            .ticks(d3.time.days, 1)
-            .tickFormat(d3.time.format('%a %d'))
+            .ticks(d3.time.years, 1)
+            .tickFormat(d3.time.format('%Y'))
             .tickSize(6, 0, 0);
 
         var xMonthAxis = d3.svg.axis()
@@ -112,24 +112,67 @@
             .attr('class', 'runtip')
             .style('opacity', 0);
 
-        //var loading = chart
-        //    .append('text')
-        //    .text('loading...')
-        //    .attr('font-size', 26);
+        var loading = chart
+            .append('text')
+            .text('loading...')
+            .attr('x', width / 2)
+            .attr('y', height / 2)
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'central')
+            .attr('font-size', 26)
+            .style('opacity', 0);
 
         var offset = .5 * y(1) + 0.5;
 
         function drill(d) {
             var r = d3.select(this);
+            main.selectAll('.allItem')
+                .on('click', null)
+                .on('mouseover', null)
+                .on('mouseout', null);
+
             //r.classed('chosen', !r.classed('chosen'));
             r.classed('chosen', true);
             d.class = r.attr('class');
             console.log('run begin: ' + d.begin + ' - ' + d.end);
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+            loading
+                .style('opacity', .9)
+                .attr('x', x(d.begin))
+                .attr('y', y(d.laneid));
             rundetail(d, d3.select(this.parentNode));
         }
 
         var formatrTime = d3.time.format("%y/%m/%d %H:%M");
         var formatsTime = d3.time.format("%m/%d %H:%M");
+
+        function runtip(d) {
+            var hi = d3.select(this);
+            var hiColor = d3.rgb(gels(d.geltype)).brighter(2);
+            var text = formatrTime(d.begin)
+                + " - " + formatsTime(d.end) + '<br />'
+                + d.productcode + ' ' + d.productspec + '<br />' + (d.comment==null?'':d.comment);
+            hi.style('stroke', hiColor);
+            var hi2Color = d3.rgb(hiColor).brighter(2);
+            div.transition()
+                .duration(200)
+                .style('opacity', .9)
+                .style('background', hi2Color)
+                .style('border-color', hiColor);
+            div.html(text)
+                .style("left", (d3.event.pageX) - margin.left - 60 + "px")
+                .style("top", (d3.event.pageY - 70) - margin.top + "px");
+        }
+
+        function unruntip(d) {
+            var hi = d3.select(this);
+            hi.style('stroke', gels(d.geltype));
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+        }
 
         main.append('g').selectAll('.allItem')
             .data(items)
@@ -144,46 +187,36 @@
             .style('stroke-width', function (d) { return d.productwidth / 2; })
             .attr('title', function (d) { return d.productcode + ' ' + d.productspec })
             .on('click', drill)
-            .on("mouseover", function (d) {
-                var hi = d3.select(this);
-                var hiColor = d3.rgb(gels(d.geltype)).brighter(2);
-                hi.style('stroke', hiColor);
-                hiColor = d3.rgb(hiColor).brighter(2);
-                div.transition()
-                    .duration(200)
-                    .style('opacity', .9)
-                    .style('background', hiColor);
-                div.html(formatrTime(d.begin) + " - " + formatsTime(d.end) + '<br />' + d.productcode + ' ' + d.productspec + '<br />(' + d.id + ')<br />'+d.comment)
-                    .style("left", (d3.event.pageX) - margin.left - 60 + "px")
-                    .style("top", (d3.event.pageY - 70) - margin.top + "px");
-            })
-            .on("mouseout", function (d) {
-                var hi = d3.select(this);
-                hi.style('stroke', gels(d.geltype));
-                div.transition()
-                    .duration(500)
-                    .style("opacity", 0);
+            .on("mouseover", runtip)
+            .on("mouseout", unruntip);
+
+        main.append('text')
+            .attr('x', 0)
+            .attr('id', 'topexit')
+            .attr('class', 'reicon')
+            .attr('text-anchor', 'middle')
+            .attr('dominant-baseline', 'central')
+            .text('\uf057')
+            .on('click', function () {
+                chart.remove();
+                $(document).trigger('historyexit');
             });
 
-        // Define the div for the tooltip
         $(document).on('detailexit', function (e) {
             main.attr('opacity', 1);
-
             d3.select('#clip').select('rect').attr('height', allHeight);
-
-            main.selectAll('.mainItem').on('click', drill);  // drill
+            main.selectAll('.allItem')
+                .on('click', drill)
+                .on('mouseover', runtip)
+                .on('mouseout', unruntip);
         });
-
 
         function detailenter(item) {
             main.attr('opacity', 0);
-            main.selectAll('.mainItem').on('click', null);  // drill
-
             specview(item);
         }
 
         function rundetail(item, rungroup) {
-            //loading.style('opacity', 1);
 
             if (!item.hasOwnProperty('details')) {
                 xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
@@ -191,17 +224,20 @@
 
                     detailenter(item);
 
-                    //loading.text('rendering...').style('opacity', 0);
+                    loading.style('opacity', 0);
                 }).fail(function (msg) {
                     console.log('rundetail fail');
                     console.log(msg);
-
-                    //loading.text('failed to load')
-                    //    .attr('stroke', 'red');
+                    main.selectAll('.allItem')
+                        .on('click', drill)
+                        .on('mouseover', runtip)
+                        .on('mouseout', unruntip);
+                    loading.text('failed to load')
+                        .attr('stroke', 'red');
                 });
             } else {
                 detailenter(item);
-                //loading.style('opacity', 0);
+                loading.style('opacity', 0);
             }
         }
 
@@ -423,23 +459,22 @@
 
                 top.select('.main.axis.value').call(ytTagAxis);
 
-                //top.selectAll('.dataline').remove();
-                //top.append('path')
-                //    .datum(lanes[channel].series)
-                //    .attr('d', dataline)
-                //    .attr('class', 'dataline')
-                //    .attr('clip-path', 'url(#clip)');
+                top.selectAll('.dataline').remove();
+                top.append('path')
+                    .datum(lanes[channel].series)
+                    .attr('d', dataline)
+                    .attr('class', 'dataline')
+                    .attr('clip-path', 'url(#clip)');
 
+                //topClip.selectAll('.dot').remove();
 
-                topClip.selectAll('.dot').remove();
-
-                topClip.selectAll('.dot')
-                     .data(lanes[channel].series, function (d) { return d.prdid; })
-                   .enter().append('circle')
-                     .attr('class', 'dot')
-                     .attr('r', 1)
-                     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
-                     .attr('cy', function (d) { return yt(+d.dvalue); });
+                //topClip.selectAll('.dot')
+                //     .data(lanes[channel].series, function (d) { return d.prdid; })
+                //   .enter().append('circle')
+                //     .attr('class', 'dot')
+                //     .attr('r', 1)
+                //     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
+                //     .attr('cy', function (d) { return yt(+d.dvalue); });
 
                 top.selectAll('.limitline').remove();
                 top.selectAll('.limitline')
@@ -457,8 +492,8 @@
             function brushed() {
                 xt.domain(brushd.empty() ? xb.domain() : brushd.extent());
 
-                //top.selectAll('.dataline').remove();
-                //top.select('.dataline').attr('d', dataline);
+                top.selectAll('.dataline').remove();
+                top.select('.dataline').attr('d', dataline);
 
                 topClip.selectAll('.dot')
                      .attr('cx', function (d) { return xt(new Date(d.epoch)); })
