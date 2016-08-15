@@ -1,4 +1,14 @@
-﻿function alllines(id) {
+﻿function limitrender(limit) {
+    return [
+        { 'level': limit.LoLo, 'cls': 'outofspec' },
+        { 'level': limit.Lo, 'cls': 'outofcontrol' },
+        { 'level': limit.Aim, 'cls': 'target' },
+        { 'level': limit.Hi, 'cls': 'outofcontrol' },
+        { 'level': limit.HiHi, 'cls': 'outofspec' }
+    ];
+}
+
+function alllines(id) {
 
     if ($(id).children().length > 0)
         d3.select(id).selectAll('svg').remove();
@@ -42,26 +52,26 @@
 
         //d3.select(id).remove();
 
-        var chart = d3.select(id)
+        var graph = d3.select(id)
             .append('svg:svg')
             .attr('width', width + margin.right + margin.left)
             .attr('height', height + margin.top + margin.bottom)
             .attr('class', 'chart');
 
 
-        chart.append('defs').append('clipPath')
+        graph.append('defs').append('clipPath')
             .attr('id', 'clip')
             .append('rect')
                 .attr('width', width)
                 .attr('height', allHeight);
 
-        var main = chart.append('g')
+        var main = graph.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
             .attr('width', width)
             .attr('height', allHeight)
             .attr('class', 'main');
 
-        // draw the lanes for the main chart
+        // draw the lanes for the main graph
         main.append('g').selectAll('.laneLines')
             .data(lanes)
             .enter().append('line')
@@ -112,7 +122,7 @@
             .attr('class', 'runtip')
             .style('opacity', 0);
 
-        var loading = chart
+        var loading = graph
             .append('text')
             .text('loading...')
             .attr('x', width / 2)
@@ -134,7 +144,6 @@
             //r.classed('chosen', !r.classed('chosen'));
             r.classed('chosen', true);
             d.class = r.attr('class');
-            console.log('run begin: ' + d.begin + ' - ' + d.end);
             div.transition()
                 .duration(500)
                 .style("opacity", 0);
@@ -152,7 +161,7 @@
             var hi = d3.select(this);
             var hiColor = d3.rgb(gels(d.geltype)).brighter(2);
             var text = formatrTime(d.begin)
-                + " - " + formatsTime(d.end) + '<br />'
+                + " - " + formatsTime(d.end) + '<br />(' + d.id + ')<br />'
                 + d.productcode + ' ' + d.productspec + '<br />' + (d.comment==null?'':d.comment);
             hi.style('stroke', hiColor);
             var hi2Color = d3.rgb(hiColor).brighter(2);
@@ -162,7 +171,7 @@
                 .style('background', hi2Color)
                 .style('border-color', hiColor);
             div.html(text)
-                .style("left", (d3.event.pageX) - margin.left - 60 + "px")
+                .style("left", x(d.begin) + margin.left + 50 + "px")
                 .style("top", (d3.event.pageY - 70) - margin.top + "px");
         }
 
@@ -191,14 +200,14 @@
             .on("mouseout", unruntip);
 
         main.append('text')
-            .attr('x', 0)
+            .attr('x', -25)
             .attr('id', 'topexit')
             .attr('class', 'reicon')
             .attr('text-anchor', 'middle')
             .attr('dominant-baseline', 'central')
             .text('\uf057')
             .on('click', function () {
-                chart.remove();
+                graph.remove();
                 $(document).trigger('historyexit');
             });
 
@@ -217,7 +226,6 @@
         }
 
         function rundetail(item, rungroup) {
-
             if (!item.hasOwnProperty('details')) {
                 xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
                     item.details = details;
@@ -250,24 +258,15 @@
             return [top, bottom];
         }
 
-        function limitrender(limit) {
-            return [
-                { 'level': limit.LoLo, 'cls': 'outofspec' },
-                { 'level': limit.Lo, 'cls': 'outofcontrol' },
-                { 'level': limit.Aim, 'cls': 'target' },
-                { 'level': limit.Hi, 'cls': 'outofcontrol' },
-                { 'level': limit.HiHi, 'cls': 'outofspec' }
-            ];
-        }
-
         function specview(data) {
             var channel = 0;
             var lanes = data.details;
             var bottomHeight = lanes.length * 6 + 50;
             var topHeight = height - bottomHeight - 50 - 300;
-
+            var statHeight = height - bottomHeight - topHeight - 100;
+           
             var xb = d3.time.scale()
-                .domain([d3.time.sunday(data.begin), data.end])
+                .domain([data.begin, data.end])
                 .range([0, width]);
             var xt = d3.time.scale()
                 .range([0, width]);
@@ -278,19 +277,25 @@
             var yt;
             var ytTagAxis;
 
-            var top = chart.append('g')
+            var top = graph.append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                 .attr('width', width)
                 .attr('height', topHeight)
                 .attr('class', 'top');
 
-            var bottom = chart.append('g')
+            var bottom = graph.append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + (topHeight + 60) + ')')
                 .attr('width', width)
                 .attr('height', bottomHeight)
                 .attr('class', 'bottom');
 
-            // draw the lanes for the mini chart
+            var stat = graph.append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + (topHeight + bottomHeight + 100) + ')')
+                .attr('width', width)
+                .attr('height', statHeight)
+                .attr('class', 'stat');
+
+            // draw the lanes for the mini graph
             bottom.append('g').selectAll('.laneLines')
                 .data(lanes)
                 .enter().append('line')
@@ -355,13 +360,22 @@
                 .attr('class', 'main axis date')
                 .call(xtDateAxis);
 
+            d3.select('#clip').select('rect').attr('height', topHeight);
+            var topClip = top.append('g')
+                .attr('clip-path', 'url(#clip)');
+
             var dataline = d3.svg.line()
                 .x(function (d) { return xt(new Date(d.epoch)); })
                 .y(function (d) { return yt(+d.dvalue); });
 
-            d3.select('#clip').select('rect').attr('height', topHeight);
-            var topClip = top.append('g')
-                .attr('clip-path', 'url(#clip)');
+            var chart = new Chart({
+                element: document.querySelector('.stat'),
+                data: lanes[channel].series.map(function (d) { return d.dvalue; }),
+                limits: limitrender(lanes[channel].limit),
+                bins: 20,
+                width: width,
+                height: statHeight
+            });
 
             switched();
             top.append('g')
@@ -387,6 +401,7 @@
                 .on('click', function () {
                     bottom.remove();
                     top.remove();
+                    stat.remove();
                     $(document).trigger('detailexit');
                 });
 
@@ -402,14 +417,6 @@
                 .selectAll('text')
                     .attr('dx', 5)
                     .attr('dy', 12);
-
-            // invisible hit area to move around the selection window
-            bottom.append('rect')
-                .attr('pointer-events', 'painted')
-                .attr('width', width)
-                .attr('height', bottomHeight)
-                .attr('visibility', 'hidden')
-                .on('mouseup', moveBrushd);
 
             var trace = bottom.selectAll('.trace')
                 .data(lanes)
@@ -431,10 +438,18 @@
                 .attr('y1', 0)
                 .attr('y2', 0);
 
+            // invisible hit area to move around the selection window
+            bottom.append('rect')
+                .attr('pointer-events', 'painted')
+                .attr('width', width)
+                .attr('height', bottomHeight)
+                .attr('visibility', 'hidden')
+                .on('mouseup', moveBrushd);
+
             // draw the selection area
             var brushd = d3.svg.brush()
                 .x(xb)
-                .extent([d3.time.monday(focal), d3.time.saturday.ceil(focal)])
+                .extent([data.begin, data.end])
                 .on('brush', brushed);
 
             bottom.append('g')
@@ -444,6 +459,7 @@
                     .attr('y', 1)
                     .attr('height', bottomHeight - 1);
 
+            bottom.selectAll('rect.background').remove();
             brushed();
 
             function switched() {
@@ -487,21 +503,22 @@
                     .attr('x2', width)
                     .attr('y1', function (d) { return yt(+d.level); })
                     .attr('y2', function (d) { return yt(+d.level); });
+
+                chart.setData(lanes[channel].series.map(function (d) { return d.dvalue; }), limitrender(lanes[channel].limit));
             }
 
             function brushed() {
                 xt.domain(brushd.empty() ? xb.domain() : brushd.extent());
 
-                top.selectAll('.dataline').remove();
-                top.select('.dataline').attr('d', dataline);
+                top.selectAll('.dataline').attr('d', dataline);
 
                 topClip.selectAll('.dot')
                      .attr('cx', function (d) { return xt(new Date(d.epoch)); })
                      .attr('cy', function (d) { return yt(+d.dvalue); });
 
                 var
-                    minExtent = d3.time.day(brushd.extent()[0])
-                  , maxExtent = d3.time.day(brushd.extent()[1]);
+                    minExtent = brushd.extent()[0]
+                  , maxExtent = brushd.extent()[1];
 
                 bottom.select('.brushd').call(brushd.extent([minExtent, maxExtent]));
 
@@ -634,4 +651,5 @@ function collapseLanes(chart) {
 
     return { lanes: lanes, items: items };
 }
+
 

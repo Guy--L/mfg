@@ -42,25 +42,25 @@
         //d3.select(id).remove();
 
 
-        var chart = d3.select(id)
+        var graph = d3.select(id)
             .append('svg:svg')
             .attr('width', width + margin.right + margin.left)
             .attr('height', height + margin.top + margin.bottom)
             .attr('class', 'chart');
 
-        chart.append('defs').append('clipPath')
+        graph.append('defs').append('clipPath')
             .attr('id', 'clip')
             .append('rect')
                 .attr('width', width)
                 .attr('height', mainHeight);
 
-        var main = chart.append('g')
+        var main = graph.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
             .attr('width', width)
             .attr('height', mainHeight)
             .attr('class', 'main');
 
-        var mini = chart.append('g')
+        var mini = graph.append('g')
             .attr('transform', 'translate(' + margin.left + ',' + (mainHeight + 60) + ')')
             .attr('width', width)
             .attr('height', miniHeight)
@@ -218,10 +218,9 @@
         display();
 
         function display() {
-
             var rects, tracers, lines
-              , minExtent = d3.time.day(brush.extent()[0])
-              , maxExtent = d3.time.day(brush.extent()[1])
+              , minExtent = d3.time.day.round(brush.extent()[0])
+              , maxExtent = d3.time.day.round(brush.extent()[1])
               , visItems = items.filter(function (d) { return d.begin < maxExtent && d.end > minExtent });
 
             mini.select('.brush').call(brush.extent([minExtent, maxExtent]));
@@ -282,7 +281,6 @@
                 var s = mini.select('#miniItem_' + d.id);
                 s.classed('chosen', true);
 //                s.classed('chosen', !s.classed('chosen'));
-                console.log('run begin: ' + d.begin + ' - ' + d.end);
                 rundetail(d, d3.select(this.parentNode));
             }
 
@@ -388,8 +386,6 @@
                     });
                 } else {
                     detailenter(item);
-                    console.log('.');
-                    debugger;
                     item.message = false;
                     message.style('opacity', 0);
                 }
@@ -404,6 +400,7 @@
               , end = new Date(point.getTime() + halfExtent);
 
             brush.extent([begin, end]);
+
             display();
         }
 
@@ -450,7 +447,7 @@
             var topHeight = height - bottomHeight - 50;
 
             var xb = d3.time.scale()
-                .domain([d3.time.sunday(data.begin), data.end])
+                .domain([data.begin, data.end])
                 .range([0, width]);
             var xt = d3.time.scale()
                 .range([0, width]);
@@ -461,13 +458,13 @@
             var yt;
             var ytTagAxis;
 
-            var top = chart.append('g')
+            var top = graph.append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                 .attr('width', width)
                 .attr('height', topHeight)
                 .attr('class', 'top');
 
-            var bottom = chart.append('g')
+            var bottom = graph.append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + (topHeight + 60) + ')')
                 .attr('width', width)
                 .attr('height', bottomHeight)
@@ -538,15 +535,16 @@
                 .attr('class', 'main axis date')
                 .call(xtDateAxis);
 
-            var dataline = d3.svg.line()
-                .x(function (d) { return xt(new Date(d.epoch)); })
-                .y(function (d) { return yt(+d.dvalue); });
-
             d3.select('#clip').select('rect').attr('height', topHeight);
             var topClip = top.append('g')
                 .attr('clip-path', 'url(#clip)');
 
+            var dataline = d3.svg.line()
+                .x(function (d) { return xt(new Date(d.epoch)); })
+                .y(function (d) { return yt(+d.dvalue); });
+
             switched();
+
             top.append('g')
                 .attr('transform', 'translate(-1.5,0)')
                 .attr('class', 'main axis value')
@@ -586,14 +584,6 @@
                     .attr('dx', 5)
                     .attr('dy', 12);
 
-            // invisible hit area to move around the selection window
-            bottom.append('rect')
-                .attr('pointer-events', 'painted')
-                .attr('width', width)
-                .attr('height', bottomHeight)
-                .attr('visibility', 'hidden')
-                .on('mouseup', moveBrushd);
-
             var trace = bottom.selectAll('.trace')
                 .data(lanes)
               .enter().append('g')
@@ -614,10 +604,22 @@
                 .attr('y1', 0)
                 .attr('y2', 0);
 
+            // invisible hit area to move around the selection window
+            bottom.append('rect')
+                .attr('id', 'hitd')
+                .attr('pointer-events', 'painted')
+                .attr('width', width)
+                .attr('height', bottomHeight)
+                .attr('visibility', 'hidden')
+                .on('mouseup', moveBrushd);
+
             // draw the selection area
             var brushd = d3.svg.brush()
                 .x(xb)
-                .extent([d3.time.monday(focal), d3.time.saturday.ceil(focal)])
+                .extent([
+                    d3.max([data.begin, brush.extent()[0]]),
+                    d3.min([data.end, brush.extent()[1]])
+                    ])
                 .on('brush', brushed);
 
             bottom.append('g')
@@ -626,6 +628,8 @@
                 .selectAll('rect')
                     .attr('y', 1)
                     .attr('height', bottomHeight - 1);
+
+            bottom.selectAll('rect.background').remove();
 
             brushed();
 
@@ -675,18 +679,18 @@
             function brushed() {
                 xt.domain(brushd.empty() ? xb.domain() : brushd.extent());
 
-                top.selectAll('.dataline').remove();
-                top.select('.dataline').attr('d', dataline);
+                top.selectAll('.dataline').attr('d', dataline);
 
                 //topClip.selectAll('.dot')
                 //     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
                 //     .attr('cy', function (d) { return yt(+d.dvalue); });
 
                 var
-                    minExtent = d3.time.day(brushd.extent()[0])
-                  , maxExtent = d3.time.day(brushd.extent()[1]);
+                    minExtent = brushd.extent()[0]
+                  , maxExtent = brushd.extent()[1];
 
                 bottom.select('.brushd').call(brushd.extent([minExtent, maxExtent]));
+                console.log('bottom select brushd');
 
                 // julian date would be %j after %a %d and %b %e
                 if ((maxExtent - minExtent) > 1468800000) {

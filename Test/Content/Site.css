@@ -477,6 +477,7 @@ i.ctx {
     fill: blue;
 }
 
+.main text.reicon,
 .reicon {
     font-family: FontAwesome;
     font-size: 20px;
@@ -506,4 +507,16 @@ div.runtip {
     border-radius: 4px;			
     pointer-events: none;		
     opacity: 0;	
+}
+
+.axis path, .tick line {
+    fill: none;
+    stroke: #333;
+}
+
+.bar rect {
+    fill: steelblue;
+}
+.bar rect:hover {
+    fill: green;
 }
