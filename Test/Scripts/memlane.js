@@ -58,7 +58,6 @@ function alllines(id) {
             .attr('height', height + margin.top + margin.bottom)
             .attr('class', 'chart');
 
-
         graph.append('defs').append('clipPath')
             .attr('id', 'clip')
             .append('rect')
@@ -227,8 +226,8 @@ function alllines(id) {
 
         function rundetail(item, rungroup) {
             if (!item.hasOwnProperty('details')) {
-                xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
-                    item.details = details;
+                xhub.server.runDetail(item.productcode, item.productspec, item.lane, item.start, item.stop).done(function (details) {
+                    item.details = details; 
 
                     detailenter(item);
 
@@ -259,6 +258,11 @@ function alllines(id) {
         }
 
         function specview(data) {
+
+            $('#Context_Product').val(data.productcode + ' ' + data.productspec);
+            var oldtitle = $('#linestitle').html();
+            $('#linestitle').html('<h3>Detail of ' + data.lane + ' between ' + data.stamp.replace('T', ' ') + ' and ' + data.endstamp.replace('T', ' ') + '</h3>');
+
             var channel = 0;
             var lanes = data.details;
             var bottomHeight = lanes.length * 6 + 50;
@@ -402,6 +406,7 @@ function alllines(id) {
                     bottom.remove();
                     top.remove();
                     stat.remove();
+                    $('#linestitle').html(oldtitle);
                     $(document).trigger('detailexit');
                 });
 
@@ -512,9 +517,9 @@ function alllines(id) {
 
                 top.selectAll('.dataline').attr('d', dataline);
 
-                topClip.selectAll('.dot')
-                     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
-                     .attr('cy', function (d) { return yt(+d.dvalue); });
+                //topClip.selectAll('.dot')
+                //     .attr('cx', function (d) { return xt(new Date(d.epoch)); })
+                //     .attr('cy', function (d) { return yt(+d.dvalue); });
 
                 var
                     minExtent = brushd.extent()[0]
@@ -553,7 +558,10 @@ function alllines(id) {
                 brushed();
             }
         }
+
+        $('#linesloading').hide();
     }).fail(function (e) {
+        $('#linesloading').val('Failed to load history');
         console.log('fail');
         console.log(e);
     });

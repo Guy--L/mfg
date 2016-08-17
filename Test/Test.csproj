@@ -567,7 +567,6 @@
     <Content Include="Scripts\flotr2.js" />
     <Content Include="Scripts\flotr2.min.js" />
     <Content Include="Scripts\flotr2.nolibs.js" />
-    <Content Include="Scripts\histogram-chart.js" />
     <Content Include="Scripts\html2canvas.js" />
     <Content Include="Scripts\d3\README.md" />
     <Content Include="Scripts\d3\LICENSE" />
@@ -607,7 +606,6 @@
     <Content Include="Scripts\randomData.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\specheck.js" />
     <Content Include="Scripts\memlane.js" />
     <Content Include="Scripts\swimlane.js" />
     <Content Include="Scripts\TwitterBootstrapMvcJs.js" />

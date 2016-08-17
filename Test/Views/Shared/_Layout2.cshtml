@@ -100,6 +100,7 @@
             xhub = $.connection.contextHub;
 
             function ctxUpdate(ctx) {
+                console.log(ctx);
                 prd.val(ctx.Product);
                 lot.val(ctx.LotNum);
 
@@ -152,9 +153,11 @@
                 }
             });
             $('i#producticon').on('click', function (e) {
+                console.log('ip');
                 xhub.server.clear().done(ctxUpdate);
             });
             $('i#loticon').on('click', function (e) {
+                console.log('il');
                 xhub.server.clearSample().done(ctxUpdate);
             });
         });

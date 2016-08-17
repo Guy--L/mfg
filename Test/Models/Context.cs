@@ -85,6 +85,7 @@ namespace Test.Models
         public string Product { get; set; }
         public string LotNum { get; set; }
 
+        public List<TagSample> samples { get; set; }
         public List<int> Statistics { get; set; }
 
         public string SampleCnt { get { return Statistics?[0].ToString() + ' '; } }
@@ -95,6 +96,7 @@ namespace Test.Models
 
         public int LaneId {
             get {
+                if (LotNum == null) return 0;
                 return Line.all[LotNum.Substring(5, 1)+'-'+LotNum.Substring(6, 1)];
             }
         }

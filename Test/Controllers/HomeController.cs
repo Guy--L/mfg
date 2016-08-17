@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ClosedXML.Excel;
 using Test.Models;
 using Test.Properties;
 
@@ -220,19 +222,6 @@ namespace Test.Controllers
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult RunDetail(int id, string group, long start, long end)
-        {
-            var samples = TagSample.Span(group, start.FromJSMSecs(), end.FromJSMSecs());
-
-            var data = samples.Select(r => new
-            {
-                id = id,
-                series = r.series,
-                limit = r.limit
-            });
-            return Json(data, JsonRequestBehavior.AllowGet);
-        }
-
         public ActionResult Casings()
         {
             Casings s = new Casings(_top.ProductCodeId);
@@ -331,6 +320,31 @@ namespace Test.Controllers
             var load = Models.CasingSamples.ReadExcel(file.InputStream, true, DateTime.Now.Year);
 
             return Content(load.Item2.Value.ToString("MM/dd HH:mm") + "\t" + load.Item1);
+        }
+
+        [DeleteFile]
+        [HttpPost]
+        public ActionResult GetSpreadSheet(Context ctx)
+        {
+            if (_top == null)
+                return Json(new { status = "error", message = "context not found" });
+
+            if (_top.samples == null)
+                return Json(new { status = "error", message = "no samples attached to context" });
+
+            var wb = new XLWorkbook();
+
+            _top.samples.Select(w => w.Export(wb, ctx.Start, ctx.End)).ToList();
+            Debug.WriteLine(ctx.Product + ": " + ctx.Start + "-" + ctx.End);
+            Stream stream = new MemoryStream();
+            wb.SaveAs(stream);
+
+            stream.Position = 0;
+            //Session["chart"] = chart;
+            return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            {
+                FileDownloadName = ctx.Product.Replace(' ','_') + "_" + ctx.Start.ToShortDateString() + "_" + ctx.End.ToShortDateString() + ".xlsx"
+            };
         }
     }
 }

@@ -101,6 +101,7 @@ namespace Test.Models
             { "csg_glyc_pct", "Glycerin" }
         };
 
+        [ResultColumn] public string devname { get; set; }
         [ResultColumn] public string tagname { get; set; }
         public string label { get { return _labels[tagname]; } }
         

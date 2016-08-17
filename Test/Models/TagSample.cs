@@ -2,15 +2,21 @@
 using System.Linq;
 using System.Collections.Generic;
 using NPoco;
+using System.IO;
+using ClosedXML.Excel;
 
 namespace Test.Models
 {
     public class Value : All
     {
-        [ResultColumn] public long prdid { get; set; }
-        [ResultColumn] public double? dvalue { get; set; }
-        [ResultColumn] public long epoch { get; set; }
-        [ResultColumn] public int ctrl { get; set; }
+        [ResultColumn]
+        public long prdid { get; set; }
+        [ResultColumn]
+        public double? dvalue { get; set; }
+        [ResultColumn]
+        public long epoch { get; set; }
+        [ResultColumn]
+        public int ctrl { get; set; }
 
         public string print()
         {
@@ -20,10 +26,14 @@ namespace Test.Models
 
     public class Trace
     {
-        [ResultColumn] public int tagid { get; set; }
-        [ResultColumn] public long start { get; set; }
-        [ResultColumn] public long stop { get; set; }
-        [ResultColumn] public int ctl { get; set; }
+        [ResultColumn]
+        public int tagid { get; set; }
+        [ResultColumn]
+        public long start { get; set; }
+        [ResultColumn]
+        public long stop { get; set; }
+        [ResultColumn]
+        public int ctl { get; set; }
     }
 
     public class TagSample
@@ -61,7 +71,7 @@ namespace Test.Models
         ";
 
         private static string _linesample = @";
-            declare @@tags table (tagid int, tagname varchar(64), limitid int, stamp datetime, lolo float, lo float, aim float, hi float, hihi float)    
+            declare @@tags table (tagid int, devname varchar(64), tagname varchar(64), limitid int, stamp datetime, lolo float, lo float, aim float, hi float, hihi float)    
             declare @@vals table (prdid bigint, tagid int, dvalue float, epoch bigint, stamp datetime, ctrl int)
             
             ;with asof as (
@@ -70,7 +80,7 @@ namespace Test.Models
                 where stamp <= @1
             )
             insert into @@tags 
-            select t.tagid, t.name as tagname, m.limitid, m.stamp, m.lolo, m.lo, m.aim, m.hi, m.hihi
+            select t.tagid, d.name as devname, t.name as tagname, m.limitid, m.stamp, m.lolo, m.lo, m.aim, m.hi, m.hihi
             from tag t
             left join asof m on m.tagid = t.tagid
             left join asof n on n.tagid = m.tagid and n.stamp > m.stamp
@@ -123,7 +133,9 @@ namespace Test.Models
             select prdid, tagid, dvalue, epoch, stamp, ctrl 
             from @@vals
             order by tagid, stamp
+        ";
 
+        private static string _trace = @"
             ;with a as (
                 select tagid
                     , abs(ctrl) as ctl
@@ -199,14 +211,52 @@ namespace Test.Models
             }
         }
 
-        public TagSample(Limit _limit, List<Value> values, List<Trace> xs, DateTime _start, DateTime _end)
+        public TagSample(Limit _limit, List<Value> values, DateTime _start, DateTime _end)
         {
             Label = _limit.label;
             limit = _limit;
             series = values;
-            xspec = xs;
             Start = _start;
             End = _end;
+        }
+
+        public int Export(XLWorkbook wb, DateTime start, DateTime end)
+        {
+            int tot = 0;
+            string path;
+
+            if (limit == null)
+                path = "tag." + (series.Any() ? series.First().TagId.ToString() : "name");
+            else
+                path = limit.devname + '.' + limit.tagname;
+
+            var ws = wb.Worksheets.Add(path);
+            IEnumerable<Value> all = series;
+
+            if (start != null)
+                all = all.Where(d => d.Stamp >= start);
+
+            if (end != null)
+                all = all.Where(d => d.Stamp <= end);
+
+            all.Select((d, i) =>
+            {
+                ws.Row(i + 1).Cell(1).SetValue<DateTime>(d.Stamp);
+                ws.Row(i + 1).Cell(2).SetValue<double>(d.dvalue ?? 0.0);
+                return i;
+            }).ToList();
+
+            if (limit != null)
+            {
+                var wl = wb.Worksheets.Add(path + "_limits");
+                wl.Row(1).Cell(1).SetValue<DateTime>(limit.Stamp);
+                wl.Row(1).Cell(2).SetValue<double>(limit.LoLo);
+                wl.Row(1).Cell(3).SetValue<double>(limit.Lo);
+                wl.Row(1).Cell(4).SetValue<double>(limit.Aim);
+                wl.Row(1).Cell(5).SetValue<double>(limit.Hi);
+                wl.Row(1).Cell(6).SetValue<double>(limit.HiHi);
+            }
+            return tot;
         }
 
         public static List<TagSample> Span(string channel, DateTime start, DateTime end)
@@ -217,16 +267,14 @@ namespace Test.Models
             {
                 try
                 {
-                    var results = t.FetchMultiple<Limit, Value, Trace>(_linesample, channel, start.ToStamp(), end.ToStamp(), 10);
+                    var results = t.FetchMultiple<Limit, Value>(_linesample, channel, start.ToStamp(), end.ToStamp(), 10);
                     var series = results.Item2.ToLookup(k => k.TagId, v => v);
-                    var xspec = results.Item3.ToLookup(k => k.tagid, v => v);
                     tagsamples = results.Item1.Select(
                         n => new TagSample(n,
                                         series[n.TagId].ToList(),
-                                        xspec[n.TagId].ToList(),
                                         start,
                                         end)).ToList();
-                    
+
                 }
                 catch (Exception e)
                 {

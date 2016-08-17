@@ -289,6 +289,8 @@
                 mini.attr('opacity', 1);
 
                 d3.select('#clip').select('rect').attr('height', mainHeight);
+                $('li.download').hide();
+                $('li.download').on('click', null);
 
                 mini.select('#hit').on('mouseup', moveBrush);    // moveBrush
                 brush.on('brush', display);                      // display
@@ -354,6 +356,12 @@
 
             console.log('display completed');
 
+            function xlscallback(data)
+            {
+                console.log('called back');
+                console.log(data);
+            }
+
             function detailenter(item) {
                 main.attr('opacity', 0);
                 mini.attr('opacity', 0);
@@ -362,6 +370,7 @@
                 main.selectAll('.mainItem').on('click', null);  // drill
 
                 specview(item);
+                $('li.download').show();
             }
 
             function rundetail(item, rungroup) {
@@ -370,7 +379,8 @@
                 message.style('opacity', 1);
 
                 if (!item.hasOwnProperty('details')) {
-                    xhub.server.runDetail(item.lane, item.start, item.stop).done(function (details) {
+                    console.log(item.productcode, item.productspec, item.lane, item.start, item.stop);
+                    xhub.server.runDetail(item.productcode, item.productspec, item.lane, item.start, item.stop).done(function (details) {
                         item.details = details;
 
                         detailenter(item);
@@ -382,7 +392,7 @@
                         console.log(msg);
 
                         message.text('failed to load')
-                            .attr('stroke', 'red');
+                            .style('stroke', 'red');
                     });
                 } else {
                     detailenter(item);
@@ -630,6 +640,11 @@
                     .attr('height', bottomHeight - 1);
 
             bottom.selectAll('rect.background').remove();
+
+            $('#getdetail').on('click', function (e) {
+                $('input#Context_Start').val(brushd.extent()[0]);
+                $('input#Context_End').val(brushd.extent()[1]);
+            });
 
             brushed();
 

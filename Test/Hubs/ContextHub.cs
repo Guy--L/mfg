@@ -33,13 +33,19 @@ namespace Test.Hubs
             return runs;
         }
 
-        public List<TagSample> RunDetail(string channel, long start, long end)
+        public List<TagSample> RunDetail(string code, string spec, string channel, long start, long end)
         {
             var samples = TagSample.Span(channel, start.FromJSMSecs(), end.FromJSMSecs());
 
             //Debug.WriteLine(string.Join("\n", samples[1].series.Select(r =>r.print()).ToArray()));
 
             samples.Select((s, i) => { s.id = i; return true; }).ToList();
+
+            Context ctx = new Context(code, spec);
+            ctx.ConnectionId = Context.ConnectionId;
+            contexts.AddOrUpdate(Context.User.Identity.Name, ctx, (k, v) => ctx);
+
+            ctx.samples = samples;
 
             return samples;
         }
@@ -93,7 +99,7 @@ namespace Test.Hubs
                 return null;
 
             ctx.ConnectionId = Context.ConnectionId;
-            ctx.LotNum = "";
+            ctx.LotNum = null;
             ctx.SampleId = 0;
             contexts.AddOrUpdate(Context.User.Identity.Name, ctx, (k, v) => ctx);
             return ctx;

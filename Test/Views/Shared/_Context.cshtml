@@ -18,6 +18,8 @@
 @Html.Hidden("Context_ConnectionId", @Model.ConnectionId, new { @id = "Context_ConnectionId" })
 @Html.Hidden("Context_ProductCodeId", @Model.ProductCodeId, new { @id = "Context_ProductCodeId" })
 @Html.Hidden("Context_SampleId", @Model.SampleId, new { @id = "Context_SampleId" })
+@Html.Hidden("Context_Start", Model.Start, new { @id = "Context_Start" })
+@Html.Hidden("Context_End", Model.End, new { @id = "Context_End" })
 
 @using (var form = Html.Bootstrap().Begin(new Form().Id("contextform").Type(FormType.Inline).Class("navbar-form navbar-right")))
 {
