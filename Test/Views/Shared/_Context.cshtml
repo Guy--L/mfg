@@ -24,7 +24,7 @@
 @using (var form = Html.Bootstrap().Begin(new Form().Id("contextform").Type(FormType.Inline).Class("navbar-form navbar-right")))
 {
     <i class='ctxicon fa fa-gift text-@icolor(Model.ProductCodeId)' id='producticon' rel='tooltip' data-placement='bottom' @ShowIfFound(Model.ProductCodeId)></i>
-    @form.FormGroup().TextBox("Context_Product").Value(Model.Product).Size(InputSize.Small).Id("Context_Product").Placeholder("Product Code").Tooltip(producttip).Label().Class("sr-only")
+    @form.FormGroup().TextBox("Context_Product").Value(Model.Product).Id("Context_Product").Placeholder("Product Code").Tooltip(producttip).Label().Class("sr-only")
     <i class='ctxicon fa fa-barcode text-@icolor(Model.SampleId)' id='loticon' rel='tooltip' data-placement='bottom' @ShowIfFound(Model.SampleId)></i>
-    @form.FormGroup().TextBox("Context_LotNum").Value(Model.LotNum).Size(InputSize.Small).Id("Context_LotNum").Placeholder("Lot Number").Tooltip(lottip).Label().Class("sr-only")
+    @form.FormGroup().TextBox("Context_LotNum").Value(Model.LotNum).Id("Context_LotNum").Placeholder("Lot Number").Tooltip(lottip).Label().Class("sr-only")
 }

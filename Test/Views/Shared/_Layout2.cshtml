@@ -72,7 +72,7 @@
         var xhub;
         var pcodepattern = /^(1[3-9]|2\d|3[0-2])[ABCDEGHJPRTX]\d\dR?( (I ?|\d)\d{3})?$/i;
         var lotpattern = /^(F|B)?\d[0-3]\d[0-6][ABCD][1-8]00[0-6]$/i;
-        
+
         $.fn.founded = function (isfound) {
             if ($(this).is('input')) {
                 $(this).css('background-color', isfound ? '#CBFFC0' : 'pink');
@@ -90,8 +90,10 @@
             }
             return $(this);
         }
-        
+
         $(function () {
+            $('#contextform div.form-group').attr('class', 'form-group');
+
             var lot = $('input#Context_LotNum');
             var prd = $('input#Context_Product');
             var prdi = $('#producticon');

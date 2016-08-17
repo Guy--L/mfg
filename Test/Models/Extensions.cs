@@ -22,6 +22,10 @@ namespace Test.Models
             return new DateTime((tm * 10000) + DatetimeMinTimeTicks).ToUniversalTime();
         }
 
+        public static DateTime FromJSMSecsLocal(this long tm)
+        {
+            return new DateTime((tm * 10000) + DatetimeMinTimeTicks).ToLocalTime();
+        }
 
         public static string ToSStamp(this DateTime stamp)
         {

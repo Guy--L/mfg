@@ -520,3 +520,7 @@ div.runtip {
 .bar rect:hover {
     fill: green;
 }
+
+li.download {
+    padding-top: 15px;
+}

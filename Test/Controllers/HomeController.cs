@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -324,7 +323,7 @@ namespace Test.Controllers
 
         [DeleteFile]
         [HttpPost]
-        public ActionResult GetSpreadSheet(Context ctx)
+        public ActionResult GetSpreadSheet(string Product, long Start, long End)
         {
             if (_top == null)
                 return Json(new { status = "error", message = "context not found" });
@@ -333,9 +332,10 @@ namespace Test.Controllers
                 return Json(new { status = "error", message = "no samples attached to context" });
 
             var wb = new XLWorkbook();
+            var a = Start.FromJSMSecsLocal();
+            var b = End.FromJSMSecsLocal();
 
-            _top.samples.Select(w => w.Export(wb, ctx.Start, ctx.End)).ToList();
-            Debug.WriteLine(ctx.Product + ": " + ctx.Start + "-" + ctx.End);
+            _top.samples.Select(w => w.Export(wb, a, b)).ToList();
             Stream stream = new MemoryStream();
             wb.SaveAs(stream);
 
@@ -343,7 +343,7 @@ namespace Test.Controllers
             //Session["chart"] = chart;
             return new FileStreamResult(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             {
-                FileDownloadName = ctx.Product.Replace(' ','_') + "_" + ctx.Start.ToShortDateString() + "_" + ctx.End.ToShortDateString() + ".xlsx"
+                FileDownloadName = Product.Replace(' ','_') + "_" + a.ToString("yyyy-MM-dd-HH-mm") + "_" + b.ToString("yyyy-MM-dd-HH-mm") + ".xlsx"
             };
         }
     }

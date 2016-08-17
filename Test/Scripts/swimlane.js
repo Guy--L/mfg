@@ -642,8 +642,9 @@
             bottom.selectAll('rect.background').remove();
 
             $('#getdetail').on('click', function (e) {
-                $('input#Context_Start').val(brushd.extent()[0]);
-                $('input#Context_End').val(brushd.extent()[1]);
+                $('input#Product').val(data.productcode + ' ' + data.productspec);
+                $('input#Start').val(brushd.extent()[0].getTime());
+                $('input#End').val(brushd.extent()[1].getTime());
             });
 
             brushed();
