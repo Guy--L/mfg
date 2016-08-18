@@ -294,6 +294,7 @@ namespace Test.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult UploadCasing(HttpPostedFileBase file)
         {
             if (!ModelState.IsValid || file == null)
