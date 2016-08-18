@@ -2,8 +2,10 @@
 
     if ($(id).children().length > 0)
         d3.select(id).selectAll('svg').remove();
-     
+
     xhub.server.runsEver().done(function (rets) {
+
+        console.log(rets);
 
         if (typeof rets === 'undefined')
             return;

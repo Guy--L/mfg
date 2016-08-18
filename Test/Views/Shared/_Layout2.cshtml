@@ -123,10 +123,14 @@
                     xhub.server.stats().done(ctxstats);                     // uses payload function if it exists
             };
             $.connection.hub.start().done(function () {
+                console.log('hub done');
                 if (typeof ctxstats != 'undefined' && $('input#Context_ProductCodeId').val() != 0) {
                     $('.jumbotron').hide();
                     swim('#lanes');
                 }
+            })
+            .fail(function (error) {
+                console.log('hub error '+error);
             });
             $.connection.hub.disconnected(function () {
                 setTimeout(function () {
