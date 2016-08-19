@@ -64,8 +64,14 @@ namespace Test.Models
                 if (_instance==this)
                         _instance=null;
         }
-				        
-		public class Record<T> where T:new()
+
+        protected override void OnException(Exception e)
+        {
+            base.OnException(e);
+            e.Data["LastSQL"] = LastSQL;
+        }
+
+        public class Record<T> where T:new()
 		{
 			public static labDB repo { get { return labDB.GetInstance(); } }
 			public bool IsNew() { return repo.IsNew(this); }

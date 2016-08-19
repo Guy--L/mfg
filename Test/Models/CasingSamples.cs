@@ -673,8 +673,10 @@ namespace Test.Models
             }
             catch (Exception e)
             {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Readexcel: ", e));
                 Debug.WriteLine("(" + current + ", " + linerpt + ", lastid: "+lastid+") exception in ReadExcel: " + e.Message);
                 Debug.WriteLine(e.StackTrace);
+                Debug.WriteLine(e.Data["LastSQL"]);
                 return null;
             }
             if (publish)

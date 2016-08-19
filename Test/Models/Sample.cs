@@ -92,9 +92,9 @@ namespace Test.Models
         ";
 
         public Sample() { }
-        public Sample(int id)
+        public Sample(int sampleid)
         {
-            SingleOrDefault(id);
+            SingleOrDefault(" where sampleid = @0", sampleid);
         }
 
         public List<Reading> readings { get; set; }
