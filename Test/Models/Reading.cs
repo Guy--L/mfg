@@ -129,7 +129,7 @@ namespace Test.Models
             Reading nr = null;
             using (labDB d = new labDB())
             {
-                nr = d.SingleOrDefaultInto(nr, " where sampleid = @0", sampleid);
+                nr = d.FirstOrDefaultInto(nr, " where sampleid = @0", sampleid);
             }
             ParameterId = parameterid;
             parameter();
