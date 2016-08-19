@@ -88,7 +88,9 @@ namespace Poster
         {
             string last = "";
 
-            HttpClient client = new HttpClient();
+            HttpClient client = new HttpClient(new HttpClientHandler() {
+                UseDefaultCredentials = true
+            });
 
             StatusLabel.Text = "uploading " + files.Length + " file" + (files.Length != 1 ? "s": "");
 
