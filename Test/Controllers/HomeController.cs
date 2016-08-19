@@ -10,6 +10,7 @@ using Test.Properties;
 
 namespace Test.Controllers
 {
+    [Authorize]
     public class HomeController : BaseController
     {
         /*
@@ -87,18 +88,21 @@ namespace Test.Controllers
             return View(top);
         }
 
+        [AllowAnonymous]
         public ActionResult SolutionBatches()
         {
             SolutionBatches s = new SolutionBatches();
             return View(s);
         }
 
+        [AllowAnonymous]
         public ActionResult SBatch(int id)
         {
             SolutionBatchView s = new SolutionBatchView(id);
             return View(s);
         }
 
+        [AllowAnonymous]
         public ActionResult StopBatch(int id)
         {
             var b = SolutionBatch.Single(id);
@@ -109,6 +113,7 @@ namespace Test.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult SaveSBatch(SolutionBatchView sbv)
         {
             sbv.b.SystemId = sbv.SysId.Value;
@@ -116,6 +121,7 @@ namespace Test.Controllers
             return RedirectToAction("SolutionBatches");
         }
 
+        [AllowAnonymous]
         public ActionResult SolutionTests(int id)
         {
             SolutionTests t = new SolutionTests();
@@ -140,6 +146,7 @@ namespace Test.Controllers
             return View(t);
         }
 
+        [AllowAnonymous]
         public ActionResult SolutionChart(int id, int group)
         {
             SolutionTests t = new SolutionTests();
@@ -153,17 +160,20 @@ namespace Test.Controllers
             return View(new SolutionChart(t, group));
         }
 
+        [AllowAnonymous]
         public ActionResult PNGCharts()
         {
             return View();
         }
 
+        [AllowAnonymous]
         public ActionResult STestNew(int bid)
         {
             SolutionTestView t = new SolutionTestView(bid);
             return View(t);
         }
 
+        [AllowAnonymous]
         public ActionResult STest(int id)
         {
             SolutionTestView t = new SolutionTestView(id);
@@ -171,12 +181,14 @@ namespace Test.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult SaveSTest(SolutionTestView tv)
         {
             tv.Save();
             return RedirectToAction("SolutionTests", new { id = tv.t.SolutionBatchId });
         }
 
+        [AllowAnonymous]
         public ActionResult Units()
         {
             using (labDB db = new labDB())
