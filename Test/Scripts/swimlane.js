@@ -5,8 +5,6 @@
 
     xhub.server.runsEver().done(function (rets) {
 
-        console.log(rets);
-
         if (typeof rets === 'undefined')
             return;
 

@@ -59,6 +59,12 @@ namespace <#=Namespace #>
                 if (_instance==this)
                         _instance=null;
         }
+
+		protected override void OnException(Exception e)
+        {
+            base.OnException(e);
+            e.Data["LastSQL"] = LastSQL;
+        }
 				        
 <# if (GenerateOperations) { #>
 		public class Record<T> where T:new()

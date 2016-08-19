@@ -90,7 +90,7 @@ namespace Test.Models
             and t.name in ('layflat_mm_pv', 'csg_moist_pct', 'csg_glyc_pct')       
             and n.limitid is null
 
-            select tagid, tagname, limitid, stamp, lolo, lo, aim, hi, hihi from @@tags
+            select tagid, devname, tagname, limitid, stamp, lolo, lo, aim, hi, hihi from @@tags
 
             insert into @@vals
             select tagid, dvalue, epoch, stamp, 

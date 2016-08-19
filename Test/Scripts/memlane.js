@@ -222,6 +222,7 @@ function alllines(id) {
         function detailenter(item) {
             main.attr('opacity', 0);
             specview(item);
+            $('li.download').show();
         }
 
         function rundetail(item, rungroup) {
@@ -465,6 +466,13 @@ function alllines(id) {
                     .attr('height', bottomHeight - 1);
 
             bottom.selectAll('rect.background').remove();
+
+            $('#getdetail').on('click', function (e) {
+                $('input#Product').val(data.productcode + ' ' + data.productspec);
+                $('input#Start').val(brushd.extent()[0].getTime());
+                $('input#End').val(brushd.extent()[1].getTime());
+            });
+
             brushed();
 
             function switched() {

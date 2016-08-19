@@ -106,6 +106,8 @@ Chart.prototype.drawHist = function () {
     //this.min = stdm.mean - 2 * stdm.deviation;
 
     this.min = d3.min(this.safedata);
+    if (typeof this.min === 'undefined')
+        return;
 
     var h = this.height,
         w = this.width,

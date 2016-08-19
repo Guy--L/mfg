@@ -6,10 +6,17 @@
 }
 
 @section actions {
-    <li class="download">
-        <button class="btn btn-xs btn-success" type="submit"><i class="fa fa-cloud-download"></i>&nbsp;Download viewed Data</button>
-    </li>
+    @using (var form = Html.Bootstrap().Begin(new Form("GetSpreadSheet", "Home").Type(FormType.Inline).Id("zoomxlsform")))
+    {
+        <li class="download">
+            @Html.Hidden("Product")
+            @Html.Hidden("Start")
+            @Html.Hidden("End")
+            <button class="btn btn-xs btn-success" type="submit" id="getdetail"><i class="fa fa-cloud-download"></i>&nbsp;xlsx</button>
+        </li>
+    }
 }
+
 
 <div class="container-fluid">
     <div class="row-fluid">
