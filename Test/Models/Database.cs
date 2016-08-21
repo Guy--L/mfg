@@ -1918,6 +1918,7 @@ namespace Test.Models
 	}
 
 	[TableName("Sample")]
+    [PrimaryKey("SampleId")]
 	[ExplicitColumns]
     public partial class Sample : labDB.Record<Sample>  
     {        [Column] 		public int SampleId 

@@ -331,6 +331,9 @@ namespace Test.Controllers
         {
             var load = Models.CasingSamples.ReadExcel(file.InputStream, true, DateTime.Now.Year);
 
+            if (load == null)
+                return Content("nothing loaded");
+
             return Content(load.Item2.Value.ToString("MM/dd HH:mm") + "\t" + load.Item1);
         }
 
