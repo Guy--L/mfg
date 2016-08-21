@@ -76,12 +76,13 @@
         $('#pngcharts').on('click', function () {
             location.href = '@Url.Action("PNGCharts","Home",null,Request.Url.Scheme)';
         });
-        $('.stest').on('click', function (e) {
+        @*$('.stest').on('click', function (e) {
             e.preventDefault();
             var id = $(this).data('id');
             id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            console.log('stest: '+id);
             location.href = '@Url.Action("SolutionTests","Home",null,Request.Url.Scheme)/' + id;
-        });
+        });*@
         $('.stopbatch').on('click', function (e) {
             e.stopPropagation();
             var id = $(this).closest('tr').data('id');
