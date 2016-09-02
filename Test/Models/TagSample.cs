@@ -267,6 +267,7 @@ namespace Test.Models
             {
                 try
                 {
+                    t.CommandTimeout = 60000;
                     var results = t.FetchMultiple<Limit, Value>(_linesample, channel, start.ToStamp(), end.ToStamp(), 10);
                     var series = results.Item2.ToLookup(k => k.TagId, v => v);
                     tagsamples = results.Item1.Select(
