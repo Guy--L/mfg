@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -79,6 +80,7 @@ namespace Test.Models
             "down for repair",
             "remain",
             "exempt", 
+            "canceled",
             "exempt moved to",
             "monday",
             "tuesday",
@@ -290,7 +292,11 @@ namespace Test.Models
                     if (solnum == "")
                         solnum = cmt.Substring(soln + 3).Split(' ')[1].Replace(",", "");
 
-                    var system = Models.System.all[solnum];
+                    solnum = solnum.Replace(".", "");
+
+                    int system;
+                    if (!Models.System.all.TryGetValue(solnum, out system))
+                        system = 0;
 
                     edits = plans.Where(p => p.SystemId == system).Select(p => p.Append(cmt)).Sum();
 
@@ -392,7 +398,10 @@ namespace Test.Models
             }
 
             var system = d[sysi].Substring(d[sysi].IndexOf('#') + 1).Replace(")", "");
-            SystemId = Models.System.all[system];
+            if (Models.System.all.ContainsKey(system))
+                SystemId = Models.System.all[system];
+            else
+                Debug.WriteLine("system not found: " + system);
 
             var color = d[coli].Substring(1, d[coli].Length - 2).ToLower().Replace("//", "/");
             int extruder = 0;
