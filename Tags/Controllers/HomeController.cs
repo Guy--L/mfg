@@ -64,7 +64,7 @@ namespace Tags.Controllers
                 return RedirectToAction("Review", "Home");
 
             ViewData["Channel"] = p.Channel;
-            var chart = new Chart(p.picked);
+            var chart = new Chart(p.picked, p.Start, p.Finish);
             Session["chart"] = chart;
             return View(chart);
         }

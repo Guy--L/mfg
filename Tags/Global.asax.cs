@@ -36,6 +36,9 @@ namespace Tags
             Tag.All();
             TagMap.projectPath = Server.MapPath("~/App_Data/XML/TestOutput.xml");
 
+            All.GetFirstStamp();
+            Past.GetFirstStamp();
+
             var config = (spc.NameValueCollection) ConfigurationManager.GetSection("quartz");
             ISchedulerFactory schedFact = new StdSchedulerFactory(config);
             // get a scheduler
@@ -69,6 +72,7 @@ namespace Tags
                 var roles = u.Roles();
                 Session["roles"] = roles.Select(r => r._Role).ToList();
             }
+            All.GetFirstStamp();
 
             //HttpContext.Current.Session["authority"] = _db.Fetch<User>(string.Format(Models.User.get_role, user)).FirstOrDefault();
         }

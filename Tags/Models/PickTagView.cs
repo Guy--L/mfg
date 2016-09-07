@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
@@ -18,6 +19,10 @@ namespace Tags.Models
                 <br />
             </div>
         ";
+
+        public DateTime Start { get; set; }
+        public DateTime Finish { get; set; }
+        public DateTime Earliest { get; set; }
 
         public string DeletedViews { get; set; }
         public bool Cancel { get; set; }
@@ -49,6 +54,10 @@ namespace Tags.Models
             var picklist = Tag.tagsByLines(id);
             charts = "";
             snippet = "";
+            Start = All.FirstStamp;
+            Finish = DateTime.Now;
+            Earliest = Past.FirstStamp;
+
             if (picklist.Any())
             {
                 Channel = string.Join(", ", picklist.Select(c => c.Channel).Distinct().ToArray());

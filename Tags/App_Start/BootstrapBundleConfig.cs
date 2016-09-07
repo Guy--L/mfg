@@ -27,6 +27,7 @@ namespace Test.App_Start
                 "~/Content/bootstrap.css",
                 "~/Content/font-awesome.css",
                 "~/Content/bootstrap-duallistbox.css",
+                "~/Content/datepicker.css",
                 "~/Content/"
                 ));
             //BundleTable.Bundles.Add(new StyleBundle("~/Content/bootstrap/theme").Include(

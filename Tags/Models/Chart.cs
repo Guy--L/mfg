@@ -56,7 +56,7 @@ namespace Tags.Models
 
         public static string _data = @"
             select TagId, Value, Stamp 
-            from [All]
+            from [Production]
             where TagId in ({0}) and Stamp >= '{1}' and Stamp <= '{2}'
                 union all
             select TagId, Value, getdate() Stamp  
@@ -157,19 +157,22 @@ namespace Tags.Models
         { }
 
         public Chart(int[] request, DateTime min) :
-            this(string.Join(",", request), min)
+            this(string.Join(",", request), min, DateTime.Now)
+        { }
+
+        public Chart(int[] request, DateTime min, DateTime max) :
+            this(string.Join(",", request), min, max)
         { }
 
         public Chart(int[] request) :
-            this(string.Join(",", request), DateTime.MinValue)
+            this(string.Join(",", request), DateTime.MinValue, DateTime.Now)
         { }
 
-        public Chart(string include) : this(include, DateTime.MinValue)
+        public Chart(string include) : this(include, DateTime.MinValue, DateTime.Now)
         { }
 
-        public Chart(string include, DateTime min)
+        public Chart(string include, DateTime min, DateTime max)
         {
-            DateTime max = DateTime.Now;
             if (min == DateTime.MinValue)
                 min = max.AddDays(-28);
 

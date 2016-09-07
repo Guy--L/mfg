@@ -191,6 +191,10 @@
       <HintPath>..\packages\T4MVCExtensions.3.17.4\lib\net40\T4MVCExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="TwitterBootstrapMVC.Eyecon.Datepicker.MVC5, Version=1.0.42.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TwitterBootstrapMVC.Eyecon.Datepicker.MVC5.1.0.42\lib\net40\TwitterBootstrapMVC.Eyecon.Datepicker.MVC5.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="TwitterBootstrapMVC5, Version=3.17.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TwitterBootstrapMVC5.3.17.1\lib\net40\TwitterBootstrapMVC5.dll</HintPath>
       <Private>True</Private>
@@ -220,6 +224,8 @@
     <Compile Include="Jobs\ChartJob.cs" />
     <Compile Include="Jobs\JobBase.cs" />
     <Compile Include="Jobs\MailJob.cs" />
+    <Compile Include="Models\Past.cs" />
+    <Compile Include="Models\All.cs" />
     <Compile Include="Models\ChannelView.cs" />
     <Compile Include="Models\LabDb.cs">
       <DependentUpon>LabDb.tt</DependentUpon>
@@ -277,6 +283,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\datepicker.css" />
     <Content Include="Content\Export\TextFile1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -333,6 +340,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Properties\PublishProfiles\Production.pubxml" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\cron.js" />
