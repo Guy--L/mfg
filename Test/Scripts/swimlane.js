@@ -274,6 +274,7 @@
                 .attr('transform', function (d) { return 'translate(0,' + (y1(d.laneid) + .1 * y1(1) + 0.5) + ')'; });
 
             function drill(d) {
+                if (d.message) return;
                 var r = d3.select(this);
                 //r.classed('chosen', !r.classed('chosen'));
                 r.classed('chosen', true);

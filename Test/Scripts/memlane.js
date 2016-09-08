@@ -139,7 +139,7 @@ function alllines(id) {
                 .on('click', null)
                 .on('mouseover', null)
                 .on('mouseout', null);
-
+            
             //r.classed('chosen', !r.classed('chosen'));
             r.classed('chosen', true);
             d.class = r.attr('class');
