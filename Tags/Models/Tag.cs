@@ -176,7 +176,7 @@ namespace Tags.Models
         }
 
         private XFactory xml;
-        public XElement node { get { return xml.node; } }
+        public XElement node { get { return xml?.node; } }
 
         public Tag()
         { }

@@ -6,7 +6,7 @@
 // 
 //     Connection String Name: `tag`
 //     Provider:               `System.Data.SqlClient`
-//     Connection String:      `Data Source=GUYLISTER3546;Initial Catalog=taglogs;Integrated Security=True;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False`
+//     Connection String:      `Data Source=GUYLISTER3546;Initial Catalog=taglogs;Integrated Security=True;Connection Timeout=120`
 //     Schema:                 `dbo`
 //     Include Views:          `True`
 
@@ -224,6 +224,15 @@ namespace Tags.Models
 		[Column] public string Type { get; set; } 		
 		[Column] public string Path { get; set; } 		
 		[Column] public string Template { get; set; } 	
+	}
+
+	[TableName("Production")]
+	[ExplicitColumns]
+    public partial class Production : tagDB.Record<Production>  
+    {		
+		[Column] public int tagid { get; set; } 		
+		[Column] public string value { get; set; } 		
+		[Column] public DateTime stamp { get; set; } 	
 	}
 
 	[TableName("Channel")]

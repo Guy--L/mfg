@@ -110,37 +110,15 @@ namespace Tags.Models
     public partial class Line : labDB.Record<Line>  
     {		
 		[Column] public int LineId { get; set; } 		
-		[Column] public string Status { get; set; } 		
 		[Column] public int? LineTankId { get; set; } 		
 		[Column] public int UnitId { get; set; } 		
-		[Column] public int LineNumber { get; set; } 	
-	}
-
-	[TableName("Unit")]
-	[PrimaryKey("UnitId")]
-	[ExplicitColumns]
-    public partial class Unit : labDB.Record<Unit>  
-    {		
-		[Column] public int UnitId { get; set; } 		
-		[Column("Unit")] public string _Unit { get; set; }
-	
-	}
-
-	[TableName("LineOperation")]
-	[ExplicitColumns]
-    public partial class LineOperation : labDB.Record<LineOperation>  
-    {		
-		[Column] public decimal INDAY { get; set; } 		
-		[Column] public string INUNIT { get; set; } 		
-		[Column] public decimal INLINE { get; set; } 		
-		[Column] public decimal INSHFT { get; set; } 		
-		[Column] public string STCODE { get; set; } 		
-		[Column] public decimal INTIME { get; set; } 		
-		[Column] public string RSCODE { get; set; } 		
-		[Column] public string INPRD { get; set; } 		
-		[Column] public DateTime? stamp { get; set; } 		
-		[Column] public int LineId { get; set; } 		
-		[Column] public int? ProductCodeId { get; set; } 	
+		[Column] public int LineNumber { get; set; } 		
+		[Column] public int? SystemId { get; set; } 		
+		[Column] public int StatusId { get; set; } 		
+		[Column] public int ProductCodeId { get; set; } 		
+		[Column] public DateTime Stamp { get; set; } 		
+		[Column] public int PersonId { get; set; } 		
+		[Column] public int ConversionId { get; set; } 	
 	}
 
 	[TableName("LineStatus")]
@@ -163,6 +141,16 @@ namespace Tags.Models
 		[Column] public string Reason { get; set; } 		
 		[Column] public DateTime Stamp { get; set; } 		
 		[Column] public int? ProductCodeId { get; set; } 	
+	}
+
+	[TableName("Unit")]
+	[PrimaryKey("UnitId")]
+	[ExplicitColumns]
+    public partial class Unit : labDB.Record<Unit>  
+    {		
+		[Column] public int UnitId { get; set; } 		
+		[Column("Unit")] public string _Unit { get; set; }
+	
 	}
 
 }

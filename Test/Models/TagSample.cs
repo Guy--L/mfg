@@ -9,14 +9,10 @@ namespace Test.Models
 {
     public class Value : All
     {
-        [ResultColumn]
-        public long prdid { get; set; }
-        [ResultColumn]
-        public double? dvalue { get; set; }
-        [ResultColumn]
-        public long epoch { get; set; }
-        [ResultColumn]
-        public int ctrl { get; set; }
+        [ResultColumn] public long prdid { get; set; }
+        [ResultColumn] public double? dvalue { get; set; }
+        [ResultColumn] public long epoch { get; set; }
+        [ResultColumn] public int ctrl { get; set; }
 
         public string print()
         {
@@ -26,14 +22,10 @@ namespace Test.Models
 
     public class Trace
     {
-        [ResultColumn]
-        public int tagid { get; set; }
-        [ResultColumn]
-        public long start { get; set; }
-        [ResultColumn]
-        public long stop { get; set; }
-        [ResultColumn]
-        public int ctl { get; set; }
+        [ResultColumn] public int tagid { get; set; }
+        [ResultColumn] public long start { get; set; }
+        [ResultColumn] public long stop { get; set; }
+        [ResultColumn] public int ctl { get; set; }
     }
 
     public class TagSample

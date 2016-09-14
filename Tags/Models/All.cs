@@ -1,10 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using NPoco;
 
 namespace Tags.Models
 {
+    public class Value : All
+    {
+        [ResultColumn] public long prdid { get; set; }
+        [ResultColumn] public double? dvalue { get; set; }
+        [ResultColumn] public long epoch { get; set; }
+        [ResultColumn] public int ctrl { get; set; }
+
+        public string print()
+        {
+            return TagId + " " + Stamp.ToStamp() + ", " + epoch + " " + dvalue;
+        }
+    }
+
     public partial class All
     {
         private static string _horizon = @"

@@ -43,6 +43,8 @@ namespace Tags.Controllers
             if (!ModelState.IsValid)
                 return RedirectToAction("Index", "Home");
 
+            p.Start = p.Start < p.Earliest ? p.Earliest : p.Start;
+
             TempData["picked"] = p;
 
             if (p.NewView != null && !string.IsNullOrWhiteSpace(p.NewView) && p.picked != null)
@@ -67,6 +69,47 @@ namespace Tags.Controllers
             var chart = new Chart(p.picked, p.Start, p.Finish);
             Session["chart"] = chart;
             return View(chart);
+        }
+
+        [HttpPost]
+        public ActionResult SelectedTags(PickTagView p)
+        {
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index", "Home");
+
+            p.Start = p.Start < p.Earliest ? p.Earliest : p.Start;
+
+            TempData["picked"] = p;
+
+            if (p.NewView != null && !string.IsNullOrWhiteSpace(p.NewView) && p.picked != null)
+                Graph.SaveView(_login, p.NewView, p.picked);
+
+            if (p.DeletedViews != null && !string.IsNullOrWhiteSpace(p.DeletedViews))
+                Graph.DeleteView(p.DeletedViews.Substring(1));
+
+            if (p.Monitor)
+                return RedirectToAction("Picked2Monitor");
+
+            if (p.picked == null)
+            {
+                Error("Please pick at least one tag before charting");
+                var tid = Session["LineId"] as string;
+                return RedirectToAction("TagsByLine", "Home", new { id = tid });
+            }
+            if (p.Cancel)
+                return RedirectToAction("Review", "Home");
+
+            var chart = new Chart2(p.picked, p.Start, p.Finish);
+            Session["chart"] = chart;
+
+            var view = new ChartView()
+            {
+                Chart = Newtonsoft.Json.JsonConvert.SerializeObject(chart)
+            };
+
+            ViewData["Channel"] = p.Channel;
+
+            return View(view);
         }
 
         public ActionResult Picked2Monitor()
