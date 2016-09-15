@@ -60,6 +60,8 @@ namespace Test
                 user = "lister.g.1";
 #else
             var user = Thread.CurrentPrincipal.Identity.Name;
+            if (user == null)
+                user = "Anonymous";
 #endif
             //scheduleDB _db = new scheduleDB();
             HttpContext.Current.Session["user"] = user;

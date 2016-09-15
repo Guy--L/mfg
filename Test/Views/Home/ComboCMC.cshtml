@@ -53,3 +53,22 @@
         </a>*@
     </div>
 </div>
+
+@section scripts{
+<script type="text/javascript">
+    $(function () {
+        var rhub = $.connection.refreshHub;
+        rhub.client.refresh = function () {
+            location.reload(true);
+        };
+        $.connection.hub.start().done(function () {
+            rhub.server.register("Deck");
+        });
+        $.connection.hub.disconnected(function () {
+            setTimeout(function () {
+                $.connection.hub.start();
+            }, 1000); // Re-start connection after 1 second
+        });
+    });
+</script>
+}

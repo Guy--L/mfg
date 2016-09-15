@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms.DataVisualization.Charting;
+using Microsoft.AspNet.SignalR;
+using Test.Hubs;
 using cx = System.Windows.Forms.DataVisualization.Charting;
 
 namespace Test.Models
@@ -106,6 +108,9 @@ namespace Test.Models
 
                 c.SaveImage(Path.Combine(path, id + "_" + s.FileNameSuffix + ".png"), ChartImageFormat.Png);
             };
+
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RefreshHub>();
+            hub.Clients.Group("Deck").refresh();
         }
 
         private void Chart(SolutionTests t, List<ReadingField> readings)

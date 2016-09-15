@@ -167,7 +167,7 @@ namespace Test.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult ComboCNC()
+        public ActionResult ComboCMC()
         {
             return View();
         }

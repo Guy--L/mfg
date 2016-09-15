@@ -237,6 +237,7 @@
     <Compile Include="Controllers\DeleteFileAttribute.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Hubs\ContextHub.cs" />
+    <Compile Include="Hubs\RefreshHub.cs" />
     <Compile Include="Models\Casings.cs" />
     <Compile Include="Models\CasingSampleArchive.cs" />
     <Compile Include="Models\Conversion.cs" />
@@ -482,6 +483,9 @@
     </Content>
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="Content\Slides\dummy.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Elmah.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -650,7 +654,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\ComboCNC.cshtml" />
+    <Content Include="Views\Home\ComboCMC.cshtml" />
     <Content Include="Views\Home\SolutionBatches.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SolutionBatch.cshtml" />
     <Content Include="Views\Home\SBatch.cshtml" />
@@ -729,9 +733,7 @@
     <Content Include="Views\Shared\DisplayTemplates\Plan.cshtml" />
     <Content Include="Views\Home\PNGCharts.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\Slides\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
