@@ -167,6 +167,12 @@ namespace Test.Controllers
         }
 
         [AllowAnonymous]
+        public ActionResult ComboCNC()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         public ActionResult STestNew(int bid)
         {
             SolutionTestView t = new SolutionTestView(bid);
@@ -203,7 +209,7 @@ namespace Test.Controllers
             int[] systms = new int[] { 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
             foreach (var i in systms)
                 Models.SolutionChart.UpdateDeck(i);
-            return RedirectToAction("Units");
+            return RedirectToAction("PNGCharts");
         }
 
         public ActionResult Show()

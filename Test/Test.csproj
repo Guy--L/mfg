@@ -650,7 +650,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\PNGCharts.cshtml" />
+    <Content Include="Views\Home\ComboCNC.cshtml" />
     <Content Include="Views\Home\SolutionBatches.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SolutionBatch.cshtml" />
     <Content Include="Views\Home\SBatch.cshtml" />
@@ -727,6 +727,7 @@
     <Content Include="Views\Home\CasingView.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Run.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Plan.cshtml" />
+    <Content Include="Views\Home\PNGCharts.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Slides\" />

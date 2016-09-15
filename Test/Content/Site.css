@@ -524,3 +524,12 @@ div.runtip {
 li.download {
     padding-top: 15px;
 }
+
+.no-gutter [class*="-4"] {
+    padding:0;
+}
+
+.no-gutter .thumbnail {
+    margin: 0;
+    padding: 0;
+}

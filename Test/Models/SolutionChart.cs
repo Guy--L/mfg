@@ -41,7 +41,7 @@ namespace Test.Models
             Deck d = new Deck("Solutions");
 
             var time = tests.Select(t => t.DateTime).ToList();
-            var series = d.Slides.SelectMany(s => s.Series).GroupBy(x => x.SeriesId).Select(y => y.First()).ToDictionary(k => k.SeriesId);
+            var series = d.Slides.SelectMany(s => s.content).GroupBy(x => x.SeriesId).Select(y => y.First()).ToDictionary(k => k.SeriesId);
             foreach(var line in series.Values)
             {
                 line.setvalues(tests);
@@ -50,6 +50,7 @@ namespace Test.Models
                     ChartType = SeriesChartType.FastLine,
                     XValueType = ChartValueType.DateTime,
                     AxisLabel = line.YLabel,
+                    BorderWidth = 2,
                     Color = Color.FromName(line.ForeGround)
                 };
                 line.core.Points.DataBindXY(time, line.values);
@@ -57,17 +58,18 @@ namespace Test.Models
             foreach (var s in d.Slides) { 
                 var c = new Chart() { Size = new Size(1920, 1080) };
 
-                c.Titles.Add("System "+tests.First().System+": "+string.Join(", ", s.Series.Select(x=>x.Title).ToArray()));
+                c.Titles.Add("System "+tests.First().System+": "+string.Join(", ", s.content.Select(x=>x.Title).ToArray()));
                 c.Titles[0].Font = new Font("Arial", 14, FontStyle.Bold);
 
-                if (s.Series.Count == 1) c.Titles[0].ForeColor = Color.FromName(s.Series[0].ForeGround);
+                if (s.content.Count == 1) c.Titles[0].ForeColor = Color.FromName(s.content[0].ForeGround);
 
                 ChartArea bottom = null;
-                foreach(var line in s.Series)
+                foreach(var line in s.content)
                 {
                     var x = series[line.SeriesId];
                     var a = new ChartArea(x.Title);
                     a.AxisY.MajorGrid.LineColor = Color.LightGray;
+                    a.AxisX.MajorGrid.LineColor = Color.Gray;
                     a.AxisY.LabelStyle.Font = new Font("Arial", 14);
                     a.AxisY.Title = x.YLabel;
                     a.AxisY.TitleFont = new Font("Arial", 14);
@@ -78,11 +80,12 @@ namespace Test.Models
                     c.ChartAreas.Add(a);
 
                     c.Series.Add(x.core);
+                    
                     x.core.ChartArea = x.Title;
                     bottom = a;
                 }
                 bottom.AxisX.LabelStyle.Format = "dd/MMM\nhh:mm";
-                bottom.AxisX.MajorGrid.LineColor = Color.LightGray;
+                bottom.AxisX.MajorGrid.LineColor = Color.Gray;
                 bottom.AxisX.LabelStyle.ForeColor = Color.Black;
                 bottom.AxisX.LabelStyle.Font = new Font("Arial", 14);
                 bottom.AxisX.IsLabelAutoFit = true;
@@ -91,7 +94,7 @@ namespace Test.Models
                 foreach(var batch in batches)
                 {
                     var t = new StripLine();
-                    t.BackColor = Color.GhostWhite;
+                    t.BackColor = Color.Aquamarine;
                     t.IntervalOffset = batch.Begin.ToOADate();
                     t.IntervalOffsetType = DateTimeIntervalType.Days;
                     t.StripWidth = batch.End.ToOADate() - t.IntervalOffset;
