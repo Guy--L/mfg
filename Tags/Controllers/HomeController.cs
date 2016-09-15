@@ -104,10 +104,9 @@ namespace Tags.Controllers
 
             var view = new ChartView()
             {
+                List = p.Channel,
                 Chart = Newtonsoft.Json.JsonConvert.SerializeObject(chart)
             };
-
-            ViewData["Channel"] = p.Channel;
 
             return View(view);
         }

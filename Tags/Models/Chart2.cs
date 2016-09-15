@@ -9,14 +9,15 @@ namespace Tags.Models
     {
         public string List { get; set; }
         public string Chart { get; set; }
+        public HtmlString Title { get { return new HtmlString(List.Replace(",", "<br />")); } }
     }
 
     public class Series2
     {
         public string Name { get; set; }
         public Tag Tag { get; set; }
-        public List<Limit> Specs { get; set; }
-        public List<Value> Data { get; set; }
+        public List<List<Val>> Specs { get; set; }
+        public List<Val> Data { get; set; }
 
         public Series2(string nm, Tag t)
         {
@@ -49,6 +50,21 @@ namespace Tags.Models
             this(string.Join(",", request), min, max)
         { }
 
+        /// <summary>
+        /// Create chart for tags in cs-list between min and max
+        /// Chart
+        ///   Name
+        ///   exportName
+        ///   Runs
+        ///   Series
+        ///     Name  
+        ///     Tag
+        ///     Specs
+        ///     Data
+        /// </summary>
+        /// <param name="include"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
         public Chart2(string include, DateTime min, DateTime max)
         {
             using (tagDB t = new tagDB())
@@ -79,8 +95,15 @@ namespace Tags.Models
                 Series = tags.Select(p =>
                 {
                     var series = plots[p.TagId];
-                    series.Specs = limits[p.TagId].ToList();
-                    series.Data = samples[p.TagId].ToList();
+                    var spectrum = limits[p.TagId];
+                    var lolo = spectrum.Select(m => new Val(m.epoch, m.LoLo)).ToList();
+                    var lo = spectrum.Select(m => new Val(m.epoch, m.Lo)).ToList();
+                    var aim = spectrum.Select(m => new Val(m.epoch, m.Aim)).ToList();
+                    var hi = spectrum.Select(m => new Val(m.epoch, m.Hi)).ToList();
+                    var hihi = spectrum.Select(m => new Val(m.epoch, m.HiHi)).ToList();
+
+                    series.Specs = new List<List<Val>>() { lolo, lo, aim, hi, hihi };
+                    series.Data = samples[p.TagId].Select(s => new Val(s)).ToList();
                     return series;
                 }).ToList();
             }

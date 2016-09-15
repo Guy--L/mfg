@@ -16,6 +16,27 @@ namespace Tags.Models
         }
     }
 
+    /// <summary>
+    /// Little class for json serialization of gobs of data
+    /// </summary>
+    public class Val
+    {
+        public long t { get; set; }
+        public double y { get; set; }
+
+        public Val(Value v)
+        {
+            t = v.epoch;
+            y = v.dvalue ?? 0;
+        }
+
+        public Val(long e, double v)
+        {
+            t = e;
+            y = v;
+        }
+    }
+
     public partial class All
     {
         private static string _horizon = @"

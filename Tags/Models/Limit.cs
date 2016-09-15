@@ -2,29 +2,34 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using NPoco;
 
 namespace Tags.Models
 {
     public partial class Limit
     {
+        [ResultColumn] public long epoch { get; set; }
         private const double clipmargin = 2.0;
 
         public double ClipLo { get { return (Aim - 2 * (Aim - LoLo)); } }
         public double ClipHi { get { return (Aim + 2 * (HiHi - Aim)); } } 
 
         public static string _limits = @"
-            select limitid, tagid, '{1}' stamp, lolo, lo, aim, hi, hihi from (
-             select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, 
+            select limitid, tagid, '{1}' stamp, lolo, lo, aim, hi, hihi, epoch
+            from (
+             select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, dbo.Epoch(stamp) epoch,
               ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp DESC) rn
              from limit
              where stamp < '{1}' and tagid in ({0})
             ) tmp where rn = 1
             union
-            select limitid, tagid, stamp, lolo, lo, aim, hi, hihi from limit
+            select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, dbo.Epoch(stamp) epoch 
+            from limit
             where stamp >= '{1}' and stamp <= '{2}' and tagid in ({0})
             union
-            select limitid, tagid, '{2}' stamp, lolo, lo, aim, hi, hihi from (
-             select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, 
+            select limitid, tagid, '{2}' stamp, lolo, lo, aim, hi, hihi, epoch
+            from ( 
+             select limitid, tagid, stamp, lolo, lo, aim, hi, hihi, dbo.Epoch(stamp) epoch,
               ROW_NUMBER() OVER (PARTITION BY tagid ORDER BY stamp DESC) rn
              from limit
              where stamp <= '{2}' and tagid in ({0})

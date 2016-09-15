@@ -1,15 +1,76 @@
-﻿function tagdata(id, data) {
+﻿
+/// Chart (indata)
+///   Name
+///   exportName
+///   Runs
+///   Series
+///     Name  
+///     Tag
+///     Specs
+///         LoLo
+///         Lo
+///         Aim
+///         Hi
+///         HiHi
+///     Data
+
+function reDate(point) {
+    point.t = new Date(point.t);
+    return point;
+}
+
+function parseData(indata) {
+    indata.mint = Number.MAX_VALUE;
+    indata.maxt = Number.MIN_VALUE;
+    indata.miny = Number.MAX_VALUE;
+    indata.maxy = Number.MIN_VALUE;
+
+    indata.series = indata.Series.map(function(d){
+        var s = {};
+        s.Name = d.Name;
+        s.Tag = d.Tag;
+
+        s.Specs = d.Specs.map(function(d){
+            return d.map(reDate);
+        });
+        s.Data = d.Data.map(function (d) {
+            indata.mint = (indata.mint > d.t) ? d.t : indata.mint;
+            indata.maxt = (indata.maxt < d.t) ? d.t : indata.maxt;
+            indata.miny = (indata.miny > d.y) ? d.y : indata.miny;
+            indata.maxy = (indata.maxy < d.y) ? d.y : indata.maxy;
+
+            d.t = new Date(d.t);
+            return d;
+        });
+        return s;
+    });
+    return indata;
+}
+
+function tagdata(id, rawdata) {
+
     var margin = { top: 20, right: 20, bottom: 30, left: 40 },
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
+    d3.select("div#"+id)
+       .append("div")
+       .classed("svg-container", true) //container class to make it responsive
+       .append("svg")
+       //responsive SVG needs these 2 attributes and no width and height attr
+       .attr("preserveAspectRatio", "xMinYMin meet")
+       .attr("viewBox", "0 0 " + width + " " + height)
+       //class to make it responsive
+       .classed("svg-content-responsive", true);
     
+    data = parseData(rawdata);
+
     var x = d3.time.scale()
-        .domain([-width / 2, width / 2])
+        .domain([data.mint, data.maxt])
         .range([0, width]);
 
     var y = d3.scale.linear()
-        .domain([-height / 2, height / 2])
+        .domain([data.miny, data.maxy])
         .range([height, 0]);
 
     var xAxis = d3.svg.axis()
@@ -58,8 +119,8 @@
 
     function reset() {
         d3.transition().duration(750).tween("zoom", function () {
-            var ix = d3.interpolate(x.domain(), [-width / 2, width / 2]),
-                iy = d3.interpolate(y.domain(), [-height / 2, height / 2]);
+            var ix = d3.interpolate(x.domain(), [data.mint, data.maxt]),
+                iy = d3.interpolate(y.domain(), [data.miny, data.maxy]);
             return function (t) {
                 zoom.x(x.domain(ix(t))).y(y.domain(iy(t)));
                 zoomed();

@@ -12,8 +12,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using NPoco;
 
 namespace Tags.Models
@@ -64,8 +62,8 @@ namespace Tags.Models
                 if (_instance==this)
                         _instance=null;
         }
-				        
-		public class Record<T> where T:new()
+
+        public class Record<T> where T:new()
 		{
 			public static labDB repo { get { return labDB.GetInstance(); } }
 			public bool IsNew() { return repo.IsNew(this); }

@@ -12,7 +12,7 @@ namespace Tags.Models
 			lines as (
 				select lineid from unit u
 					join line l on l.unitid = u.unitid
-					where u.unit+convert(char,l.linenumber,0) in (@0)
+					where u.unit+convert(char,l.linenumber,0) in ({0})
 					),
 			 cut as (
 	            select linetxid, lineid, stamp, productcodeid, statusid, endstamp from (
@@ -28,14 +28,14 @@ namespace Tags.Models
 	            , n.endstamp
                 , n.productcodeid
             from cut n
-			join lines a on a.lineid = n.lineid
+			join lines m on m.lineid = n.lineid
             join line l on l.lineid = n.lineid
             join unit u on u.unitid = l.unitid
             join productcode p on p.ProductCodeId = n.ProductCodeId
             join [status] s on s.StatusId = n.StatusId
-            where n.stamp >= @1 and n.stamp <= @2
-			or n.endstamp >= @1 and n.endstamp <= @2
-			or n.stamp <= @1 and @1 <= n.endstamp
+            where n.stamp >= '{1}' and n.stamp <= '{2}'
+			or n.endstamp >= '{1}' and n.endstamp <= '{2}'
+			or n.stamp <= '{1}' and '{1}' <= n.endstamp
             and s.Code = 'RP'
             order by n.lineid, n.stamp
         ";
@@ -65,11 +65,11 @@ namespace Tags.Models
             {
                 try
                 {
-                    runs = d.Fetch<Run>(_byLines, include, start, end).ToLookup(k => k.LineId);
+                    runs = d.Fetch<Run>(string.Format(_byLines, include, start.ToStamp(), end.ToStamp())).ToLookup(k=>k.LineId);
                 }
                 catch (Exception e)
                 {
-                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding runs by "+include+" ["+start.ToShortDateString()+"-"+end.ToShortDateString()+"]", e));
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding runs by " + include + " [" + start.ToShortDateString() + "-" + end.ToShortDateString() + "]", e));
                 }
             }
             return runs;
