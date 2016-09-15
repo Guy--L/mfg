@@ -38,3 +38,4 @@ BuildDate.txt
 app_data/*
 *.DS_Store
 Test/App_Data/Files/*.xls
+Test/Content/Slides/
