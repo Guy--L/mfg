@@ -753,6 +753,7 @@
     <Content Include="Views\Shared\DisplayTemplates\Run.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Plan.cshtml" />
     <Content Include="Views\Home\PNGCharts.cshtml" />
+    <Content Include="Views\Shared\_Fullscreen.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

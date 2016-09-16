@@ -87,7 +87,7 @@ namespace Test.Models
                     x.core.ChartArea = x.Title;
                     bottom = a;
                 }
-                bottom.AxisX.LabelStyle.Format = "dd/MMM\nhh:mm";
+                bottom.AxisX.LabelStyle.Format = "dd/MMM\nHH:mm";
                 bottom.AxisX.MajorGrid.LineColor = Color.Gray;
                 bottom.AxisX.LabelStyle.ForeColor = Color.Black;
                 bottom.AxisX.LabelStyle.Font = new Font("Arial", 14);
