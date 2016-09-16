@@ -60,9 +60,10 @@ namespace Test.Models
             foreach (var s in d.Slides) { 
                 var c = new Chart() { Size = new Size(1920, 1080) };
 
+                c.BackImage = Path.Combine(path, tests.First().System + ".png");
                 c.Titles.Add("System "+tests.First().System+": "+string.Join(", ", s.content.Select(x=>x.Title).ToArray()));
                 c.Titles[0].Font = new Font("Arial", 14, FontStyle.Bold);
-
+                
                 if (s.content.Count == 1) c.Titles[0].ForeColor = Color.FromName(s.content[0].ForeGround);
 
                 ChartArea bottom = null;
@@ -78,7 +79,7 @@ namespace Test.Models
                     a.AxisY.IsStartedFromZero = false;
                     a.AxisX.IsMarginVisible = false;
                     a.AxisX.LabelStyle.Enabled = false;
-
+                    a.BackColor = Color.Transparent;
                     c.ChartAreas.Add(a);
 
                     c.Series.Add(x.core);
@@ -96,7 +97,9 @@ namespace Test.Models
                 foreach(var batch in batches)
                 {
                     var t = new StripLine();
-                    t.BackColor = Color.Aquamarine;
+                    t.BorderWidth = 25;
+                    t.BorderColor = Color.FromArgb(127, Color.Aquamarine);
+                    t.BackColor = Color.Transparent;
                     t.IntervalOffset = batch.Begin.ToOADate();
                     t.IntervalOffsetType = DateTimeIntervalType.Days;
                     t.StripWidth = batch.End.ToOADate() - t.IntervalOffset;

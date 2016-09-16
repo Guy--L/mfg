@@ -3,6 +3,13 @@
 }
 
 <div class="row no-gutter">
+    <div class="col-md-6" id="window">
+    </div>
+    <div class="col-md-6" id="screen">
+    </div>
+</div>
+
+<div class="row no-gutter">
     <div class="col-md-4">
         <a href="~/Content/Slides/1_ComboCMC.png" class="thumbnail">
             <img class="img-responsive" src="~/Content/Slides/1_ComboCMC.png" />
@@ -32,8 +39,8 @@
     </div>
     <div class="col-md-4">
         @*<a href="~/Content/Slides/2_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/2_ComboCMC.png" />
-        </a>*@
+                <img class="img-responsive" src="~/Content/Slides/2_ComboCMC.png" />
+            </a>*@
     </div>
 </div>
 <div class="row no-gutter">
@@ -49,26 +56,29 @@
     </div>
     <div class="col-md-4">
         @*<a href="~/Content/Slides/2_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/2_ComboCMC.png" />
-        </a>*@
+                <img class="img-responsive" src="~/Content/Slides/2_ComboCMC.png" />
+            </a>*@
     </div>
 </div>
 
-@section scripts{
-<script type="text/javascript">
-    $(function () {
-        var rhub = $.connection.refreshHub;
-        rhub.client.refresh = function () {
-            location.reload(true);
-        };
-        $.connection.hub.start().done(function () {
-            rhub.server.register("Deck");
-        });
-        $.connection.hub.disconnected(function () {
-            setTimeout(function () {
-                $.connection.hub.start();
-            }, 1000); // Re-start connection after 1 second
-        });
-    });
-</script>
-}
+    @section scripts{
+        <script type="text/javascript">
+            $(function () {
+                var rhub = $.connection.refreshHub;
+                rhub.client.refresh = function () {
+                    location.reload(true);
+                };
+                $.connection.hub.start().done(function () {
+                    rhub.server.register("Deck");
+                });
+                $.connection.hub.disconnected(function () {
+                    setTimeout(function () {
+                        $.connection.hub.start();
+                    }, 1000); // Re-start connection after 1 second
+                });
+
+                $('#screen').html('screen w: ' + screen.width + ', h: ' + screen.height);
+                $('#window').html('window w: ' + $(window).width() + ', h: ' + $(window).height());
+            });
+        </script>
+    }
