@@ -74,8 +74,8 @@ namespace Test.Models
                     a.AxisY.MajorGrid.LineColor = Color.LightGray;
                     a.AxisX.MajorGrid.LineColor = Color.Gray;
                     a.AxisY.LabelStyle.Font = new Font("Arial", 14);
-                    a.AxisY.Title = x.YLabel;
                     a.AxisY.TitleFont = new Font("Arial", 14);
+                    a.AxisY.Title = x.YLabel;
                     a.AxisY.IsStartedFromZero = false;
                     a.AxisX.IsMarginVisible = false;
                     a.AxisX.LabelStyle.Enabled = false;
@@ -110,7 +110,23 @@ namespace Test.Models
                 }
 
                 c.SaveImage(Path.Combine(path, id + "_" + s.FileNameSuffix + ".png"), ChartImageFormat.Png);
-                c.Size = new Size(1280, 720);
+                c.Size = new Size(640, 360);
+
+                c.Titles[0].Font = new Font("Arial", 7, FontStyle.Bold);
+
+                foreach(var area in c.ChartAreas)
+                {
+                    area.AxisY.LabelStyle.Font = new Font("Arial", 7);
+                    area.AxisY.TitleFont = new Font("Arial", 7);
+                }
+                bottom.AxisX.LabelStyle.Font = new Font("Arial", 7);
+
+                foreach(var strip in bottom.AxisX.StripLines)
+                {
+                    strip.Font = new Font("Arial", 7, FontStyle.Bold);
+                    strip.BorderWidth = 12;
+                }
+
                 c.BackImage = Path.Combine(path, tests.First().System + "t.png");
                 c.SaveImage(Path.Combine(path, id + "_" + s.FileNameSuffix + "_thumb.png"), ChartImageFormat.Png);
             };
