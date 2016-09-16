@@ -110,6 +110,9 @@ namespace Test.Models
                 }
 
                 c.SaveImage(Path.Combine(path, id + "_" + s.FileNameSuffix + ".png"), ChartImageFormat.Png);
+                c.Size = new Size(1280, 720);
+                c.BackImage = Path.Combine(path, tests.First().System + "t.png");
+                c.SaveImage(Path.Combine(path, id + "_" + s.FileNameSuffix + "_thumb.png"), ChartImageFormat.Png);
             };
 
             var hub = GlobalHost.ConnectionManager.GetHubContext<RefreshHub>();

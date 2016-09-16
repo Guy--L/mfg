@@ -1,40 +1,34 @@
 ﻿@{
     ViewBag.Title = "Combo CMC Charts";
+    Layout = "~/Views/Shared/_Fullscreen.cshtml";
 }
-
-<div class="row no-gutter">
-    <div class="col-md-6" id="window">
-    </div>
-    <div class="col-md-6" id="screen">
-    </div>
-</div>
 
 <div class="row no-gutter">
     <div class="col-md-4">
         <a href="~/Content/Slides/1_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/1_ComboCMC.png" />
+            <img class="img-responsive" src="~/Content/Slides/1_ComboCMC_thumb.png" />
         </a>
     </div>
     <div class="col-md-4">
         <a href="~/Content/Slides/5_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/5_ComboCMC.png" />
+            <img class="img-responsive" src="~/Content/Slides/5_ComboCMC_thumb.png" />
         </a>
     </div>
     <div class="col-md-4">
         <a href="~/Content/Slides/8_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/8_ComboCMC.png" />
+            <img class="img-responsive" src="~/Content/Slides/8_ComboCMC_thumb.png" />
         </a>
     </div>
 </div>
 <div class="row no-gutter">
     <div class="col-md-4">
         <a href="~/Content/Slides/2_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/2_ComboCMC.png" />
+            <img class="img-responsive" src="~/Content/Slides/2_ComboCMC_thumb.png" />
         </a>
     </div>
     <div class="col-md-4">
         <a href="~/Content/Slides/6_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/6_ComboCMC.png" />
+            <img class="img-responsive" src="~/Content/Slides/6_ComboCMC_thumb.png" />
         </a>
     </div>
     <div class="col-md-4">
@@ -46,12 +40,12 @@
 <div class="row no-gutter">
     <div class="col-md-4">
         <a href="~/Content/Slides/4_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/4_ComboCMC.png" />
+            <img class="img-responsive" src="~/Content/Slides/4_ComboCMC_thumb.png" />
         </a>
     </div>
     <div class="col-md-4">
         <a href="~/Content/Slides/7_ComboCMC.png" class="thumbnail">
-            <img class="img-responsive" src="~/Content/Slides/7_ComboCMC.png" />
+            <img class="img-responsive" src="~/Content/Slides/7_ComboCMC_thumb.png" />
         </a>
     </div>
     <div class="col-md-4">
@@ -63,6 +57,20 @@
 
     @section scripts{
         <script type="text/javascript">
+            function requestFullScreen(element) {
+                // Supports most browsers and their versions.
+                var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+
+                if (requestMethod) { // Native full screen.
+                    requestMethod.call(element);
+                } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+                    var wscript = new ActiveXObject("WScript.Shell");
+                    if (wscript !== null) {
+                        wscript.SendKeys("{F11}");
+                    }
+                }
+            }
+
             $(function () {
                 var rhub = $.connection.refreshHub;
                 rhub.client.refresh = function () {
@@ -77,8 +85,8 @@
                     }, 1000); // Re-start connection after 1 second
                 });
 
-                $('#screen').html('screen w: ' + screen.width + ', h: ' + screen.height);
-                $('#window').html('window w: ' + $(window).width() + ', h: ' + $(window).height());
+                var elem = document.body; // Make the body go full screen.
+                requestFullScreen(elem);
             });
         </script>
     }
