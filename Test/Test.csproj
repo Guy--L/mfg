@@ -241,7 +241,6 @@
     <Compile Include="Models\Casings.cs" />
     <Compile Include="Models\CasingSampleArchive.cs" />
     <Compile Include="Models\Conversion.cs" />
-    <Compile Include="Models\Display.cs" />
     <Compile Include="Models\Extensions.cs" />
     <Compile Include="Models\Extruder.cs" />
     <Compile Include="Models\Limit.cs" />
@@ -700,7 +699,6 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\ComboCMCnew.cshtml" />
     <Content Include="Views\Home\SolutionBatches.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SolutionBatch.cshtml" />
     <Content Include="Views\Home\SBatch.cshtml" />
