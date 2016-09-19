@@ -25,7 +25,6 @@ namespace Test
             Bootstrap.Configure();
             BaseController.built = Resources.BuildDate;
             SolutionChart.path = Server.MapPath("~/Content/Slides/");
-
             using (labDB db = new labDB())
             {
                 Reading.Types = db.Fetch<Parameter>().ToDictionary(k => k.ParameterId, v => v);
@@ -35,7 +34,7 @@ namespace Test
                 Status.SetIcons(db.Fetch<Status>());
                 SolutionRecipe.Solutions = db.Fetch<SolutionRecipe>().ToDictionary(k => k.SolutionRecipeId, v => v.SolutionType);
                 Extruder.Colors = db.Fetch<Extruder>().ToDictionary(k => k.ExtruderId, v => v.Color);
-                Models.System.Systems = db.Fetch<Models.System>().ToDictionary(k => k.SystemId, v => v._System.Replace("unassigned","0"));
+                Models.System.Systems = db.Fetch<Models.System>().Where(s => s.Status.Trim() == "Good").ToDictionary(k => k.SystemId, v => v._System.Replace("unassigned","0"));
             }
 
             CasingSample.mapReflection();
