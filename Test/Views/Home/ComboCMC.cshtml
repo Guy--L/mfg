@@ -96,6 +96,9 @@
                 rhub.client.refresh = function () {
                     location.reload(true);
                 };
+                rhub.client.upVersion = function () {
+                    setTimeout(function () { location.reload(true); }, 300000);
+                };
                 $.connection.hub.start().done(function () {
                     rhub.server.register("Deck");
                 });

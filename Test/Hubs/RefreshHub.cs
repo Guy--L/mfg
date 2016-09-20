@@ -17,5 +17,10 @@ namespace Test.Hubs
         {
             Clients.Group(page).refresh();
         }
+
+        public void UpVersion(string page)
+        {
+            Clients.Group(page).upVersion();
+        }
     }
 }

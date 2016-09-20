@@ -11,6 +11,8 @@ using Test.Controllers;
 using Test.Properties;
 using System.Threading;
 using System.Configuration;
+using Test.Hubs;
+using Microsoft.AspNet.SignalR;
 
 namespace Test
 {
@@ -42,8 +44,18 @@ namespace Test
             Unit.ips = ConfigurationManager.AppSettings["unitstations"].Split(',');
             Unit.setLineIds();
 
+            int[] systms = new int[] { 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+            foreach (var i in systms)
+                SolutionChart.UpdateDeck(i);
+
             //LineStatus.Initialize();
             //    LineTestView.Lines = db.Fetch<Line>();
+        }
+
+        protected void Application_Exit()
+        {
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RefreshHub>();
+            hub.Clients.Group("Deck").upVersion();
         }
 
         protected void ErrorMail_Mailing(object sender, Elmah.ErrorMailEventArgs e)
