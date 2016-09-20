@@ -33,6 +33,12 @@ namespace Test.Hubs
             return runs;
         }
 
+        public List<Run> RunsLine(int line)
+        {
+            var runs = Run.RunsLine(line);
+            return runs;
+        }
+
         public List<TagSample> RunDetail(string code, string spec, string channel, long start, long end)
         {
             var samples = TagSample.Span(channel, start.FromJSMSecs(), end.FromJSMSecs());

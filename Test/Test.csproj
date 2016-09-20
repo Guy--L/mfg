@@ -650,6 +650,7 @@
     <Content Include="Scripts\jsnlog.js" />
     <Content Include="Scripts\jsnlog.min.js" />
     <Content Include="Scripts\jssor.slider.mini.js" />
+    <Content Include="Scripts\onelane.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\portHub.js" />
     <Content Include="Scripts\randomData.js" />

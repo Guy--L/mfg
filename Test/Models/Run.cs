@@ -51,6 +51,37 @@ namespace Test.Models
             order by {3} n.stamp
         ";
 
+        private static string _lineRuns = @";
+           -- select distinct(cast(substring(r.productcode,3,1) as char)) geltype
+           -- from linetx n
+           -- join productcode r on n.productcodeid = r.ProductCodeId
+
+            with cut as (
+	            select linetxid, lineid, stamp, productcodeid, statusid, endstamp, comment from (
+		            select distinct linetxid, lineid, stamp, productcodeid, statusid, comment,
+			            lead(stamp, 1, getdate()) over (partition by lineid order by stamp) as endstamp
+		            from linetx
+                    where lineid = @0
+	            ) a
+            )
+            select 
+                  n.linetxid
+	            , n.lineid
+	            , n.stamp
+	            , n.endstamp
+                , p.productcodeid
+                , p.productcode
+                , p.productspec
+                , cast(substring(p.productcode,1,2) as int) productwidth
+                , cast(substring(p.productcode,3,1) as char) geltype
+                , comment
+            from cut n
+            join productcode p on p.productcodeid = n.productcodeid
+            join [status] s on s.StatusId = n.StatusId
+            where s.Code = 'RP'
+            order by n.stamp
+        ";
+
         private static string _allRuns = @";
            -- select distinct(cast(substring(r.productcode,3,1) as char)) geltype
            -- from linetx n
@@ -276,6 +307,23 @@ namespace Test.Models
                 try
                 {
                     runs = d.Fetch<Run>(_allRuns).OrderBy(r => r.Lane).ToList();
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Error finding all runs by productcode ", e));
+                }
+            }
+            return runs;
+        }
+
+        public static List<Run> RunsLine(int line)
+        {
+            List<Run> runs = null;
+            using (labDB d = new labDB())
+            {
+                try
+                {
+                    runs = d.Fetch<Run>(_lineRuns, line).OrderBy(r => r.Lane).ToList();
                 }
                 catch (Exception e)
                 {

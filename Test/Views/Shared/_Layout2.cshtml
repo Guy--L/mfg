@@ -128,6 +128,7 @@
                     $('.jumbotron').hide();
                     swim('#lanes');
                 }
+                $(document).trigger('contextready');
             })
             .fail(function (error) {
                 console.log('hub error '+error);
