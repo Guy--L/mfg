@@ -173,6 +173,12 @@ namespace Test.Controllers
         }
 
         [AllowAnonymous]
+        public ActionResult ScreenTest()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
         public ActionResult STestNew(int bid)
         {
             SolutionTestView t = new SolutionTestView(bid);

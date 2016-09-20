@@ -1,0 +1,17 @@
+﻿<div class="container">
+
+    <div id="screen">
+    </div>
+    <div id="window">
+    </div>
+    <div id="page">
+    </div>
+</div>
+
+    @section scripts {
+        <script type="text/javascript">
+        $('#window').html('window: '+$(window).height()+'H x '+$(window).width()+'W');   // returns height of browser viewport
+        $('#screen').html('screen: '+screen.height+'H x '+screen.width+'W');
+        $('#page').html('document: '+$(document).height()+'H x '+$(document).width()+'W');
+        </script>
+    }

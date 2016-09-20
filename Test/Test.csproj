@@ -682,7 +682,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Tags.cs</LastGenOutput>
     </Content>
-    <Content Include="Views\Home\swim.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -778,6 +777,7 @@
     <Content Include="Views\Home\PNGCharts.cshtml" />
     <Content Include="Views\Shared\_Fullscreen.cshtml" />
     <Content Include="Views\Home\ComboCMC.cshtml" />
+    <Content Include="Views\Home\ScreenTest.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
