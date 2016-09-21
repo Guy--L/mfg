@@ -433,6 +433,8 @@ namespace Test.Models
                 var oilcell = r.GetCell(12);
                 OilPct = (oilcell?.CellType == CellType.Numeric) ? (int)(oilcell.NumericCellValue * 1000.0) : 0;
 
+                ParameterId = _type;
+
                 Save();
             }
             catch (Exception e)
@@ -454,6 +456,7 @@ namespace Test.Models
                 Gly.Stamp = sampled;
                 Gly.Operator = tech;
                 Gly.EditCount = 1;
+                Gly.ParameterId = _type;
                 Gly.Save();
             }
             catch (Exception e)

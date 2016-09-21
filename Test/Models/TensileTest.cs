@@ -7,7 +7,7 @@ using Test.Properties;
 
 namespace Test.Models
 {
-    public partial class TensileTest
+    public partial class TensileTest : Sample
     {
         public TensileTest() { }
 
@@ -26,7 +26,7 @@ namespace Test.Models
             using (labDB db = new labDB())
             {
                 sample = db.Single<Sample>(string.Format(Resources.TensileSampleById, id));
-                list = db.Fetch<TensileTest>(string.Format(Resources.TensileTestBySample, id));
+                list = db.Fetch<Reading>(string.Format(Resources.TensileTestBySample, id));
             }
         }
     }

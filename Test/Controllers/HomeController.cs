@@ -13,26 +13,25 @@ namespace Test.Controllers
     [Authorize]
     public class HomeController : BaseController
     {
-        /*
         public ActionResult TensileSamples()
         {
-            TensileSamples t = new TensileSamples();
+            TensileTests t = new TensileTests(0);
             using (labDB db = new labDB())
             {
-                t.list = db.Fetch<TensileSample>(Resources.TensileSamples);
+                t.list = db.Fetch<Reading>(Resources.TensileSamples);
             }
             return View(t);
         }
 
         public ActionResult TSample(int id)
         {
-            TensileSampleView s = new TensileSampleView(id);
+            TensileTestView s = new TensileTestView(id);
             return View(s);
         }
 
         public ActionResult StopTensile(int id)
         {
-            var b = TensileSample.Single(id);
+            var b = TensileTest.Single(id);
             b.Completed = DateTime.Now;
             b.Update();
 
@@ -40,9 +39,9 @@ namespace Test.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveTSample(TensileSampleView sbv)
+        public ActionResult SaveTSample(TensileTestView sbv)
         {
-            sbv.t.LineId = sbv.LineId.Value;
+            sbv.t.LineId = sbv.sample.LineId;
             if (sbv.t.Note == null) sbv.t.Note = "";
             if (string.IsNullOrWhiteSpace(sbv.t.Tech)) sbv.t.Tech = "";
             sbv.t.Save();
@@ -58,16 +57,16 @@ namespace Test.Controllers
 
         public ActionResult TTest(int id)
         {
-            TensileSample s = TempData["TensileSample"] as TensileSample;
+            TensileTest s = TempData["TensileTest"] as TensileTest;
             if (s == null)
             {
                 using (labDB db = new labDB()) {
-                    s = db.SingleOrDefault<TensileSample>(string.Format(Resources.TensileSampleById, (id < 0) ? -id : id));
+                    s = db.SingleOrDefault<TensileTest>(string.Format(Resources.TensileSampleById, (id < 0) ? -id : id));
                 }
             }
             TensileTestView v = new TensileTestView(id);
             v.sample = s;
-            v.t.TensileSampleId = s.TensileSampleId;
+            v.t.SampleId = s.SampleId;
             return View(v);
         }
 
@@ -75,9 +74,9 @@ namespace Test.Controllers
         public ActionResult SaveTTest(TensileTestView ttv)
         {
             ttv.t.Save();
-            return RedirectToAction("TensileTests", new { id = ttv.sample.TensileSampleId });
+            return RedirectToAction("TensileTests", new { id = ttv.sample.SampleId });
         }
-        */
+        
 
         public ActionResult Index()
         {

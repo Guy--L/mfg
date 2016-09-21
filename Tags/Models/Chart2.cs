@@ -102,7 +102,7 @@ namespace Tags.Models
                     var hi = spectrum.Select(m => new Val(m.epoch, m.Hi)).ToList();
                     var hihi = spectrum.Select(m => new Val(m.epoch, m.HiHi)).ToList();
 
-                    series.Specs = new List<List<Val>>() { lolo, lo, aim, hi, hihi };
+                    series.Specs = new List<List<Val>>() { lolo, lo, aim, hi, hihi };           // put limits into series to plot as stepped line
                     series.Data = samples[p.TagId].Select(s => new Val(s)).ToList();
                     return series;
                 }).ToList();

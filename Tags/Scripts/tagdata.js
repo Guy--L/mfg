@@ -14,18 +14,18 @@
 ///         HiHi
 ///     Data
 
-function reDate(point) {
-    point.t = new Date(point.t);
-    return point;
+function reDate(p) {
+    p.t = new Date(p.t);
+    return p;
 }
 
-function parseData(indata) {
-    indata.mint = Number.MAX_VALUE;
-    indata.maxt = Number.MIN_VALUE;
-    indata.miny = Number.MAX_VALUE;
-    indata.maxy = Number.MIN_VALUE;
+function parseData(ind) {
+    ind.mint = Number.MAX_VALUE;
+    ind.maxt = Number.MIN_VALUE;
+    ind.miny = Number.MAX_VALUE;
+    ind.maxy = Number.MIN_VALUE;
 
-    indata.series = indata.Series.map(function(d){
+    ind.series = ind.Series.map(function(d){
         var s = {};
         s.Name = d.Name;
         s.Tag = d.Tag;
@@ -34,17 +34,17 @@ function parseData(indata) {
             return d.map(reDate);
         });
         s.Data = d.Data.map(function (d) {
-            indata.mint = (indata.mint > d.t) ? d.t : indata.mint;
-            indata.maxt = (indata.maxt < d.t) ? d.t : indata.maxt;
-            indata.miny = (indata.miny > d.y) ? d.y : indata.miny;
-            indata.maxy = (indata.maxy < d.y) ? d.y : indata.maxy;
+            ind.mint = (ind.mint > d.t) ? d.t : ind.mint;
+            ind.maxt = (ind.maxt < d.t) ? d.t : ind.maxt;
+            ind.miny = (ind.miny > d.y) ? d.y : ind.miny;
+            ind.maxy = (ind.maxy < d.y) ? d.y : ind.maxy;
 
             d.t = new Date(d.t);
             return d;
         });
         return s;
     });
-    return indata;
+    return ind;
 }
 
 function tagdata(id, rawdata) {
