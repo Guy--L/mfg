@@ -18,10 +18,10 @@ namespace Test.Models
         public static Dictionary<string, PropertyInfo> reflect;
         private static string casingType = "CasingSample";
 
-        private static int _type = Reading.TypeOf[casingType];
-        private static int oiltype = Reading.TypeOf["Oil"];
+        private static int _type = Parameter.TypeOf[casingType];
+        private static int oiltype = Parameter.TypeOf["Oil"];
 
-        public static string Symbol = Reading.IconML(_type);
+        public static string Symbol = Parameter.IconML(_type);
 
         [ResultColumn, ComplexMapping] public Reading Gly { get; set; }
 

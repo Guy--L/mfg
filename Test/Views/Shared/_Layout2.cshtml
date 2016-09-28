@@ -12,21 +12,25 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             @*<div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Casings", "CasingSamples", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                @Html.ActionLink("Solutions", "SolutionBatches", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                @Html.ActionLink("Lines", "Lines", "Control", new { area = "" }, new { @class ="navbar-brand" })
-                @Html.ActionLink("Products", "Products", "Control", new { area = "" }, new { @class = "navbar-brand" })
-                @Html.ActionLink("Conversions", "Conversions", "Control", new { area = "" }, new { @class = "navbar-brand" })                              
-            </div>*@
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @Html.ActionLink("Casings", "CasingSamples", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                    @Html.ActionLink("Solutions", "SolutionBatches", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                    @Html.ActionLink("Lines", "Lines", "Control", new { area = "" }, new { @class ="navbar-brand" })
+                    @Html.ActionLink("Products", "Products", "Control", new { area = "" }, new { @class = "navbar-brand" })
+                    @Html.ActionLink("Conversions", "Conversions", "Control", new { area = "" }, new { @class = "navbar-brand" })
+                </div>*@
             @using (var nav = Html.Bootstrap().Begin(new Nav().Style(NavType.NavBar).SetLinksActiveByControllerAndAction()))
             {
                 @nav.ActionLink("Home", "Index", "Home").Class("navbar-brand")
-                @nav.ActionLink("Casings", "CasingSamples", "Home").PrependIcon(new Icon("fa fa-cut"))
+                using (var dd = nav.BeginDropDown(new DropDown("<i class='fa fa-shopping-basket'></i> Samples")))
+                {
+                    @dd.ActionLink("Casings", "CasingSamples", "Home").PrependIcon("fa fa-cut")
+                    @dd.ActionLink("Layflats", "LayFlats", "Home").PrependIcon("fa fa-eraser")
+                }
                 @nav.ActionLink("Solutions", "SolutionBatches", "Home").PrependIcon(new Icon("fa fa-flask"))
                 @nav.ActionLink("Lines", "Lines", "Control").PrependIcon(new Icon("fa fa-list-ol"))
                 @nav.ActionLink("Products", "Products", "Control").PrependIcon(new Icon("fa fa-gift"))
@@ -45,9 +49,6 @@
                 </div>
                 <ul class="nav navbar-nav pull-right">
                     @RenderSection("actions", required: false)
-                    @*<li><a href="#"><small>built @File.GetLastWriteTime(assembly.Location)</small></a></li>
-                    <li><a href="#"><i class="icon-user icon-white"></i> @Model.User</a></li>
-                    <li><a href="#"><i class="icon-question icon-white"></i></a></li>*@
                 </ul>
             </div>
         </div>
@@ -57,7 +58,7 @@
         @RenderBody()
         <hr />
         <footer>
-                &copy; @DateTime.Now.Year - Nitta Casings Inc<div class="pull-right">built @ViewBag.built</div>
+            &copy; @DateTime.Now.Year - Nitta Casings Inc<div class="pull-right">built @ViewBag.built</div>
         </footer>
     </div>
 
@@ -76,7 +77,7 @@
         $.fn.founded = function (isfound) {
             if ($(this).is('input')) {
                 $(this).css('background-color', isfound ? '#CBFFC0' : 'pink');
-                $(this).tooltip(isfound?'disable':'enable');
+                $(this).tooltip(isfound ? 'disable' : 'enable');
                 return $(this);
             }
 
@@ -131,7 +132,7 @@
                 $(document).trigger('contextready');
             })
             .fail(function (error) {
-                console.log('hub error '+error);
+                console.log('hub error ' + error);
             });
             $.connection.hub.disconnected(function () {
                 setTimeout(function () {

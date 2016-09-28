@@ -8,6 +8,11 @@ namespace Test.Models
 {
     public partial class Extruder
     {
-        [Ignore] public static Dictionary<int, string> Colors;
+        [Ignore] public static Dictionary<int, string> Colors; 
+
+        static Extruder()
+        {
+            Colors = repo.Fetch<Extruder>().ToDictionary(k => k.ExtruderId, v => v.Color);
+        }
     }
 }

@@ -1,0 +1,3 @@
+﻿@model Test.Models.ReadItem
+
+<td class="@Model.CellClass readitem">@Html.Bootstrap().TextBoxFor(m=>m.Value).Class(@Model.Mask).Label().Class("sr-only")</td>

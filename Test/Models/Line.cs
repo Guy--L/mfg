@@ -39,6 +39,8 @@ namespace Test.Models
         public List<Line> lines { get; set; }
         public List<System> systems { get; set; }
 
+        public List<List<Line>> table { get; set; }
+
         public static string _linehistory = @"
               FROM (
                 select [Stamp]
@@ -102,6 +104,19 @@ namespace Test.Models
                 lines = labdb.Fetch<Line>(_lineload + " order by l.LineNumber, l.UnitId");
                 systems = labdb.Fetch<System>(System._active);
             }
+        }
+    }
+
+    public class LinePicker
+    {
+        public List<string> units { get; set; }
+        public List<Line>[] lines { get; set; }
+
+        public LinePicker(Lines lns)
+        {
+            units = lns.lines.Select(n => Unit.Code(n.UnitId)).Distinct().ToList();
+            var rows = lns.lines.Count / units.Count;
+            lines = Enumerable.Range(0, rows).Select(r => lns.lines.Where(ln => ln.LineNumber == r + 1).ToList()).ToArray();           
         }
     }
 

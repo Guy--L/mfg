@@ -31,6 +31,11 @@
     color: orange;
 }
 
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+    background-color: lightgoldenrodyellow;
+    color: darkgoldenrod;
+}
+
 .time-context {
     background-color: lightblue;
 }
@@ -99,6 +104,27 @@ tr.headers th {
 }
 #grouptimestamp div.form-group {
     margin: 0;
+}
+
+#linepickertable thead tr th,
+#linepickertable tbody tr td.rowlabel {
+    text-align: center;
+    font-size: large;
+    font-style: bold;
+}
+
+.sampletable tbody tr td.readitem {
+    max-width: 60px;
+} 
+
+.sampletable thead tr th {
+    text-align: center;
+}
+
+.sampletable tbody tr td.readitem input {
+    max-width: 100%;
+    padding: 4px;
+    font-size: large;
 }
 
 .table-condensed tbody tr.linetestrow td {

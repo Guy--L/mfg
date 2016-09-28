@@ -24,6 +24,11 @@ namespace Test.Models
         [ResultColumn] public DateTime DateTime { get; set; }
         [ResultColumn] public DateTime Completed { get; set; }
 
+        static System()
+        {
+            Systems = repo.Fetch<System>().Where(s => s.Status.Trim() == "Good").ToDictionary(k => k.SystemId, v => v._System.Replace("unassigned", "0"));
+        }
+
         public string Pretty { get { return _System + " " + SolutionType; } }
     }
 }

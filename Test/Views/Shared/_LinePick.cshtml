@@ -1,0 +1,35 @@
+﻿@model Test.Models.LinePicker   
+
+<div id="linepicker">
+    <h4>@Html.Bootstrap().TextBox("linepicked").Size(InputSize.Small).Label().LabelText("Pick a Line").Class("text-primary")</h4>
+    <div class="form-group">
+        <table class="table table-condensed table-no-border" id="linepickertable">
+            <thead>
+                <tr>
+                    <th>Line\Unit</th>
+                    @foreach (var unit in Model.units)
+                    {
+                        <th>@unit</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (var row = 0; row < Model.lines.Length; row++)
+                {
+                    <tr>
+                        <td class="rowlabel">@(row+1)</td>
+                        @foreach (var ls in Model.lines[row])
+                        {
+                            <td data-id="@ls.LineId" class="sys-@ls.SystemId" data-name="@ls.Name">
+                                <button class="btn btn-xs btn-@ls.status.Color sys-@ls.SystemId linebtn" data-id="@ls.LineId" data-spec="@ls.product.FullCode">
+                                    @ls.product._ProductCode <i class="fa fa-@ls.status.Icon"></i>
+                                </button>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

@@ -243,6 +243,7 @@
     <Compile Include="Models\Conversion.cs" />
     <Compile Include="Models\Extensions.cs" />
     <Compile Include="Models\Extruder.cs" />
+    <Compile Include="Models\LayFlat.cs" />
     <Compile Include="Models\Limit.cs" />
     <Compile Include="Models\Line.cs" />
     <Compile Include="Models\LineTx.cs" />
@@ -502,8 +503,8 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
-    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="favicon.ico" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -535,12 +536,12 @@
     <None Include="Elmah.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Instructions.pdf" />
     <Content Include="fonts\FontAwesome.otf" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
-    <Content Include="Instructions.pdf" />
     <None Include="Properties\PublishProfiles\Production.pubxml" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
@@ -742,7 +743,7 @@
     <Content Include="Views\Home\CasingSampleView.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CasingSamplesView.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CasingSample.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Reading.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ReadItem.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Glycerin.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Double.cshtml" />
     <Content Include="Views\Shared\_LayoutjUart.cshtml" />
@@ -780,6 +781,11 @@
     <Content Include="Views\Shared\_Fullscreen.cshtml" />
     <Content Include="Views\Home\ComboCMC.cshtml" />
     <Content Include="Views\Home\ScreenTest.cshtml" />
+    <Content Include="Views\Home\LayFlats.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\LayFlat.cshtml" />
+    <Content Include="Views\Home\LayFlat.cshtml" />
+    <Content Include="Views\Shared\_LinePick.cshtml" />
+    <Content Include="Views\Shared\_SampleHeader.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

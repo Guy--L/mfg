@@ -1,0 +1,69 @@
+﻿@model Test.Models.LayFlats
+@{
+    string title = "LayFlat Measurements";
+}
+<div class="container">
+    <br />
+    <table id="layflats" class="table table-striped table-hover table-condensed table-bordered">
+        <thead>
+            <tr>
+                <th colspan="11">@title</th>
+                <th colspan="4">
+                    <button class="btn btn-success btn-xs" id="addlayflat">
+                        <i class="fa fa-plus"></i> Add LayFlat Sample
+                    </button>
+                </th>
+            </tr>
+            <tr>
+                <th>Line</th>
+                <th>DateTime</th>
+                <th>Sampled</th>
+                <th>Julian</th>
+                <th>Product</th>
+                <th>Reel</th>
+                <th>Footage</th>
+                <th>LoLo</th>
+                <th>Lo</th>
+                <th>Aim</th>
+                <th>Hi</th>
+                <th>HiHi</th>
+                <th>Avg(@Model.sample)</th>
+                <th>Range</th>
+            </tr>
+        </thead>
+        <tbody>
+            @Html.DisplayFor(m => m.list)
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+    function attachDT() {
+        q = $('#layflats').dataTable({
+            "sDom": "<'row'<'col-xs-6'f><'col-xs-6'i>>t",
+            "order": [[1, "desc"]],
+            "bPaginate": false,
+            "oLanguage": {
+                "sInfo": "_TOTAL_ layflat sample(s)",
+                "sInfoFiltered": "(of _MAX_ unfiltered)",
+                "sProcessing": "<i class='fa fa-spinner fa-spin'></i>"
+            },
+            fixedHeader: {
+                headerOffset: 50
+            }
+        });
+    }
+    $(function () {
+        attachDT();
+        $('#layflats tbody').on('click', 'tr', function () {
+            var id = $(this).data('id');
+            id = (id != '' && typeof id !== 'undefined') ? id : 0;
+            location.href = '@Url.Action("LayFlat", "Home", null, Request.Url.Scheme)/' + id;
+        });
+        $('#addlayflat').on('click', function () {
+            location.href = '@Url.Action("LayFlat","Home",null,Request.Url.Scheme)/0' ;
+        });
+    });
+    </script>
+}

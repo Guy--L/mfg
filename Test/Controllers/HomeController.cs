@@ -88,6 +88,28 @@ namespace Test.Controllers
         }
 
         [AllowAnonymous]
+        public ActionResult LayFlats()
+        {
+            var lfs = new LayFlats();
+            return View(lfs);
+        }
+
+        [AllowAnonymous]
+        public ActionResult LayFlat(int id)
+        {
+            var lfv = new LayFlatView(id);
+            return View(lfv);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult SaveLayFlat(LayFlatView lfv)
+        {
+            lfv.lf.Save();
+            return RedirectToAction("LayFlats");
+        }
+
+        [AllowAnonymous]
         public ActionResult SolutionBatches()
         {
             SolutionBatches s = new SolutionBatches();

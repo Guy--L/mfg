@@ -11,14 +11,12 @@ namespace Test.Models
 {
     public partial class Reading
     {
+        public static int CountPerRecord = 5;
+
         public string FieldName { get; set; }
         public PropertyInfo propInfo { get; set; }
-        public static Dictionary<string, int> TypeOf;
-        public static Dictionary<int, Parameter> Types;
-        public static Dictionary<int, List<int>> Times;
         public static Dictionary<char, int[]> Lines;
         private static string _units = @"ABCD";
-        private static string _icon = @"<i class='fa fa-2x fa-{0}' title='{1} Sample'></i>";
 
         private static string _all = @"
             SELECT m.[ReadingId]
@@ -60,7 +58,6 @@ namespace Test.Models
         [ResultColumn, ComplexMapping] public Parameter Prm {get; set;}
 
         [ResultColumn] public string Name { get; set; }
-        [ResultColumn] public int[] Scale { get; set; }
         [ResultColumn] public string[] Mask { get; set; }
         [ResultColumn] public string[] Cells { get; set; }
         [ResultColumn] public string Icon { get; set; }
@@ -69,12 +66,39 @@ namespace Test.Models
         [ResultColumn] public bool Passed { get; set; }
         [ResultColumn] public int TestNumber { get; set; }
 
+        public int factorize
+        {
+            set { factor.Select(f => { f = value; return 1; }).ToList(); }
+        }
         public int[] factor { get; set; }
         public string r1 { get { return R1.HasValue ? ((double)R1 / factor[0]).ToString() : ""; } }
         public string r2 { get { return R2.HasValue ? ((double)R2 / factor[1]).ToString() : ""; } }
         public string r3 { get { return R3.HasValue ? ((double)R3 / factor[2]).ToString() : ""; } }
         public string r4 { get { return R4.HasValue ? ((double)R4 / factor[3]).ToString() : ""; } }
         public string r5 { get { return R5.HasValue ? ((double)R5 / factor[4]).ToString() : ""; } }
+
+        public string this[int i]
+        {
+            get
+            {
+                if (i == 0) return r1;
+                if (i == 1) return r2;
+                if (i == 2) return r3;
+                if (i == 3) return r4;
+                if (i == 4) return r5;
+                return null;
+            }
+            set
+            {
+                double chk = 0.0;
+                double.TryParse(value, out chk);
+                if (i == 0) R1 = (int) chk * factor[0];
+                if (i == 1) R2 = (int) chk * factor[1];
+                if (i == 2) R3 = (int) chk * factor[2];
+                if (i == 3) R4 = (int) chk * factor[3];
+                if (i == 4) R5 = (int) chk * factor[4];
+            }
+        }
 
         private static string _mask = @"'alias': 'decimal', 'digits': {0}, 'integerDigits': {1}";
 
@@ -88,12 +112,6 @@ namespace Test.Models
         { 
             var msk = Mask[i];
             return inmask(msk);
-        }
-
-        public static string IconML(int id)
-        {
-            var p = Types[id];
-            return string.Format(_icon, p.Icon, p.Name);
         }
 
         public static void SetLines(IEnumerable<Line> lns)
@@ -122,8 +140,19 @@ namespace Test.Models
             }
         }
 
+        static Reading()
+        {
+            SetLines(repo.Fetch<Line>());
+        }
+
         public Reading() { }
         
+        public Reading(Parameter p)
+        {
+            ParameterId = p.ParameterId;
+            parameter();
+        }
+
         public Reading(int sampleid, int parameterid)
         {
             Reading nr = null;
@@ -135,7 +164,7 @@ namespace Test.Models
             parameter();
         }
 
-        public Reading(int id, string name) : this(id, TypeOf[name])
+        public Reading(int id, string name) : this(id, Parameter.TypeOf[name])
         {}
 
         public Reading(int id, int? type)
@@ -156,10 +185,9 @@ namespace Test.Models
 
         public int parameter()
         {
-            var t = Types[ParameterId];
+            var t = Parameter.Types[ParameterId];
             Name = t.Name;
-            Scale = t.Scale.Split(',').Select(i => int.Parse(i)).ToArray();
-            factor = Scale.Select(s => (int)Math.Pow(10, s)).ToArray();
+            factor = t.factor();
             Mask = t.Mask.Split(',');
             Count = t.Count;
             Icon = t.Icon;
@@ -171,7 +199,20 @@ namespace Test.Models
     {
         public string CellClass { get; set; }
         public string Mask { get; set; }
-        public dynamic Value { get; set; }
+        public string Value { get; set; }
+
+        public ReadItem() { }
+
+        public ReadItem(string mask)
+        {
+            Value = "";
+            Mask = mask;
+        }
+        public ReadItem(string value, string mask)
+        {
+            Value = value;
+            Mask = mask;
+        }
     }
 
     public class ReadingView
@@ -183,7 +224,7 @@ namespace Test.Models
             get
             {
                 var now = DateTime.Now;
-                return new DateTime(now.Year, now.Month, now.Day, Reading.Times[r.ParameterId].First(t => t >= now.Hour), 0, 0);
+                return new DateTime(now.Year, now.Month, now.Day, Parameter.Times[r.ParameterId].First(t => t >= now.Hour), 0, 0);
             } 
         }
         

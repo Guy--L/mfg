@@ -9,6 +9,11 @@ namespace Test.Models
 
         public static Dictionary<int, Status> state;
 
+        static Status()
+        {
+            SetIcons(repo.Fetch<Status>());
+        }
+
         public static void SetIcons(List<Status> s)
         {
             statuses = s.ToDictionary(k => k.Description, v => v.StatusId);

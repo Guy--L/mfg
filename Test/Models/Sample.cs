@@ -80,42 +80,74 @@ namespace Test.Models
                   ,b.[Tech]
                   ,b.[Note]
 				  ,b.[Completed]
-                  ,r.[ProductCode]
-				  ,r.[ProductSpec]
-                  ,r.[ProductCode]+r.[ProductSpec] as CodeSpec
-				  ,r.[WetTensileMinimum]
+                  ,p.[ProductCode]
+				  ,p.[ProductSpec]
+                  ,p.[ProductCode]+r.[ProductSpec] as CodeSpec
+                  ,p.[LF_Aim]
+                  ,p.[LF_Min]
+                  ,p.[LF_Max]
+                  ,p.[LF_LCL]
+                  ,p.[LF_UCL]
+				  ,p.[WetTensileMinimum]
 				  ,s.[UnitId]
+                  ,r.[ReadingId]            as readings__ReadingId   
+                  ,r.[LineId]               as readings__LineId      
+                  ,r.[Stamp]                as readings__Stamp      
+                  ,r.[R1]                   as readings__R1          
+                  ,r.[R2]                   as readings__R2          
+                  ,r.[R3]                   as readings__R3          
+                  ,r.[R4]                   as readings__R4          
+                  ,r.[R5]                   as readings__R5          
+                  ,r.[Average]              as readings__Average     
+                  ,r.[ParameterId]          as readings__ParameterId 
+                  ,r.[Operator]             as readings__Operator    
+                  ,r.[ProductCodeId]        as readings__ProductCodeId
+                  ,r.[EditCount]            as readings__EditCount   
+                  ,r.[Scheduled]            as readings__Scheduled   
+                  ,r.[Reel]                 as readings__Reel    
+                  ,r.[Footage]              as readings__Footage     
               FROM [dbo].[Sample] b
               join [dbo].[Line] s on b.[LineId] = s.[LineId]
-              join [dbo].[ProductCode] r on b.[ProductCodeId] = r.[ProductCodeId]
-			  where b.[TensileSampleId] = {0}
+              join [dbo].[ProductCode] p on b.[ProductCodeId] = p.[ProductCodeId]
+              left join [dbo].[Reading] r on r.[SampleId] = b.[SampleId] 
         ";
 
         public Sample() { }
         public Sample(int sampleid)
         {
-            SingleOrDefault(" where sampleid = @0", sampleid);
+            Type = Parameter.Types[Parameter.TypeOf[GetType().Name]];
+
+            if (sampleid == 0)
+            {
+                Structure();
+                return;
+            }
+
+            repo.FetchOneToMany<Sample>(p => p.readings, _sample + "where b.[SampleId] = @0", sampleid);
         }
 
-        public List<Reading> readings { get; set; }
+        [ResultColumn] public List<Reading> readings { get; set; }
+        public Parameter Type { get; set; }
 
         [ResultColumn] public int TestCount { get; set; }
         [ResultColumn] public float WetTensileMinimum { get; set; }
 
         [ResultColumn, ComplexMapping] public Line Line;
+        [ResultColumn, ComplexMapping] public ProductCode Product;
+
         public bool Up { get; set; }
 
         public string TypeCells
         {
             get
             {
-                var type = Reading.Types[ParameterId.Value];
+                var type = Parameter.Types[ParameterId.Value];
                 return string.Format(_tcells, type.Icon, type.TypeName);
             }
         }
-        public string Type { 
+        public string TypeString { 
             get { 
-                var type = Reading.Types[ParameterId.Value];
+                var type = Parameter.Types[ParameterId.Value];
                 return string.Format(_icon, type.Icon, type.TypeName); 
             } 
         }
@@ -124,7 +156,7 @@ namespace Test.Models
 
         public static DateTime NextSlot(string typeName)
         {
-            var t = Reading.TypeOf[typeName];
+            var t = Parameter.TypeOf[typeName];
             return NextSlot(t);
         }
 
@@ -133,7 +165,7 @@ namespace Test.Models
             // next will be set to 1:00 even if now is 1:59
             // may want to refine this algorithm either with global or parameter based intervals
             var now = DateTime.Now;
-            var diary = Reading.Types[type].Diary.Split(',').Select(h => int.Parse(h)).ToList();
+            var diary = Parameter.Types[type].Diary.Split(',').Select(h => int.Parse(h)).ToList();
             if (diary.Count == 1 && diary[0] == 0)
                 return now;
 
@@ -168,14 +200,21 @@ namespace Test.Models
             {
                 todo = d.Fetch<Sample>(_nextsamples, line);
             }
-            if (todo.Count == Reading.Types.Count)
+            if (todo.Count == Parameter.Types.Count)
                 return todo;
+
             var planned = todo.Select(t => t.ParameterId);
-            foreach (var m in Reading.Types.Keys.Where(k => !planned.Contains(k)))
+            foreach (var m in Parameter.Types.Keys.Where(k => !planned.Contains(k)))
             {
                 todo.Add(new Sample() { ParameterId = m, NextScheduled = NextSlot(m), LineId = line });
             }
             return todo;
+        }
+
+        public virtual void Structure()
+        {
+            var recs = Type.Count / Reading.CountPerRecord;
+            readings = Enumerable.Range(0, recs).Select(i => new Reading(Type)).ToList();
         }
     }
 
@@ -197,7 +236,7 @@ namespace Test.Models
         public SampleView(int id)
         {
             grid = Reading.Lines;
-            types = Reading.Types;
+            types = Parameter.Types;
 
             using (labDB db = new labDB())
             {
@@ -218,7 +257,7 @@ namespace Test.Models
                         LineId = 0,
                         ParameterId = 0
                     };
-                    pending = Reading.Types.Keys.Select(k => new Sample() { ParameterId = k }).ToList();
+                    pending = Parameter.Types.Keys.Select(k => new Sample() { ParameterId = k }).ToList();
                     LineId = 0;
                 }
                 products = AddNone(new SelectList(productlist, "ProductCodeId", "CodeSpec", t.ProductCodeId));
