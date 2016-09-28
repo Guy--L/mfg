@@ -21,7 +21,7 @@
                         @foreach (var ls in Model.lines[row])
                         {
                             <td data-id="@ls.LineId" class="sys-@ls.SystemId" data-name="@ls.Name">
-                                <button class="btn btn-xs btn-@ls.status.Color sys-@ls.SystemId linebtn" data-id="@ls.LineId" data-spec="@ls.product.FullCode">
+                                <button class="btn btn-xs btn-@ls.status.Color sys-@ls.SystemId linebtn" data-id="@ls.LineId" data-spec="@ls.product.FullCode" data-aim='@ls.product.LF_Aim.Value.ToString("F1")'>
                                     @ls.product._ProductCode <i class="fa fa-@ls.status.Icon"></i>
                                 </button>
                             </td>

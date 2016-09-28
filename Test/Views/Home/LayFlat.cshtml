@@ -21,33 +21,47 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="col-xs-12 text-primary" id="linestitle"><h3>LayFlat Sample</h3></div>
+        <div class="col-xs-12 text-primary" id="linestitle"><h3>@Model.lf.TypeHtml @Model.lf.Type.Name Sample</h3></div>
     </div>
-        @using (var form = Html.Bootstrap().Begin(new Form("SaveLayFlat", "Home").Type(FormType.Inline).Id("layflatform")))
+        @using (var form = Html.Bootstrap().Begin(new Form("SaveLayFlat", "Home").Type(FormType.Horizontal).Id("layflatform")))
         {
-        <div class="row-fluid">
-            <div class="col-md-5">
-                @Html.Partial("_LinePick", Model.lines)
-                @Html.Partial("_SampleHeader", Model.lf)
-            </div>
-            <div class="col-md-7 readinput">
-                @Html.HiddenFor(m=>m.lf.SampleId)
-                @Html.HiddenFor(m=>m.lf.LineId)
-                @form.FormGroup().TextBoxFor(m=>m.lf.ReelNumber) &nbsp;
-                @form.FormGroup().TextBoxFor(m=>m.lf.Footage)
-                <table id="layflattable" class="sampletable table table-condensed">
-                    <thead>
-                        <tr>
-                            @ReadingHeader(Model.lf.Type.Count)
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            @Html.EditorFor(m => m.lf.values)
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="row-fluid">
+                <div class="col-md-5">
+                    @Html.Partial("_LinePick", Model.lines)
+                    @Html.Partial("_SampleHeader", Model.lf)
+                </div>
+            
+                <div class="col-md-7 readinput">
+                    @Html.HiddenFor(m=>m.lf.SampleId)
+                    @Html.HiddenFor(m=>m.lf.LineId)
+                    @Html.HiddenFor(m=>m.lf.Average)
+                    @Html.HiddenFor(m=>m.lf.Range)
+                    @Html.HiddenFor(m=>m.lf.Scheduled)
+                    @form.FormGroup().TextBoxFor(m=>m.lf.Tech)
+                    @form.FormGroup().TextBoxFor(m=>m.lf.ReelNumber)
+                    @form.FormGroup().TextBoxFor(m=>m.lf.Footage)
+
+                    <table id="layflattable" class="sampletable table table-borderless">
+                        <thead>
+                            <tr></tr>
+                            <tr>
+                                <th colspan="2">Average:</th>
+                                <th id="average"></th>
+                                <th colspan="3">Range:</th>
+                                <th id="range"></th>
+                                <th colspan="@(Model.lf.Type.Count-8)">
+                            </tr>
+                            <tr>
+                                @ReadingHeader(Model.lf.Type.Count)
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                @Html.EditorFor(m => m.lf.values)
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="row-fluid">
                 @(form.FormGroup().CustomControls(buttons.ToArray()))
@@ -58,27 +72,46 @@
 @section scripts {
     <script type="text/javascript">
         var linepicked = $('#linepicked');
+        function restat(n){
+            var sum = 0;
+            var min = Infinity;
+            var max = -Infinity;
+            n.each(function(e){
+                var val = Number($(this).val());
+                if (val>max) max = val;
+                if (val<min) min = val;
+                sum += val;
+            });
+            sum = Math.round(10*sum/n.length)/10;
+            max = Math.round(10*(max-min))/10;
+
+            $('#average').text(sum);
+            $('#range').text(max);
+            $('#@Html.IdFor(m=>m.lf.Average)').val(sum);
+            $('#@Html.IdFor(m=>m.lf.Range)').val(max);
+        }
         $(function () {
-            $('input.n31').inputmask('decimal', { digits: 1, integerDigits: 2 });
+            var readings = $("#layflattable td.readitem input");
             $('.linebtn').on('mouseenter', function (e) {
                 linepicked.val($(this).parent().data('name'));
             });
             $('.linebtn').on('click', function (e) {
                 e.preventDefault();
-                console.log($(this).data('spec')+' '+linepicked.val()+'.');
-                $('#@Html.IdFor(m => m.lf.SampleId)').val($(this).parent().data('id'));
+                $('#@Html.IdFor(m => m.lf.LineId)').val($(this).parent().data('id'));
                 $('#sampleheader').show();
                 $('#sample_name span').text(linepicked.val());
+                var aim = ''+$(this).data('aim');
+                $('#layflattable td.readitem input').val(aim.substring(0, aim.indexOf('.')+2))
                 $('#sample_product span').text($(this).data('spec'));
                 $('#linepicker').hide();
+                $('.readinput, #savelayflat').show();
+                restat(readings);
             });
             if (@Model.lf.SampleId == 0) {
                 $('#sampleheader').hide();
-                $('#linepicker').show();
-                $('div.sampleinput');
+                $('.readinput, #savelayflat').hide();
             }
             else {
-                $('#sampleheader').show();
                 $('#linepicker').hide();
             }
             $('#savelayflat').on('click', function(e){
@@ -87,6 +120,58 @@
             $('#cancel').on('click', function (e) {
                 e.preventDefault();
                 location.href = '@Url.Action("LayFlats", "Home",null,Request.Url.Scheme)';
+            });
+            readings.on("keydown", function (e) {
+                var val = $(this).val();
+                var pnt = val.indexOf('.');
+                var int = pnt==-1?val:val.substring(0,pnt);
+                var dec = val.substring(pnt+1);
+
+                if (e.shiftKey && e.keyCode === 187) {
+                    $(this).val((Number(int)+1)+'.'+dec);
+                    restat(readings);
+                    e.preventDefault();
+                    return;
+                }
+                if (e.keyCode === 189) {
+                    $(this).val((int-1)+'.'+dec);
+                    restat(readings);
+                    e.preventDefault();
+                    return;
+                }
+                // Allow: backspace, delete, tab, escape, enter and .
+                if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190, 37, 39]) !== -1 ||
+                    // Allow: Ctrl+A, Command+A
+                     (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                    // Allow: home, end, left, right, down, up
+                     (e.keyCode >= 35 && e.keyCode <= 40)) {
+                    // let it happen, don't do anything
+                    return;
+                }
+                // Ensure that it is a number and stop the keypress
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                    return;
+                }
+                var chr = String.fromCharCode(e.keyCode);
+
+                if (0+int == 0)
+                    val = chr;
+                else if (0+int < 10)
+                    val = int*10 + chr;
+                else {
+                    var idx = readings.index(this);
+                    $(this).val(int+'.'+String.fromCharCode(e.keyCode));
+                    if (idx == readings.length - 1) {
+                        readings[0].select();
+                    }
+                    else {
+                        readings[idx+1].focus();
+                        readings[idx+1].select();
+                    }
+                    e.preventDefault();
+                }
+                restat(readings);
             });
         });
     </script>   

@@ -98,6 +98,8 @@ namespace Test.Controllers
         public ActionResult LayFlat(int id)
         {
             var lfv = new LayFlatView(id);
+            TempData["Lines"] = lfv.status;
+            Session["Readings"] = lfv.lf.readings;
             return View(lfv);
         }
 
@@ -105,7 +107,10 @@ namespace Test.Controllers
         [AllowAnonymous]
         public ActionResult SaveLayFlat(LayFlatView lfv)
         {
-            lfv.lf.Save();
+            Lines status = TempData["Lines"] as Lines;
+            lfv.lf.Line = status.lines.SingleOrDefault(n=>n.LineId == lfv.lf.LineId);
+            lfv.lf.Stamp = DateTime.Now;
+            lfv.lf.Save(Session["Readings"]);
             return RedirectToAction("LayFlats");
         }
 

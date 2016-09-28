@@ -120,10 +120,20 @@ namespace Test.Models
             if (sampleid == 0)
             {
                 Structure();
+                Scheduled = LastSlot(Type.ParameterId);
+                Note = "";
                 return;
             }
 
             repo.FetchOneToMany<Sample>(p => p.readings, _sample + "where b.[SampleId] = @0", sampleid);
+        }
+
+        public static List<LayFlat> LayFlats(DateTime cutoff)
+        {
+            using (labDB d = new labDB())
+            {
+                return d.FetchOneToMany<LayFlat>(p => p.readings, _sample + " where b.Stamp > @0 and b.ParameterId = @1", cutoff.ToStamp(), LayFlat._type);
+            }
         }
 
         [ResultColumn] public List<Reading> readings { get; set; }
@@ -147,12 +157,34 @@ namespace Test.Models
         }
         public string TypeString { 
             get { 
-                var type = Parameter.Types[ParameterId.Value];
-                return string.Format(_icon, type.Icon, type.TypeName); 
+                return string.Format(_icon, Type.Icon, Type.TypeName); 
             } 
         }
 
+        public MvcHtmlString TypeHtml
+        {
+            get
+            {
+                return new MvcHtmlString(TypeString);
+            }
+        }
+
         public bool Active { get { return !Completed.HasValue; } }
+
+        public static DateTime LastSlot(int type)
+        {
+            var now = DateTime.Now;
+            var diary = Parameter.Types[type].Diary.Split(',').Select(h => int.Parse(h)).ToList();
+            if (diary.Count == 1 && diary[0] == 0)
+                return now;
+
+            var last = diary.LastOrDefault(h => h <= now.Hour);
+
+            if (last == 0)                    // wrap back to prior day
+                return new DateTime(now.Year, now.Month, now.Day - 1, diary[diary.Count - 1], 0, 0);
+
+            return new DateTime(now.Year, now.Month, now.Day, last, 0, 0);
+        }
 
         public static DateTime NextSlot(string typeName)
         {
