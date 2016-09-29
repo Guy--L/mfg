@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Omu.ValueInjecter;
 using NPoco;
 using System.Reflection;
 
@@ -71,26 +72,31 @@ namespace Test.Models
 
         private static string _icon = @"<i class='fa fa-2x fa-{0}' title='{1} Sample'></i>";
         private static string _tcells = @"<td>" + _icon + "</td><td>{1}</td>";
-        private static string _sample = @"
+        public static string _sample = @"
               SELECT b.[SampleId]
                   ,b.[Stamp]
+                  ,b.[Scheduled]
                   ,b.[ProductCodeId]
+                  ,b.[ParameterId]
                   ,b.[LineId]
-				  ,s.[LineNumber]
+				  ,s.[LineNumber]           as Line__LineNumber
                   ,b.[Tech]
                   ,b.[Note]
 				  ,b.[Completed]
-                  ,p.[ProductCode]
-				  ,p.[ProductSpec]
-                  ,p.[ProductCode]+r.[ProductSpec] as CodeSpec
-                  ,p.[LF_Aim]
-                  ,p.[LF_Min]
-                  ,p.[LF_Max]
-                  ,p.[LF_LCL]
-                  ,p.[LF_UCL]
-				  ,p.[WetTensileMinimum]
-				  ,s.[UnitId]
+                  ,b.[ReelNumber]  
+                  ,b.[Footage]   
+                  ,p.[ProductCode]          as Product__ProductCode
+				  ,p.[ProductSpec]          as Product__ProductSpec
+                  ,p.[ProductCode]+p.[ProductSpec] as Product__CodeSpec
+                  ,p.[LF_Aim]               as Product__LF_Aim
+                  ,p.[LF_Min]               as Product__LF_Min
+                  ,p.[LF_Max]               as Product__LF_Max
+                  ,p.[LF_LCL]               as Product__LF_LCL
+                  ,p.[LF_UCL]               as Product__LF_UCL
+				  ,p.[WetTens_Min]          as Product__WetTens_Min
+				  ,s.[UnitId]               as Line__Unitid
                   ,r.[ReadingId]            as readings__ReadingId   
+                  ,r.[SampleId]             as readings__SampleId
                   ,r.[LineId]               as readings__LineId      
                   ,r.[Stamp]                as readings__Stamp      
                   ,r.[R1]                   as readings__R1          
@@ -101,39 +107,26 @@ namespace Test.Models
                   ,r.[Average]              as readings__Average     
                   ,r.[ParameterId]          as readings__ParameterId 
                   ,r.[Operator]             as readings__Operator    
-                  ,r.[ProductCodeId]        as readings__ProductCodeId
                   ,r.[EditCount]            as readings__EditCount   
                   ,r.[Scheduled]            as readings__Scheduled   
-                  ,r.[Reel]                 as readings__Reel    
-                  ,r.[Footage]              as readings__Footage     
               FROM [dbo].[Sample] b
               join [dbo].[Line] s on b.[LineId] = s.[LineId]
               join [dbo].[ProductCode] p on b.[ProductCodeId] = p.[ProductCodeId]
               left join [dbo].[Reading] r on r.[SampleId] = b.[SampleId] 
         ";
 
-        public Sample() { }
-        public Sample(int sampleid)
+        public static Sample Existing(int id)
         {
-            Type = Parameter.Types[Parameter.TypeOf[GetType().Name]];
-
-            if (sampleid == 0)
-            {
-                Structure();
-                Scheduled = LastSlot(Type.ParameterId);
-                Note = "";
-                return;
-            }
-
-            repo.FetchOneToMany<Sample>(p => p.readings, _sample + "where b.[SampleId] = @0", sampleid);
+            return repo.FetchOneToMany<Sample>(p => p.readings, _sample + "where b.[SampleId] = @0", id).SingleOrDefault();
         }
 
-        public static List<LayFlat> LayFlats(DateTime cutoff)
+        public Sample() { }
+        public Sample(string note)
         {
-            using (labDB d = new labDB())
-            {
-                return d.FetchOneToMany<LayFlat>(p => p.readings, _sample + " where b.Stamp > @0 and b.ParameterId = @1", cutoff.ToStamp(), LayFlat._type);
-            }
+            Type = Parameter.Types[Parameter.TypeOf[GetType().Name]];
+            Structure();
+            Scheduled = LastSlot(Type.ParameterId);
+            Note = note;
         }
 
         [ResultColumn] public List<Reading> readings { get; set; }
@@ -146,6 +139,13 @@ namespace Test.Models
         [ResultColumn, ComplexMapping] public ProductCode Product;
 
         public bool Up { get; set; }
+
+        public HtmlString FullCode {
+            get {
+                    return Product == null ? (new HtmlString("")) : Product.FullCode;
+
+            }
+        }
 
         public string TypeCells
         {

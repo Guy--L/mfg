@@ -23,7 +23,7 @@
     <div class="row-fluid">
         <div class="col-xs-12 text-primary" id="linestitle"><h3>@Model.lf.TypeHtml @Model.lf.Type.Name Sample</h3></div>
     </div>
-        @using (var form = Html.Bootstrap().Begin(new Form("SaveLayFlat", "Home").Type(FormType.Horizontal).Id("layflatform")))
+        @using (var form = Html.Bootstrap().Begin(new Form("SaveLayFlat", "Home").Type(FormType.Horizontal).LabelWidthMd(3).Id("layflatform")))
         {
             <div class="row-fluid">
                 <div class="col-md-5">
@@ -33,7 +33,8 @@
             
                 <div class="col-md-7 readinput">
                     @Html.HiddenFor(m=>m.lf.SampleId)
-                    @Html.HiddenFor(m=>m.lf.LineId)
+                    @Html.HiddenFor(m => m.lf.LineId)
+                    @Html.HiddenFor(m => m.lf.ProductCodeId)
                     @Html.HiddenFor(m=>m.lf.Average)
                     @Html.HiddenFor(m=>m.lf.Range)
                     @Html.HiddenFor(m=>m.lf.Scheduled)
@@ -44,12 +45,12 @@
                     <table id="layflattable" class="sampletable table table-borderless">
                         <thead>
                             <tr></tr>
-                            <tr>
+                            <tr class="trbold">
                                 <th colspan="2">Average:</th>
                                 <th id="average"></th>
-                                <th colspan="3">Range:</th>
+                                <th colspan="2">Range:</th>
                                 <th id="range"></th>
-                                <th colspan="@(Model.lf.Type.Count-8)">
+                                <th colspan="@(Model.lf.Type.Count-6)">
                             </tr>
                             <tr>
                                 @ReadingHeader(Model.lf.Type.Count)
@@ -98,6 +99,7 @@
             $('.linebtn').on('click', function (e) {
                 e.preventDefault();
                 $('#@Html.IdFor(m => m.lf.LineId)').val($(this).parent().data('id'));
+                $('#@Html.IdFor(m => m.lf.ProductCodeId)').val($(this).parent().data('code'));
                 $('#sampleheader').show();
                 $('#sample_name span').text(linepicked.val());
                 var aim = ''+$(this).data('aim');
@@ -113,6 +115,7 @@
             }
             else {
                 $('#linepicker').hide();
+                restat(readings);
             }
             $('#savelayflat').on('click', function(e){
 
@@ -131,12 +134,14 @@
                     $(this).val((Number(int)+1)+'.'+dec);
                     restat(readings);
                     e.preventDefault();
+                    $(this).select();
                     return;
                 }
                 if (e.keyCode === 189) {
                     $(this).val((int-1)+'.'+dec);
                     restat(readings);
                     e.preventDefault();
+                    $(this).select();
                     return;
                 }
                 // Allow: backspace, delete, tab, escape, enter and .

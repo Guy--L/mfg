@@ -70,7 +70,23 @@ namespace Test.Models
         {
             set { factor.Select(f => { f = value; return 1; }).ToList(); }
         }
-        public int[] factor { get; set; }
+
+        private int[] _factor;
+
+        public int[] factor
+        {
+            get
+            {
+                if (_factor == null)
+                {
+                    _factor = Parameter.Types[ParameterId].factor();
+                }
+                return _factor;
+            }
+            set { _factor = value; }
+        }
+
+
         public string r1 { get { return R1.HasValue ? ((double)R1 / factor[0]).ToString() : ""; } }
         public string r2 { get { return R2.HasValue ? ((double)R2 / factor[1]).ToString() : ""; } }
         public string r3 { get { return R3.HasValue ? ((double)R3 / factor[2]).ToString() : ""; } }
@@ -92,11 +108,11 @@ namespace Test.Models
             {
                 double chk = 0.0;
                 double.TryParse(value, out chk);
-                if (i == 0) R1 = (int) chk * factor[0];
-                if (i == 1) R2 = (int) chk * factor[1];
-                if (i == 2) R3 = (int) chk * factor[2];
-                if (i == 3) R4 = (int) chk * factor[3];
-                if (i == 4) R5 = (int) chk * factor[4];
+                if (i == 0) R1 = (int) (chk * factor[0]);
+                if (i == 1) R2 = (int) (chk * factor[1]);
+                if (i == 2) R3 = (int) (chk * factor[2]);
+                if (i == 3) R4 = (int) (chk * factor[3]);
+                if (i == 4) R5 = (int) (chk * factor[4]);
             }
         }
 
@@ -232,12 +248,12 @@ namespace Test.Models
 
         public ReadingView() { }
 
-        public ReadingView(int id, int? type)
-        {
-            grid = Reading.Lines;
-            r = new Reading(id, type);
-            s = new Sample(r.SampleId);
-        }
+        //public ReadingView(int id, int? type)
+        //{
+        //    grid = Reading.Lines;
+        //    r = new Reading(id, type);
+        //    s = new Sample(r.SampleId);
+        //}
 
         public ReadingView(int id, Sample s)
         {

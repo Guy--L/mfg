@@ -42,6 +42,11 @@ namespace Test.Models
             return stamp.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
+        public static string ToJulian(this DateTime stamp)
+        {
+            return (stamp.Year % 100).ToString() + "-" + stamp.DayOfYear.ToString("000");
+        }
+
         public static string ToShort(this DateTime stamp)
         {
             return stamp.ToString("MM-dd HH:mm");

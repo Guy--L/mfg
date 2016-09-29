@@ -17,7 +17,11 @@ namespace Test.Models
         public LayFlats()
         {
             horizon = DateTime.Now.AddDays(-14);
-            //list = Sample.LayFlats(horizon);
+            using (labDB d = new labDB())
+            {
+                list = d.FetchOneToMany<LayFlat>(p => p.readings, Sample._sample + " where b.Stamp > @0 and b.ParameterId = @1", horizon.ToStamp(), LayFlat._type).Select(n => n.specialize()).ToList();
+            }
+            sample = list.Any() ? list.First().Type.Count : 0;
         }
     }
 
@@ -31,39 +35,47 @@ namespace Test.Models
         public double Average { get; set; }
         public double Range { get; set; }
         public string SpecColor { get; set; }
+        public string ScheduledJ { get { return Scheduled.ToJulian(); } }
 
         public List<ReadItem> values { get; set; }
 
         public LayFlat() { }
 
-        public LayFlat(int id) : base(id)
+        public LayFlat specialize()
         {
-            if (id == 0)
-            {
-                values = Enumerable.Range(0, Type.Count).Select(v => new ReadItem(Type.Mask)).ToList();
-                Average = Range = 0.0;
-                return;
-            }
             var sum = 0.0;
             var max = -1.0;
-            var min = (double) Product.LF_Max * 10;
+            var min = (double)Product.LF_Max * 10;
+            Type = Parameter.Types[ParameterId.Value];
             values = Enumerable.Range(0, Type.Count).Select(r => {
                 var s = readings[r / Reading.CountPerRecord][r % Reading.CountPerRecord];
                 var v = double.Parse(s);
                 if (v > max) max = v;
                 if (v < min) min = v;
                 sum += v;
-                return new ReadItem(s, Type.Mask); 
+                return new ReadItem(v.ToString("F"+Type.Scale), Type.Mask);
             }).ToList();
             Average = sum / Type.Count;
             Range = max - min;
+            return this;
+        }
+
+        public static new LayFlat Existing(int id)
+        {
+            var layflat = repo.FetchOneToMany<LayFlat>(p => p.readings, _sample + "where b.[SampleId] = @0", id).SingleOrDefault();
+            layflat.specialize();
+            return layflat;
+        }
+
+        public LayFlat(bool children) : base("")
+        {
+            values = Enumerable.Range(0, Type.Count).Select(v => new ReadItem(Type.Mask)).ToList();
+            Average = Range = 0.0;
         }
 
         public void Save(object session)
         {
             List<Reading> readings = session as List<Reading>;
-            ProductCodeId = Line.ProductCodeId;
-            SystemId = Line.SystemId;
             ParameterId = _type;
 
             Note = "";
@@ -78,7 +90,6 @@ namespace Test.Models
 
     public class LayFlatView
     {
-        public Lines status { get; set; }
         public LinePicker lines { get; set; }
         public LayFlat lf { get; set; }
         public List<ReadItem> readings { get; set; }
@@ -88,12 +99,8 @@ namespace Test.Models
 
         public LayFlatView(int id)
         {
-            lf = new LayFlat(id);
-            if (id == 0)
-            {
-                status = new Lines();
-                lines = new LinePicker(status);
-            }
+            lf = id == 0 ? new LayFlat(true) : LayFlat.Existing(id);
+            lines = new LinePicker(new Lines());
         }
     }
 }

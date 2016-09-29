@@ -243,6 +243,11 @@ tr.casingsample td input.form-control {
     max-width: 190px;
 }
 
+tr.trbold {
+    font-size: large;
+    font-weight: bold;
+}
+
 #sbatchform div.radio.checkbox-inline {
     padding: 0;
     margin: 3px;

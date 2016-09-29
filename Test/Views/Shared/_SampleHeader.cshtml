@@ -2,6 +2,6 @@
 
 <div id="sampleheader" class="text-primary">
     <h1 id="sample_name"><span>@(Model.Line == null ? "" : Model.Line.Name)</span></h1>
-    <h2 id="sample_product"><span>@(Model.Product == null ? "" : Model.Product.ProductSpec)</span></h2>
+    <h2 id="sample_product"><span>@Model.FullCode</span></h2>
     <h3 id="sample_stamp"><span>@Model.Scheduled</span></h3>
 </div>

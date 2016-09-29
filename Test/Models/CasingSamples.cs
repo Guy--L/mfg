@@ -384,7 +384,7 @@ namespace Test.Models
             }
         }
 
-        public CasingSample(IRow r, DateTime sampled, string tech) : base(0)
+        public CasingSample(IRow r, DateTime sampled, string tech) : base("")
         {
             Stamp = sampled;
             Scheduled = sampled;

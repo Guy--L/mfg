@@ -2,10 +2,10 @@
 
 <tr data-id="@Model.SampleId">
     <td>@Model.Line.Name</td>
+    <td>@Model.Scheduled</td>
     <td>@Model.Stamp</td>
-    <td></td>
-    <td></td>
-    <td>@Model.Product.ProductSpec</td>
+    <td>@Model.ScheduledJ</td>
+    <td>@Model.Product.FullCode</td>
     <td>@Model.ReelNumber</td>
     <td>@Model.Footage</td>
     <td>@Model.Product.LF_Min</td>
@@ -13,7 +13,7 @@
     <td>@Model.Product.LF_Aim</td>
     <td>@Model.Product.LF_LCL</td>
     <td>@Model.Product.LF_Max</td>
-    <td class="@Model.SpecColor">@Model.Average</td>
-    <td>@Model.Range</td>
+    <td class="@Model.SpecColor"><bold>@Model.Average</bold></td>
+    <td><bold>@Model.Range</bold></td>
 </tr>
 
