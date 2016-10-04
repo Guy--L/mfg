@@ -141,6 +141,7 @@ namespace Poster
             DialogResult dr = openFiler.ShowDialog();
             if (dr == DialogResult.OK)
             {
+                indir.Text = Path.GetDirectoryName(openFiler.FileName);
                 Upload(openFiler.SafeFileNames);
             }
         }
