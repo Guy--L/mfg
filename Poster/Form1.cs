@@ -124,6 +124,7 @@ namespace Poster
                 catch (Exception e)
                 {
                     Messages.AppendLine(file +": "+ e.Message + ", while uploading to " + _upto);
+                    last = _recent;
                 }
             }
             this.Enable(true);
