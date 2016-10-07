@@ -168,12 +168,12 @@ Chart.prototype.drawHist = function () {
         .data(this.spec).enter()
         .append('line')
         .attr('class', function (d) { return 'limitline ' + d.cls; })
-        .attr('clip-path', 'url(#clip)')
+        //.attr('clip-path', 'url(#clip)')
         .attr('level', function (d) { return d.level; })
         .attr('x1', function (d) { return x(+d.level); })
         .attr('x2', function (d) { return x(+d.level); })
-        .attr('y1', 0)
-        .attr('y2', h);
+        .attr('y1', 0-this.padding*2)
+        .attr('y2', h+this.padding*2);
 }
 
 // the following are "public methods"

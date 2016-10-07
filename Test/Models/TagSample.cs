@@ -47,7 +47,7 @@ namespace Test.Models
 
         private static string _sample = @";
             select convert(float,value,0) as dvalue
-                ,cast(DATEDIFF(s, '1970-01-01 00:00:00', stamp) as bigint)*1000 + cast(DATEPART(ms, stamp) as bigint) as epoch
+                ,dbo.epoch(stamp) as epoch
                 ,stamp
             from production p
             join tag t on p.tagid = t.tagid
@@ -84,47 +84,22 @@ namespace Test.Models
 
             select tagid, devname, tagname, limitid, stamp, lolo, lo, aim, hi, hihi from @@tags
 
-            insert into @@vals
-            select tagid, dvalue, epoch, stamp, 
-                case when rvalue < lolo then -2
-                     when rvalue > hihi then 2
-                     when rvalue < lo then -1
-                     when rvalue > hi then 1
+            select p.tagid 
+                ,convert(float,p.value,0) as dvalue
+                ,round(convert(float,p.value,0),1) as rvalue
+                ,dbo.epoch(p.stamp) as epoch
+                ,p.stamp as stamp
+                ,case when round(convert(float,p.value,0),1) < lolo then -2
+                     when round(convert(float,p.value,0),1) > hihi then 2
+                     when round(convert(float,p.value,0),1) < lo then -1
+                     when round(convert(float,p.value,0),1) > hi then 1
                      else 0
-                end as ctrl from (
-                    select p.tagid 
-                        ,convert(float,p.value,0) as dvalue
-                        ,round(convert(float,p.value,0),1) as rvalue
-                        ,dbo.epoch(p.stamp) as epoch
-                        ,p.stamp
-                        ,t.lolo, t.lo, t.aim, t.hi, t.hihi
-                    from production p
-                    join @@tags t on p.tagid = t.tagid
-                    and p.stamp >= @1 and p.stamp <= @2
-                    where t.tagname != 'layflat_mm_pv'
-                        union all
-                    select a.tagid
-                        ,avg(a.val) as dvalue
-                        ,round(avg(a.val),1) as rvalue 
-                        ,dbo.epoch(max(a.stamp)) as epoch
-                        ,max(a.stamp) as stamp
-                        ,a.lolo, a.lo, a.aim, a.hi, a.hihi
-                    from (
-                        select p.tagid, convert(float,p.value,0) as val
-                            ,p.stamp
-                            ,((row_number() over (order by p.stamp))-1)/@3 as mesh
-							,t.lolo, t.lo, t.aim, t.hi, t.hihi
-                        from production p
-                        join @@tags t on p.tagid = t.tagid
-                        and p.stamp >= @1 and p.stamp <= @2
-                        where t.tagname = 'layflat_mm_pv'
-                    ) a
-                    group by mesh, tagid, lolo, lo, aim, hi, hihi
-                ) v
-
-            select tagid, dvalue, epoch, stamp, ctrl 
-            from @@vals
-            order by tagid, stamp
+                 end as ctrl
+                ,t.lolo, t.lo, t.aim, t.hi, t.hihi
+            from production p
+            join @@tags t on p.tagid = t.tagid
+            and p.stamp >= @1 and p.stamp <= @2
+            order by p.tagid, p.stamp
         ";
 
         private static string _trace = @"
@@ -260,7 +235,7 @@ namespace Test.Models
                 try
                 {
                     t.CommandTimeout = 60000;
-                    var results = t.FetchMultiple<Limit, Value>(_linesample, channel, start.ToStamp(), end.ToStamp(), 10);
+                    var results = t.FetchMultiple<Limit, Value>(_linesample, channel, start.ToStamp(), end.ToStamp());
                     var series = results.Item2.ToLookup(k => k.TagId, v => v);
                     tagsamples = results.Item1.Select(
                         n => new TagSample(n,
