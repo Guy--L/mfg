@@ -236,6 +236,7 @@
     <Compile Include="Controllers\ControlController.cs" />
     <Compile Include="Controllers\DeleteFileAttribute.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="HtmlExtensions\Helper.cs" />
     <Compile Include="Hubs\ContextHub.cs" />
     <Compile Include="Hubs\RefreshHub.cs" />
     <Compile Include="Models\Casings.cs" />
@@ -661,7 +662,9 @@
     <Content Include="Scripts\memlane.js" />
     <Content Include="Scripts\swimlane.js" />
     <Content Include="Scripts\TwitterBootstrapMvcJs.js" />
+    <Content Include="Scripts\_Context.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Scripts\_xlsdownload.js" />
     <Content Include="SQL\LinesAll.sql" />
     <Content Include="SQL\LineTestInsert.sql" />
     <Content Include="SQL\LineTestUpdate.sql" />

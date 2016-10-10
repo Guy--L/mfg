@@ -200,6 +200,8 @@ Chart.prototype.setData = function (newData, limit) {
    // this.setColor(this.color);
 }
 
+// quick statistical calculation for purposes of this chart
+
 function calcMeanSdVar(values) {
     var r = { mean: 0, variance: 0, deviation: 0 }, t = values.length;
     for (var m, s = 0, l = t; l--; s += values[l]);

@@ -45,6 +45,11 @@ namespace Test.Models
         [ResultColumn] public string System { get; set; }
 
         public bool Active { get { return Row == 1 && !Completed.HasValue; } }
+
+        public void RemoveChart()
+        {
+
+        }
     }
 
     public class SolutionBatchView

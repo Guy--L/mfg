@@ -43,8 +43,10 @@ function oneline(id, line) {
             , allHeight = lanes.length * 20 + 50;
 
         var x = d3.time.scale()
-            .domain([d3.time.sunday(d3.min(items, function (d) { return d.begin; })),
-                        d3.max(items, function (d) { return d.end; })])
+            .domain([
+                d3.min(items, function (d) { return d.begin; }),
+                d3.max(items, function (d) { return d.end; })
+            ])
             .range([0, width]);
 
         var ext = d3.extent(lanes, function (d) { return d.id; });
@@ -204,6 +206,7 @@ function oneline(id, line) {
                 .on('click', drill)
                 .on('mouseover', runtip)
                 .on('mouseout', unruntip);
+            $('li.download').hide();
         });
 
         function detailenter(item) {
@@ -504,7 +507,7 @@ function oneline(id, line) {
                     .attr('y1', function (d) { return yt(+d.level); })
                     .attr('y2', function (d) { return yt(+d.level); });
 
-                chart.setData(lanes[channel].series.map(function (d) { return d.dvalue; }), limitrender(lanes[channel].limit));
+                chart.setData(lanes[channel].series.map(function (d) { return d.dvalue; }), limitrender(limit));
             }
 
             function brushed() {
@@ -540,6 +543,10 @@ function oneline(id, line) {
                     .selectAll('text')
                         .attr('dx', 5)
                         .attr('dy', 12);
+
+                chart.setData(lanes[channel].series
+                    .filter(function (d) { return d.epoch >= minExtent && d.epoch <= maxExtent; })
+                    .map(function (d) { return d.dvalue; }), limitrender(lanes[channel].limit));
             }
 
             function moveBrushd() {

@@ -28,3 +28,5 @@
     <i class='ctxicon fa fa-barcode text-@icolor(Model.SampleId)' id='loticon' rel='tooltip' data-placement='bottom' @ShowIfFound(Model.SampleId)></i>
     @form.FormGroup().TextBox("Context_LotNum").Value(Model.LotNum).Id("Context_LotNum").Placeholder("Lot Number").Tooltip(lottip).Label().Class("sr-only")
 }
+
+@Html.RequireScript("/Scripts/_Context.js")

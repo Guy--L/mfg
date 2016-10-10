@@ -1,0 +1,3 @@
+﻿$(function () {
+    $('li.download').hide();
+});
