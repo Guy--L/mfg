@@ -217,6 +217,7 @@ function alllines(id) {
                 .on('click', drill)
                 .on('mouseover', runtip)
                 .on('mouseout', unruntip);
+            $('li.download').hide();
         });
 
         function detailenter(item) {
@@ -517,7 +518,19 @@ function alllines(id) {
                     .attr('y1', function (d) { return yt(+d.level); })
                     .attr('y2', function (d) { return yt(+d.level); });
 
-                chart.setData(lanes[channel].series.map(function (d) { return d.dvalue; }), limitrender(lanes[channel].limit));
+                if (brushd !== undefined) {
+                    var
+                        minExtent = brushd.extent()[0]
+                      , maxExtent = brushd.extent()[1];
+
+                    chart.setData(lanes[channel].series
+                        .filter(function (d) { return d.epoch >= minExtent && d.epoch <= maxExtent; })
+                        .map(function (d) { return d.dvalue; }), limitrender(lanes[channel].limit));
+                }
+                else {
+                    chart.setData(lanes[channel].series
+                        .map(function (d) { return d.dvalue; }), limitrender(lanes[channel].limit));
+                }
             }
 
             function brushed() {
@@ -553,6 +566,10 @@ function alllines(id) {
                     .selectAll('text')
                         .attr('dx', 5)
                         .attr('dy', 12);
+
+                chart.setData(lanes[channel].series
+                    .filter(function (d) { return d.epoch >= minExtent && d.epoch <= maxExtent; })
+                    .map(function (d) { return d.dvalue; }), limitrender(lanes[channel].limit));
             }
 
             function moveBrushd() {
