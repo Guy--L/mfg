@@ -384,6 +384,12 @@
                     xhub.server.runDetail(item.productcode, item.productspec, item.lane, item.start, item.stop).done(function (details) {
                         item.details = details;
 
+                        var laststamp = new Date(Math.max.apply(Math, details.map(function (o) { return (new Date(o.End)).getTime(); })));
+                        var firststamp = new Date(Math.min.apply(Math, details.map(function (o) { return (new Date(o.Start)).getTime(); })));
+
+                        if (firststamp < item.begin) item.begin = firststamp;
+                        if (laststamp > item.end) item.end = laststamp;
+
                         detailenter(item);
 
                         message.text('rendering...').style('opacity', 0);
@@ -718,9 +724,13 @@
                     xtDateAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%a %d'))
                     xtMonthAxis.ticks(d3.time.mondays, 1).tickFormat(d3.time.format('%b - Week %W'))
                 }
-                else {
+                else if ((maxExtent - minExtent) > 20000000) {
                     xtDateAxis.ticks(d3.time.hours, 4).tickFormat(d3.time.format('%I %p'))
                     xtMonthAxis.ticks(d3.time.days, 1).tickFormat(d3.time.format('%b %e'))
+                }
+                else {
+                    xtDateAxis.ticks(d3.time.minutes, 10).tickFormat(d3.time.format('%M'))
+                    xtMonthAxis.ticks(d3.time.hours, 1).tickFormat(d3.time.format('%b%d %H:00'))
                 }
                 top.select('.main.axis.date').call(xtDateAxis);
                 top.select('.main.axis.month').call(xtMonthAxis)

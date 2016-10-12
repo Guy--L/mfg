@@ -163,11 +163,11 @@ Chart.prototype.drawHist = function () {
     hist.exit()
         .remove()
 
-    this.plot.selectAll('.limitline').remove();
-    this.plot.selectAll('.limitline')
+    this.plot.selectAll('.limitlinechart').remove();
+    this.plot.selectAll('.limitlinechart')
         .data(this.spec).enter()
         .append('line')
-        .attr('class', function (d) { return 'limitline ' + d.cls; })
+        .attr('class', function (d) { return 'limitlinechart ' + d.cls; })
         //.attr('clip-path', 'url(#clip)')
         .attr('level', function (d) { return d.level; })
         .attr('x1', function (d) { return x(+d.level); })
