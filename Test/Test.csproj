@@ -525,7 +525,7 @@
     <Content Include="ProductionCxnStrings.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="ConnectionStrings.config">
+    <Content Include="config\ConnectionStrings.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\ChromeSerialExtension\manifest.json" />
@@ -534,6 +534,9 @@
     </Content>
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="config\DevEmail.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Elmah.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -543,6 +546,9 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="ProductionEmail.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Properties\PublishProfiles\Production.pubxml" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
