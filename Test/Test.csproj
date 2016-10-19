@@ -548,6 +548,7 @@
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="ProductionEmail.config">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Properties\PublishProfiles\Production.pubxml" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
