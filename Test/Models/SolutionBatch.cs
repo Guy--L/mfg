@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.SignalR;
+using Test.Hubs;
 using NPoco;
 
 namespace Test.Models
@@ -46,9 +49,16 @@ namespace Test.Models
 
         public bool Active { get { return Row == 1 && !Completed.HasValue; } }
 
-        public void RemoveChart()
+        public static void RemoveChart(int deckid)
         {
+            var dir = new DirectoryInfo(SolutionChart.path);
 
+            foreach (var file in dir.EnumerateFiles(deckid + "_*.png"))
+            {
+                file.Delete();
+            }
+            var hub = GlobalHost.ConnectionManager.GetHubContext<RefreshHub>();
+            hub.Clients.Group("Deck").refresh();
         }
     }
 

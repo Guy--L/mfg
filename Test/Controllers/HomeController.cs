@@ -131,6 +131,7 @@ namespace Test.Controllers
             var b = SolutionBatch.Single(id);
             b.Completed = DateTime.Now;
             b.Update();
+            SolutionBatch.RemoveChart(id);
 
             return RedirectToAction("SolutionBatches");
         }
