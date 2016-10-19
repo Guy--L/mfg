@@ -141,7 +141,16 @@ namespace Test.Models
 
             using (FileStream file = new FileStream(xls, FileMode.Open, FileAccess.Read))
             {
-                IWorkbook wb = WorkbookFactory.Create(file);
+                IWorkbook wb = null;
+                try
+                {
+                    wb = WorkbookFactory.Create(file);
+                }
+                catch (Exception e)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Uploaded file does not parse to spreadsheet: " + xls));
+                    return "Error: uploaded file does not parse to spreadsheet";
+                }
                 ISheet sh = wb.GetSheet("Schedule");
 
                 int weekday = 0;
