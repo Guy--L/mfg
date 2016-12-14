@@ -45,18 +45,20 @@ namespace Tags
             NameValueCollection properties = new NameValueCollection();
             Common.Logging.LogManager.Adapter = new Common.Logging.EventSource.EventSourceLoggerFactoryAdapter(properties);
             sched = schedFact.GetScheduler();
-            sched.Start();
+            //sched.Start();
         }
 
         protected void Application_Stop()
         {
-            sched.Shutdown();
+            //sched.Shutdown();
         }
 
         protected void Session_Start(object sender, EventArgs e)
         {
 #if DEBUG
             var user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+#elif DEMO
+            var user = "gseibel";
 #else
             var user = Thread.CurrentPrincipal.Identity.Name;
 #endif
