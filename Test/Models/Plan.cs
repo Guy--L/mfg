@@ -163,6 +163,8 @@ namespace Test.Models
                     DateTime stamp = dateCell.DateCellValue;
                     ClearDate(stamp);
 
+                    Debug.WriteLine("---cleared " + stamp.ToSStamp());
+
                     var lineIndex = 5;
                     var lineCell = sh.GetRow(lineIndex).GetCell(weekday * 2);
 
