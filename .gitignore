@@ -40,3 +40,4 @@ app_data/*
 Test/App_Data/Files/*.xls
 Test/Content/Slides/*_*.png
 config/*
+ReadPlans/Schedules/

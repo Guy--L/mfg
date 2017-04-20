@@ -73,6 +73,8 @@ namespace ReadPlans.Models
             "down for repair",
             "remain",
             "exempt", 
+            "canceled",
+            "cancelled",
             "exempt moved to",
             "monday",
             "tuesday",
@@ -113,7 +115,9 @@ namespace ReadPlans.Models
         {
             var prior = Comment ?? "";
             prior = prior.Length == 0 ? "" : prior + " ";
-            Comment = prior + comment;
+            string join = prior + comment;
+            int len = join.Length > 200 ? 200 : join.Length;
+            Comment = (prior + comment).Substring(0, len);
             Save();
             return 1;
         }
@@ -123,6 +127,7 @@ namespace ReadPlans.Models
             if (!File.Exists(xls))
                 xls = xls.Replace("Schedule ", "Sched");
 
+            // open spreadsheet
             using (FileStream file = new FileStream(xls, FileMode.Open, FileAccess.Read))
             {
                 IWorkbook wb = WorkbookFactory.Create(file);
@@ -136,7 +141,7 @@ namespace ReadPlans.Models
                 while (dateCell != null && dateCell.CellType != CellType.Blank)
                 {
                     DateTime stamp = dateCell.DateCellValue;
-                    ClearDate(stamp);
+                    ClearDate(stamp);                          // overwrite prior schedule for this day
 
                     var lineIndex = 5;
                     var lineCell = sh.GetRow(lineIndex).GetCell(weekday * 2);
@@ -345,7 +350,9 @@ namespace ReadPlans.Models
 
             var p = s[0].Split('-');
             var code = p[0].Trim();
-            var spec = p[1].Trim().Replace('#', ' ');
+            string spec = "";
+            if (p.Length >= 2)
+                spec = p[1].Trim().Replace('#', ' ');
 
             int product = 0;
             ProductCodeId = ProductCode.all.TryGetValue(ProductCode.spec(code, spec), out product) ? product : 0;
@@ -367,6 +374,16 @@ namespace ReadPlans.Models
                 sysi = 2;
                 coli = 3;
             }
+            if (d.Length == 4 && d[1].ToLower() == "new")
+            {
+                sysi = 2;
+                coli = 3;
+            }
+            if (d.Length == 4 && d[1] == "-")
+            {
+                sysi = 2;
+                coli = 3;
+            }
             if (d[0] == "-")
             {
                 d[0] = d[1];
@@ -376,6 +393,11 @@ namespace ReadPlans.Models
             if (d[1] == "")
             {
                 sysi = 2;
+                coli = 3;
+            }
+            if (d.Length == 4 && d[2] == ")")
+            {
+                sysi = 1;
                 coli = 3;
             }
 

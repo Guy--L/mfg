@@ -11,6 +11,8 @@ namespace ReadPlans.Models
     {
         private static string _lookup = @"
             select substring ('ABCD', unitid, 1)+'-'+convert(char(1), linenumber) name, lineid from line
+            union all
+            select substring ('ABCD', unitid, 1)+convert(char(1), linenumber) name, lineid from line
         ";
 
         private static Dictionary<string, int> _lines;

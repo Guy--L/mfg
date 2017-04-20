@@ -52,6 +52,7 @@ namespace Tags.Models
             from [Graph] g
             inner join [Plot] p on p.GraphId = g.GraphId
             where g.ReviewId = @0
+            order by g.GraphId
         ";
 
         private static string _tagsByGraph = @"
