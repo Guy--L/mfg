@@ -63,6 +63,7 @@ namespace Tags.Models
                 t.Name,
                 t.Address,
                 t.DataType,
+                left(reverse(t.Name),2) as [SetPoint],
                 c.Name as [Channel],
                 d.Name as [Device],
                 p.TagId as [CanonId]
