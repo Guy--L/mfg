@@ -94,6 +94,7 @@ namespace Tags.Models
                 where c.ChannelId = {0} and s.Tag in ({1})";
 
         public Dictionary<int, string> index { get; set; }
+        public Dictionary<int, bool> setp { get; set; }
         public ILookup<int, All> scalar { get; set;}
         public Dictionary<int, Dictionary<string, List<All>>> timelined { get; set; }
         public ILookup<int, Limit> limits { get; set; }
@@ -187,6 +188,7 @@ namespace Tags.Models
 
                 var stringValued = tags.Where(v => v.DataType.ToLower() == "string").Select(d => d.TagId);
                 index = tags.ToDictionary(i => i.TagId, i => (multichannel ? (i.Channel + ".") : "") + i.Name);
+                setp = tags.ToDictionary(i => i.TagId, i => i.IsSetPoint);
 
                 var samples = t.Fetch<All>(string.Format(_data, include, min.ToStamp(), max.ToStamp()));
                 if (!samples.Any())
@@ -202,7 +204,7 @@ namespace Tags.Models
                 var splitByType = samples.Where(d => stringValued.Contains(d.TagId));                   // some values are labels but most are float data points
 
                 timelined = splitByType.ToLookup(d => d.TagId).ToDictionary(d => d.Key, d => ThreadsByLabel(d));        // labels on a timeline to be y2axis
-                scalar = samples.Except(splitByType).ToLookup(n => n.TagId);                                                                    // tags with only numeric values
+                scalar = samples.Except(splitByType).ToLookup(n => n.TagId);                                                                   // tags with only numeric values
 
                 current = t.Fetch<Current>(string.Format(_current, include)).ToDictionary(c => c.TagId, c => c.Value);  // get values from right now
             }
@@ -235,7 +237,7 @@ namespace Tags.Models
                 var line = index[tagtlines.Key].Split('.');
                 var prefix = "";
                 if (line.Length > 1)
-                    prefix = line[0]+".";
+                    prefix = line[0] + ".";
                 var tlines = tagtlines.Value;
                 if (!tlines.Any())
                     continue;
@@ -261,7 +263,7 @@ namespace Tags.Models
             }
 
             charts += ((specs.Any() && charts.Length > 0) ? "," : "") + string.Join(",\n", specs.Select((x, u) => string.Format(_fills, u)).ToArray());
-            charts += ((scalar.Any() && charts.Length > 0) ? "," : "") + string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true},label:'" + index[r.First().TagId] + "'}").ToArray());
+            charts += ((scalar.Any() && charts.Length > 0) ? "," : "") + string.Join(",\n", scalar.Select((r, p) => "{data:d" + p + ",points:{show:false},lines:{show:true,steps:" + (setp[r.First().TagId]?"true":"false")+"},label:'" + index[r.First().TagId] + "'}").ToArray());
         }
 
         private Dictionary<string, List<All>> ThreadsByLabel(IGrouping <int, All> d)
