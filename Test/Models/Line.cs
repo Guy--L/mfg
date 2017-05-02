@@ -102,6 +102,7 @@ namespace Test.Models
             using (var labdb = new labDB())
             {
                 lines = labdb.Fetch<Line>(_lineload + " order by l.LineNumber, l.UnitId");
+                lines.ForEach(n => { if (n.product == null) n.product = new ProductCode() { _ProductCode = "not linked", ProductSpec = "" }; });
                 systems = labdb.Fetch<System>(System._active);
             }
         }
